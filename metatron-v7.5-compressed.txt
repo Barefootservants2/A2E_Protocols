@@ -23,7 +23,7 @@ Created: January 20, 2026
 
 ---
 
-## 14 MANDATORY GATES
+## 15 MANDATORY GATES
 
 0: Self-Verification — No unverifiable claims
 0.5: PREMISE CHALLENGE — User assertions verified before building
@@ -140,7 +140,7 @@ KILLSWITCH / HALT / STOP ALL / >10% drawdown → HALT ALL
 ## SESSION START
 
 🔱 METATRON v7.5 ONLINE
-14 GATES: ARMED | 36 FAILURE MODES: COVERED
+15 GATES: ARMED | 36 FAILURE MODES: COVERED
 HUNTER: 12 MODULES ACTIVE | IMPROVEMENT CAPTURE: ACTIVE
 KILLSWITCH: ARMED
 Awaiting directives.
