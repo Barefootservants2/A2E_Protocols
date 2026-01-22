@@ -8,7 +8,9 @@
 
 ## OVERVIEW
 
-HUNTER (Heuristic Unified Network for Tactical Equity Research) is METATRON's opportunity scanning subsystem. Version 2.0 expands from 6 to 10 modules, adding institutional flow intelligence and positioning analysis.
+HUNTER (Heuristic Unified Network for Tactical Equity Research) is METATRON's opportunity scanning subsystem. Version 2.0 maintains the 14 production modules from v7.7, enhances H8/H9/H12 with institutional-grade analytics, and adds H15 for crowding analysis.
+
+**Module Count:** 15 (H1-H15)
 
 ---
 
@@ -16,37 +18,45 @@ HUNTER (Heuristic Unified Network for Tactical Equity Research) is METATRON's op
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    HUNTER v2.0 MODULES                          │
+│                    HUNTER v2.0 MODULES (15)                     │
 ├─────────────────────────────────────────────────────────────────┤
-│  INTELLIGENCE TIER                                              │
+│  INTELLIGENCE TIER (H1-H6)                                      │
 │  ├── H1: Elite Investor Tracking          [DAILY]               │
-│  ├── H2: Political Catalyst Monitor       [DAILY]               │
+│  ├── H2a: Legislative Catalyst            [DAILY]               │
+│  ├── H2b: Regulatory/Executive            [DAILY]               │
 │  ├── H3: Sector Momentum Scanner          [WEEKLY]              │
-│  └── H4: Insider Cluster Detection        [DAILY]               │
-├─────────────────────────────────────────────────────────────────┤
-│  OPPORTUNITY TIER                                               │
+│  ├── H4: Insider Cluster Detection        [DAILY]               │
 │  ├── H5: Oversold Quality Screen          [DAILY]               │
 │  └── H6: Contract Pipeline Tracker        [WEEKLY]              │
 ├─────────────────────────────────────────────────────────────────┤
-│  FLOW TIER (NEW)                                                │
-│  ├── H7: Options Unusual Activity         [DAILY]               │
-│  └── H8: Short Interest Dynamics          [DAILY]               │
+│  EVENT & FLOW TIER (H7-H10)                                     │
+│  ├── H7: Earnings Catalyst Calendar       [DAILY]               │
+│  ├── H8: Unusual Options Flow             [DAILY] ★ ENHANCED    │
+│  ├── H9: Short Interest Dynamics          [DAILY] ★ ENHANCED    │
+│  └── H10: IPO/SPAC Pipeline               [WEEKLY]              │
 ├─────────────────────────────────────────────────────────────────┤
-│  POSITIONING TIER (NEW)                                         │
-│  ├── H9: 13F Delta Velocity               [QUARTERLY+]          │
-│  └── H10: Crowding/Concentration          [WEEKLY]              │
+│  MACRO & INSTITUTIONAL TIER (H11-H14)                           │
+│  ├── H11: Macro Event Calendar            [WEEKLY]              │
+│  ├── H12: 13F Delta Velocity              [QUARTERLY] ★ ENHANCED│
+│  ├── H13: Tariff/Trade Monitor            [DAILY]               │
+│  └── H14: Position News Aggregator        [DAILY]               │
+├─────────────────────────────────────────────────────────────────┤
+│  POSITIONING TIER (H15) ★★ NEW                                  │
+│  └── H15: Crowding/Concentration Monitor  [WEEKLY]              │
 └─────────────────────────────────────────────────────────────────┘
+
+★ ENHANCED = Upgraded in v8.0  |  ★★ NEW = Added in v8.0
 ```
 
 ---
 
-## H1: ELITE INVESTOR TRACKING
+## INTELLIGENCE TIER (H1-H6)
 
-### Purpose
-Track positioning changes of investors with proven long-term track records.
+### H1: ELITE INVESTOR TRACKING
+**Frequency:** Daily  
+**Purpose:** Track positioning changes of proven investors  
 
-### Tracked Investors
-
+**Tracked Investors:**
 | Investor | Fund | Specialty | Primary Source |
 |----------|------|-----------|----------------|
 | Eric Sprott | Sprott Inc | Precious metals, mining | 13F, 13D |
@@ -60,222 +70,131 @@ Track positioning changes of investors with proven long-term track records.
 | Carl Icahn | Icahn Enterprises | Activist | 13D, 13F |
 | David Einhorn | Greenlight Capital | Value, shorts | 13F, Conferences |
 
-### Data Sources
-- **13F Filings:** Quarterly, 45-day lag from quarter end
-- **13D/13G Filings:** >5% positions, filed within 10 days
-- **Form 4:** Insider transactions, filed within 2 business days
-- **Public Statements:** Interviews, letters, conference presentations
+**Data Sources:**
+- 13F Filings: Quarterly, 45-day lag
+- 13D/13G Filings: >5% positions, within 10 days
+- Form 4: Insider transactions, within 2 business days
+- Public statements/letters
 
-### Alert Triggers
-| Event | Alert Level | Action |
-|-------|-------------|--------|
-| New position initiated | HIGH | Research immediately |
-| Position increased >25% | MEDIUM | Add to watchlist |
-| Position decreased >25% | MEDIUM | Review thesis |
-| Position exited | HIGH | Investigate reason |
-| Public statement on position | HIGH | Update thesis |
+**Alert Triggers:**
+| Event | Alert Level |
+|-------|-------------|
+| New position initiated | HIGH |
+| Position increased >25% | MEDIUM |
+| Position decreased >25% | MEDIUM |
+| Position exited | HIGH |
 
-### Output Format
-```yaml
-h1_alert:
-  investor: string
-  ticker: string
-  action: NEW | INCREASE | DECREASE | EXIT
-  shares_change: int
-  value_change: float
-  pct_portfolio: float
-  filing_date: ISO-8601
-  filing_type: 13F | 13D | 13G | FORM4
-  notes: string
-```
+**Attribution:** Methodology inspired by WhaleWisdom and Dataroma elite tracking.
 
 ---
 
-## H2: POLITICAL CATALYST MONITOR
+### H2a: LEGISLATIVE CATALYST
+**Frequency:** Daily  
+**Purpose:** Track congressional activity affecting portfolio sectors  
 
-### Purpose
-Track policy and regulatory developments that could impact positions.
-
-### Monitoring Targets
-
-**Congressional:**
+**Monitoring Targets:**
+- Bill introductions and co-sponsors
 - Committee hearing schedules
-- Bill introductions and votes
+- Floor vote calendars
 - Budget/appropriations progress
 - Confirmation hearings
 
-**Executive:**
-- Executive orders
-- Agency rule-making
-- Trade policy (tariffs, sanctions)
-- Presidential statements
+**Data Sources:**
+- Congress.gov
+- GovTrack.us
+- Committee calendars
 
-**Regulatory:**
-| Sector | Primary Agencies |
-|--------|-----------------|
-| Defense | DOD, Armed Services Committees |
-| Energy | DOE, FERC, EPA |
+**Attribution:** Framework derived from Strategas policy research methodology.
+
+---
+
+### H2b: REGULATORY/EXECUTIVE
+**Frequency:** Daily  
+**Purpose:** Track executive and regulatory actions  
+
+**Monitoring Targets:**
+- Executive orders
+- Agency rule-making (proposed and final)
+- Enforcement actions
+- Guidance documents
+
+**Key Agencies:**
+| Sector | Agencies |
+|--------|----------|
+| Defense | DOD, Armed Services |
+| Energy | DOE, FERC, EPA, NRC |
 | Healthcare | FDA, CMS, HHS |
 | Finance | SEC, Fed, CFTC, Treasury |
 | Tech | FTC, DOJ Antitrust |
-| Mining/Resources | BLM, EPA, USFS |
+| Mining | BLM, EPA, USFS |
 
-### Alert Classification
-| Type | Timeline | Impact |
-|------|----------|--------|
-| IMMINENT | <7 days | Direct policy impact |
-| PENDING | 7-30 days | Potential impact |
-| DEVELOPING | 30-90 days | Monitor |
-| LONG-TERM | >90 days | Background |
+**Data Sources:**
+- Federal Register
+- Agency newsrooms
+- WhiteHouse.gov
 
-### Output Format
-```yaml
-h2_alert:
-  event_type: HEARING | BILL | EXECUTIVE | REGULATORY
-  agency: string
-  date: ISO-8601
-  description: string
-  affected_sectors: [list]
-  affected_tickers: [list]
-  impact_assessment: POSITIVE | NEGATIVE | NEUTRAL | UNCERTAIN
-  probability: float
-  timeline: IMMINENT | PENDING | DEVELOPING | LONG-TERM
-```
+**Attribution:** Data sourced from Federal Register and agency press releases.
 
 ---
 
-## H3: SECTOR MOMENTUM SCANNER
+### H3: SECTOR MOMENTUM SCANNER
+**Frequency:** Weekly  
+**Purpose:** Identify sector rotation opportunities  
 
-### Purpose
-Identify sector rotation opportunities through relative strength analysis.
+**Sectors Tracked:**
+- XLF, XLK, XLE, XLV, XLI, XLY, XLP, XLU, XLB, XLRE, XLC
+- GDX, SLV, USO (commodities)
 
-### Sectors Tracked
-- XLF (Financials)
-- XLK (Technology)
-- XLE (Energy)
-- XLV (Healthcare)
-- XLI (Industrials)
-- XLY (Consumer Discretionary)
-- XLP (Consumer Staples)
-- XLU (Utilities)
-- XLB (Materials)
-- XLRE (Real Estate)
-- XLC (Communications)
-- GDX (Gold Miners)
-- SLV (Silver)
-- USO (Oil)
+**Metrics:**
+| Metric | Calculation |
+|--------|-------------|
+| RS 1-Week | Sector return / SPY return |
+| RS 1-Month | Same, 1-month |
+| RS 3-Month | Same, 3-month |
+| Fund Flow | ETF inflows/outflows |
+| Breadth | % stocks > 50MA |
 
-### Metrics
-| Metric | Calculation | Signal |
-|--------|-------------|--------|
-| RS 1-Week | Sector return / SPY return | Momentum |
-| RS 1-Month | Same, 1-month | Trend |
-| RS 3-Month | Same, 3-month | Intermediate |
-| Fund Flow | ETF inflows/outflows | Sentiment |
-| Breadth | % stocks > 50MA | Health |
-| New Highs/Lows | Count ratio | Extremes |
+**Rotation Signals:**
+- RS Breakout: RS > 1.1 after < 0.95
+- Flow Reversal: 3 consecutive weeks opposite
+- Breadth Divergence: Price up, breadth down
 
-### Rotation Signals
-| Signal | Criteria | Action |
-|--------|----------|--------|
-| RS Breakout | RS > 1.1 after < 0.95 | Initiate research |
-| Flow Reversal | 3 consecutive weeks opposite | Watch closely |
-| Breadth Divergence | Price up, breadth down | Caution |
-| Leadership Change | New sector leading | Rebalance |
-
-### Output Format
-```yaml
-h3_scan:
-  scan_date: ISO-8601
-  top_3_rs:
-    - sector: string
-      rs_1wk: float
-      rs_1mo: float
-      rs_3mo: float
-      fund_flow_1wk: float
-      breadth_50ma: float
-  bottom_3_rs:
-    - [same structure]
-  rotation_signals: [list]
-  recommended_exposure: [sectors]
-```
+**Attribution:** Based on Fidelity sector rotation model and Relative Rotation Graphs.
 
 ---
 
-## H4: INSIDER CLUSTER DETECTION
+### H4: INSIDER CLUSTER DETECTION
+**Frequency:** Daily  
+**Purpose:** Identify meaningful insider buying patterns  
 
-### Purpose
-Identify meaningful insider buying patterns that may indicate undervaluation.
+**Cluster Definition:**
+- 3+ different insiders buying within 14 days
+- Single purchase > $500K
+- CEO/CFO buying any amount
 
-### Cluster Definition
-**Standard Cluster:**
-- 3+ different insiders buying within 14 calendar days
-- Minimum combined value: $100K
-
-**High-Value Single:**
-- Any single insider purchase > $500K
-
-**Executive Signal:**
-- CEO or CFO buying any amount (not option exercise)
-
-### Quality Filters (Exclude)
+**Quality Filters (Exclude):**
 - Option exercises (Form 4 code M)
-- 10b5-1 plan transactions (unless unusual timing)
+- 10b5-1 plan transactions
 - Gift transactions
-- Purchases to maintain minimum ownership requirements
 
-### Weighting Factors
-| Insider Role | Weight |
-|--------------|--------|
+**Weighting:**
+| Role | Weight |
+|------|--------|
 | CEO | 3.0 |
 | CFO | 2.5 |
 | COO/President | 2.0 |
 | Director | 1.5 |
 | VP | 1.0 |
-| 10% Owner | 2.0 |
 
-| Purchase Size vs Salary | Weight |
-|------------------------|--------|
-| > 100% annual | 3.0 |
-| 50-100% annual | 2.0 |
-| 25-50% annual | 1.5 |
-| < 25% annual | 1.0 |
+**Cluster Score:** `CS = Σ(Role_Weight × Size_Weight × Value) / 100,000`
 
-### Cluster Score
-`CS = Σ(Role_Weight × Size_Weight × Purchase_Value) / 100,000`
-
-| Score | Interpretation |
-|-------|---------------|
-| > 10 | Very strong signal |
-| 5-10 | Strong signal |
-| 2-5 | Moderate signal |
-| < 2 | Weak signal |
-
-### Output Format
-```yaml
-h4_cluster:
-  ticker: string
-  cluster_period: [start_date, end_date]
-  total_insiders: int
-  total_value: float
-  cluster_score: float
-  insiders:
-    - name: string
-      role: string
-      shares: int
-      value: float
-      date: ISO-8601
-      transaction_type: string
-```
+**Attribution:** Inspired by InsiderScore methodology and academic research on insider alpha.
 
 ---
 
-## H5: OVERSOLD QUALITY SCREEN
-
-### Purpose
-Find quality companies trading at distressed prices.
-
-### Screen Criteria
+### H5: OVERSOLD QUALITY SCREEN
+**Frequency:** Daily  
+**Purpose:** Find quality companies at distressed prices  
 
 **Technical Oversold:**
 - RSI(14) < 30, OR
@@ -287,87 +206,74 @@ Find quality companies trading at distressed prices.
 - Debt/Equity < 1.0
 - Current Ratio > 1.5
 - Interest Coverage > 3.0
-- No material negative 8-K in past 30 days
-- Market cap > $500M (avoid distressed micro-caps)
+- Market cap > $500M
 
-### Quality Score Components
-| Factor | Weight | Calculation |
-|--------|--------|-------------|
-| Profitability | 30% | ROE percentile |
-| Balance Sheet | 30% | Debt/Equity inverse percentile |
-| Momentum | 20% | 6-month RS percentile |
-| Catalyst | 20% | Upcoming event score |
+**Quality Score:** `QS = (Profitability × 0.3) + (Balance Sheet × 0.3) + (Momentum × 0.2) + (Catalyst × 0.2)`
 
-### Output Format
-```yaml
-h5_screen:
-  scan_date: ISO-8601
-  results:
-    - ticker: string
-      company: string
-      sector: string
-      price: float
-      rsi_14: float
-      pct_from_52wk_high: float
-      roe: float
-      debt_equity: float
-      current_ratio: float
-      quality_score: float
-      potential_catalysts: [list]
-```
+**Attribution:** Combines O'Shaughnessy quality factors with technical oversold conditions.
 
 ---
 
-## H6: CONTRACT PIPELINE TRACKER
+### H6: CONTRACT PIPELINE TRACKER
+**Frequency:** Weekly  
+**Purpose:** Track government contract opportunities  
 
-### Purpose
-Track government and major contract opportunities.
-
-### Data Sources
+**Data Sources:**
 - SAM.gov (Federal contracts)
+- USASpending.gov
+- DoD contracts database
 - State procurement portals
-- Company investor presentations
-- Industry conferences
-- Press releases
 
-### Tracking Fields
-```yaml
-contract:
-  contract_id: string
-  description: string
-  agency: string
-  estimated_value: float
-  award_date_expected: ISO-8601
-  incumbent: string
-  competitors: [list]
-  our_tracked_companies: [tickers]
-  probability_assessment: float
-  stage: OPPORTUNITY | PROPOSAL | EVALUATION | AWARD
-```
+**Tracking Fields:**
+- Contract value
+- Award timeline
+- Incumbent vs competitive
+- Company pipeline coverage
 
-### Key Contract Vehicles
-- IDIQ (Indefinite Delivery/Indefinite Quantity)
-- GSA Schedule
-- GWAC (Government-Wide Acquisition Contracts)
-- Agency-specific BPAs
-
-### Alert Triggers
+**Alert Triggers:**
 | Event | Alert |
 |-------|-------|
 | New opportunity > $100M | IMMEDIATE |
 | Award within 30 days | HIGH |
 | Tracked company wins | IMMEDIATE |
-| Tracked company loses | HIGH |
-| Contract modification > 20% | MEDIUM |
+
+**Attribution:** Data sourced from USASpending.gov, DoD contracts database, and SAM.gov.
 
 ---
 
-## H7: OPTIONS UNUSUAL ACTIVITY SCANNER (NEW)
+## EVENT & FLOW TIER (H7-H10)
 
-### Purpose
-Detect unusual options activity that may indicate informed trading.
+### H7: EARNINGS CATALYST CALENDAR
+**Frequency:** Daily  
+**Purpose:** Identify pre-earnings momentum setups  
 
-### Unusual Activity Criteria
+**Tracking Elements:**
+- Upcoming earnings dates
+- Historical beat/miss patterns
+- Whisper numbers vs consensus
+- Pre-earnings drift signals
+- Options implied volatility
+
+**Signals:**
+- Positive drift + high whisper = bullish setup
+- Negative drift + low whisper = bearish setup
+- IV crush opportunities post-earnings
+
+**Attribution:** Methodology based on academic earnings drift research and Estimize crowdsourced estimates.
+
+---
+
+### H8: UNUSUAL OPTIONS FLOW ★ ENHANCED in v8.0
+**Frequency:** Daily  
+**Purpose:** Detect unusual options activity indicating informed trading  
+
+**v8.0 Enhancements:**
+- Sweep vs block classification
+- Multi-exchange detection
+- Urgency scoring
+- Flow sentiment aggregation
+
+**Unusual Activity Criteria:**
 | Metric | Threshold | Classification |
 |--------|-----------|---------------|
 | Volume vs Avg | > 2x | Unusual |
@@ -376,26 +282,15 @@ Detect unusual options activity that may indicate informed trading.
 | Premium | > $100K | Significant |
 | Premium | > $1M | Institutional |
 
-### Pattern Recognition
+**Pattern Recognition:**
 | Pattern | Structure | Interpretation |
 |---------|-----------|---------------|
-| Call Sweep | Multiple exchanges, near-term, OTM | Bullish urgency |
-| Put Sweep | Multiple exchanges, near-term, OTM | Bearish urgency |
-| Call Block | Single exchange, large size | Institutional buying |
-| Put Block | Single exchange, large size | Institutional hedging |
-| Straddle/Strangle | Both sides | Volatility expectation |
-| Unusual Spread | Complex structure | Specific outlook |
+| Call Sweep | Multi-exchange, near-term, OTM | Bullish urgency |
+| Put Sweep | Multi-exchange, near-term, OTM | Bearish urgency |
+| Call Block | Single exchange, large | Institutional accumulation |
+| Put Block | Single exchange, large | Institutional hedging |
 
-### Expiration Focus
-| Days to Expiry | Classification | Weight |
-|----------------|---------------|--------|
-| 0-7 | Weekly | 1.5 (highest urgency) |
-| 8-30 | Near-term | 1.2 |
-| 31-60 | Standard | 1.0 |
-| 61-120 | LEAPS-adjacent | 0.8 |
-| > 120 | LEAPS | 0.6 |
-
-### Flow Sentiment Score
+**Flow Sentiment Score:**
 `FSS = Σ(Call_Premium - Put_Premium) / Total_Premium`
 
 | FSS | Interpretation |
@@ -406,40 +301,43 @@ Detect unusual options activity that may indicate informed trading.
 | -0.5 to -0.2 | Bearish |
 | < -0.5 | Strongly Bearish |
 
-### Output Format
+**Output Format:**
 ```yaml
-h7_alert:
+h8_alert:
   ticker: string
-  timestamp: ISO-8601
   activity_type: SWEEP | BLOCK | UNUSUAL_VOLUME
   direction: CALL | PUT | BOTH
   strike: float
   expiry: ISO-8601
   volume: int
-  open_interest: int
   premium: float
-  vol_vs_avg: float
   sentiment_signal: BULLISH | BEARISH | NEUTRAL
   urgency: HIGH | MEDIUM | LOW
-  notes: string
 ```
+
+**Attribution:** Framework inspired by OptionSonar and Unusual Whales methodologies.
 
 ---
 
-## H8: SHORT INTEREST DYNAMICS TRACKER (NEW)
+### H9: SHORT INTEREST DYNAMICS ★ ENHANCED in v8.0
+**Frequency:** Daily (bi-weekly official data)  
+**Purpose:** Track short interest changes and squeeze potential  
 
-### Purpose
-Track short interest changes and assess squeeze potential.
+**v8.0 Enhancements:**
+- Squeeze Probability Score (SPS)
+- Cost to borrow tracking
+- Utilization monitoring
+- Change velocity alerts
 
-### Key Metrics
-| Metric | Definition | Significance |
-|--------|------------|--------------|
-| SI % | Short shares / Float | Bearish positioning |
-| Days to Cover | Short shares / Avg Volume | Squeeze duration |
-| Cost to Borrow | Annualized rate | Squeeze pressure |
-| Utilization | Shorted / Available to short | Supply tightness |
+**Key Metrics:**
+| Metric | Definition |
+|--------|------------|
+| SI % | Short shares / Float |
+| Days to Cover | Short shares / Avg Volume |
+| Cost to Borrow | Annualized rate |
+| Utilization | Shorted / Available |
 
-### Threshold Alerts
+**Threshold Alerts:**
 | Metric | Level | Alert |
 |--------|-------|-------|
 | SI % | > 20% | HIGH |
@@ -448,200 +346,212 @@ Track short interest changes and assess squeeze potential.
 | Days to Cover | > 10 | EXTREME |
 | Cost to Borrow | > 20% | HIGH |
 | Cost to Borrow | > 50% | EXTREME |
-| Utilization | > 80% | HIGH |
-| Utilization | > 95% | EXTREME |
+| Utilization | > 90% | EXTREME |
 
-### Squeeze Probability Score
+**Squeeze Probability Score:**
 `SPS = (SI_norm × 0.25) + (DTC_norm × 0.25) + (CTB_norm × 0.25) + (Util_norm × 0.25)`
 
-Where each factor is normalized 0-1 based on thresholds.
+| SPS | Interpretation |
+|-----|---------------|
+| 0-0.3 | Low squeeze potential |
+| 0.3-0.5 | Moderate |
+| 0.5-0.7 | High |
+| 0.7-1.0 | Extreme |
 
-| SPS | Interpretation | Action |
-|-----|---------------|--------|
-| 0-0.3 | Low | Standard analysis |
-| 0.3-0.5 | Moderate | Monitor closely |
-| 0.5-0.7 | High | Potential opportunity |
-| 0.7-1.0 | Extreme | High risk/reward |
+**Change Alerts:**
+- SI +20% in 2 weeks = Bearish acceleration
+- SI -20% in 2 weeks = Covering activity
+- CTB +50% in 1 week = Supply tightening
 
-### Change Detection
-| Change | Timeframe | Alert |
-|--------|-----------|-------|
-| SI +20% | 2 weeks | Bearish acceleration |
-| SI -20% | 2 weeks | Covering activity |
-| CTB +50% | 1 week | Supply tightening |
-| Util +10% | 1 week | Approaching max short |
-
-### Output Format
-```yaml
-h8_tracker:
-  ticker: string
-  report_date: ISO-8601
-  short_interest:
-    shares: int
-    pct_float: float
-    change_2wk: float
-    change_4wk: float
-  days_to_cover: float
-  cost_to_borrow: float
-  utilization: float
-  squeeze_probability: float
-  alerts: [list]
-  recommendation: string
-```
+**Attribution:** Data from S3 Partners and ORTEX short interest analytics.
 
 ---
 
-## H9: 13F DELTA VELOCITY ANALYSIS (NEW)
+### H10: IPO/SPAC PIPELINE
+**Frequency:** Weekly  
+**Purpose:** Track new issues and lockup expirations  
 
-### Purpose
-Analyze rate of change in institutional positioning to identify accumulation/distribution.
+**Monitoring:**
+- Upcoming IPOs
+- SPAC merger timelines
+- Direct listings
+- Lockup expiration dates
 
-### Data Sources
-- SEC EDGAR 13F filings
-- Quarterly, filed within 45 days of quarter end
-- Amendment tracking (13F/A)
+**Signals:**
+- IPO pricing vs range
+- First-day pop patterns
+- Lockup release selling pressure
+- SPAC redemption rates
 
-### Delta Calculations
+**Attribution:** Based on Renaissance Capital IPO research and SpacResearch.com data.
+
+---
+
+## MACRO & INSTITUTIONAL TIER (H11-H14)
+
+### H11: MACRO EVENT CALENDAR
+**Frequency:** Weekly  
+**Purpose:** Track major economic events  
+
+**Key Events:**
+- FOMC meetings and minutes
+- CPI, PPI releases
+- GDP reports
+- NFP/employment data
+- Central bank speeches (global)
+
+**Impact Windows:**
+- Pre-event positioning (T-3 to T-1)
+- Event reaction (T to T+1)
+- Digestion period (T+2 to T+5)
+
+**Attribution:** Framework based on CME FedWatch and economic calendar research.
+
+---
+
+### H12: 13F DELTA VELOCITY ★ ENHANCED in v8.0
+**Frequency:** Quarterly (with daily new filing alerts)  
+**Purpose:** Analyze rate of change in institutional positioning  
+
+**v8.0 Enhancements:**
+- Delta velocity calculation (rate of change)
+- Smart money weighting (H1 investors 2x)
+- Category-level aggregation
+- Herding detection
+
+**Delta Calculations:**
 ```
-Share_Delta = (Current_Shares - Prior_Shares) / Prior_Shares
+Share_Delta = (Current - Prior) / Prior
 Dollar_Delta = Current_Value - Prior_Value
 Velocity = Annualized_Delta
 ```
 
-### Aggregation Levels
+**Aggregation Levels:**
+1. Individual fund
+2. Fund category (HF, MF, Pension, Sovereign)
+3. Aggregate institutional
 
-**Level 1: Individual Fund**
-Track specific fund changes
+**Velocity Classification:**
+| QoQ Change | Classification |
+|------------|---------------|
+| > +50% | Aggressive Accumulation |
+| +25% to +50% | Strong Accumulation |
+| +10% to +25% | Moderate Accumulation |
+| -10% to +10% | Stable |
+| -25% to -10% | Moderate Distribution |
+| < -25% | Strong Distribution |
 
-**Level 2: Fund Category**
-| Category | Examples |
-|----------|----------|
-| Hedge Funds | Point72, Citadel, Renaissance |
-| Mutual Funds | Fidelity, Vanguard, BlackRock |
-| Pensions | CalPERS, CalSTRS |
-| Sovereign Wealth | Norway, Singapore |
-| Insurance | Berkshire, MetLife |
+**Smart Money Velocity:**
+H1 tracked investors weighted 2x in aggregate calculations.
 
-**Level 3: Aggregate Institutional**
-Total 13F holder position changes
-
-### Velocity Classification
-| QoQ Change | Classification | Signal |
-|------------|---------------|--------|
-| > +50% | Aggressive Accumulation | Very Bullish |
-| +25% to +50% | Strong Accumulation | Bullish |
-| +10% to +25% | Moderate Accumulation | Slightly Bullish |
-| -10% to +10% | Stable | Neutral |
-| -25% to -10% | Moderate Distribution | Slightly Bearish |
-| -50% to -25% | Strong Distribution | Bearish |
-| < -50% | Aggressive Distribution | Very Bearish |
-
-### Smart Money Weighting
-H1 tracked investors receive 2x weight in aggregate calculations.
-
-### Output Format
-```yaml
-h9_analysis:
-  ticker: string
-  quarter: string
-  total_13f_holders: int
-  total_shares_held: int
-  qoq_change:
-    shares: float
-    value: float
-    holder_count: int
-  category_breakdown:
-    hedge_funds:
-      delta: float
-      notable_changes: [list]
-    mutual_funds:
-      delta: float
-      notable_changes: [list]
-  smart_money_delta: float
-  velocity_signal: string
-  confidence: float
-```
+**Attribution:** Methodology inspired by Goldman Sachs VIP list and hedge fund holdings research.
 
 ---
 
-## H10: CROWDING/CONCENTRATION MONITOR (NEW)
+### H13: TARIFF/TRADE MONITOR
+**Frequency:** Daily  
+**Purpose:** Track trade policy affecting commodities/materials  
 
-### Purpose
-Monitor positioning concentration to identify crowding risk.
+**Search Patterns:**
+- "[commodity] tariff 2026"
+- "[country] export ban"
+- "trade war [sector]"
+- "sanctions [commodity]"
 
-### Concentration Metrics
+**Outputs:**
+- Policy changes
+- Implementation dates
+- Affected commodities
+- Impact assessment
+
+**Attribution:** Data sourced from USTR, Commerce Department, and trade policy news.
+
+---
+
+### H14: POSITION NEWS AGGREGATOR
+**Frequency:** Daily  
+**Purpose:** E*TRADE-style news feed by held ticker  
+
+**When user provides portfolio/watchlist:**
+- Pull news for EACH ticker (7 days)
+- Flag analyst upgrades/downgrades
+- Note unusual options activity
+- Highlight price target changes
+- Mark earnings dates
+
+**Output:** Consolidated position-by-position brief
+
+**Attribution:** Inspired by E*TRADE MarketWatch integration and Bloomberg terminal news feeds.
+
+---
+
+## POSITIONING TIER (H15) ★★ NEW in v8.0
+
+### H15: CROWDING/CONCENTRATION MONITOR
+**Frequency:** Weekly  
+**Purpose:** Monitor positioning concentration and crowding risk  
+
+**Concentration Metrics:**
+```yaml
+concentration:
+  top_10_ownership_pct: float
+  hhi_index: float  # Herfindahl-Hirschman
+  hedge_fund_ownership_pct: float
+  etf_ownership_pct: float
+  retail_estimate_pct: float
+```
 
 **Ownership Concentration:**
-```
-HHI = Σ(ownership_pct²) × 10,000
-
-Top_10_Concentration = Σ(top_10_holder_pcts)
-```
-
 | HHI | Interpretation |
 |-----|---------------|
 | < 1000 | Unconcentrated |
-| 1000-1800 | Moderate concentration |
-| 1800-2500 | High concentration |
-| > 2500 | Very high concentration |
+| 1000-1800 | Moderate |
+| 1800-2500 | High |
+| > 2500 | Very High |
 
 **Hedge Fund Hotel Detection:**
 - Count HFs with > 2% ownership
 - If > 5 HFs qualify → HOTEL FLAG
-- Check entry timing similarity → HERDING FLAG
+- Similar entry timing → HERDING FLAG
 
-**ETF Ownership:**
+**ETF Crowding:**
 | ETF % | Risk |
 |-------|------|
 | < 10% | Low |
 | 10-20% | Moderate |
-| > 20% | High (index rebalance risk) |
+| > 20% | High (rebalance risk) |
 
 **Retail Crowding Indicators:**
-- Reddit mention velocity (WallStreetBets, stocks)
-- StockTwits sentiment and volume
+- Reddit mention velocity (WSB, stocks)
+- StockTwits sentiment/volume
 - Retail options flow percentage
-- Robinhood/retail broker positioning data
 
-### Crowding Score
+**Crowding Score:**
 `CS = (Inst_Conc × 0.30) + (HF_Hotel × 0.25) + (Retail × 0.20) + (SI_Factor × 0.25)`
 
-| Score | Risk Level | Recommendation |
-|-------|------------|---------------|
-| 0-0.3 | LOW | Position freely |
-| 0.3-0.5 | MODERATE | Standard sizing |
-| 0.5-0.7 | HIGH | NIBBLE only |
-| 0.7-0.85 | VERY HIGH | Avoid or minimal |
-| > 0.85 | EXTREME | Do not enter |
+| Score | Risk Level | Max Size |
+|-------|------------|----------|
+| 0-0.3 | LOW | CONVICTION |
+| 0.3-0.5 | MODERATE | STANDARD |
+| 0.5-0.7 | HIGH | NIBBLE |
+| 0.7-0.85 | VERY HIGH | NIBBLE × 0.5 |
+| > 0.85 | EXTREME | AVOID |
 
-### Reversal Risk Assessment
-High crowding + momentum = elevated reversal risk
-High crowding + negative catalyst = stampede risk
-
-### Output Format
+**Output Format:**
 ```yaml
-h10_monitor:
+h15_monitor:
   ticker: string
   analysis_date: ISO-8601
-  ownership:
-    institutional_pct: float
-    top_10_pct: float
-    hhi: float
-  hedge_fund:
-    count_above_2pct: int
-    total_hf_ownership: float
-    hotel_flag: boolean
-    herding_flag: boolean
+  top_10_pct: float
+  hhi: float
+  hf_hotel_flag: boolean
   etf_ownership_pct: float
-  retail:
-    wsb_mention_velocity: float
-    stocktwits_volume: float
-    estimated_retail_pct: float
-  short_interest_pct: float
   crowding_score: float
   risk_level: string
   recommendation: string
 ```
+
+**Attribution:** Based on institutional herding research and positioning analytics.
 
 ---
 
@@ -650,24 +560,30 @@ h10_monitor:
 ### Daily Scan Sequence
 ```
 06:00 ET - H1: Elite Investor (overnight filings)
-06:30 ET - H2: Political Catalyst (calendar update)
+06:30 ET - H2a/H2b: Political/Regulatory (calendar update)
 07:00 ET - H4: Insider Cluster (Form 4 filings)
 07:30 ET - H5: Oversold Quality (pre-market)
-08:00 ET - H7: Options Flow (prior day unusual)
-08:30 ET - H8: Short Interest (bi-weekly data + estimates)
+08:00 ET - H7: Earnings Calendar (upcoming)
+08:30 ET - H8: Options Flow (prior day unusual)
+09:00 ET - H9: Short Interest (estimates + bi-weekly data)
+09:30 ET - H13: Tariff/Trade (overnight developments)
+10:00 ET - H14: Position News (portfolio scan)
 ```
 
 ### Weekly Scan Sequence (Sunday)
 ```
 H3: Sector Momentum (weekly close data)
 H6: Contract Pipeline (SAM.gov update)
-H10: Crowding Monitor (13F aggregation)
+H10: IPO/SPAC Pipeline (upcoming week)
+H11: Macro Event Calendar (week ahead)
+H15: Crowding Monitor (13F aggregation)
 ```
 
 ### Quarterly Scan (13F Season)
 ```
-H9: 13F Delta Velocity (new filings)
+H12: 13F Delta Velocity (new filings)
 H1: Elite Investor (deep update)
+H15: Crowding Monitor (full refresh)
 ```
 
 ---
@@ -675,7 +591,7 @@ H1: Elite Investor (deep update)
 ## HUNTER INTEGRATION WITH METATRON
 
 ### Gate 11 Requirements
-All 10 HUNTER modules must complete scan before Gate 11 passes.
+All 15 HUNTER modules must complete scan before Gate 11 passes.
 
 ### Alert Escalation
 | Alert Level | Action |
@@ -691,7 +607,18 @@ When multiple modules flag same ticker:
 - 3+ modules → HIGH
 - 4+ modules → CRITICAL
 
-Example: H1 (Sprott buying) + H7 (call sweeps) + H8 (SI declining) = CRITICAL alert
+**Example:** H1 (Sprott buying) + H8 (call sweeps) + H9 (SI declining) + H15 (low crowding) = CRITICAL BUY ALERT
+
+---
+
+## VERSION HISTORY
+
+| Version | Modules | Changes |
+|---------|---------|---------|
+| v1.0 | H1-H6 | Initial release |
+| v1.5 | H1-H12 | Added event & macro tiers |
+| v1.7 | H1-H14 | Added H13 Tariff, H14 Position News |
+| **v2.0** | **H1-H15** | **Enhanced H8/H9/H12, Added H15 Crowding** |
 
 ---
 
