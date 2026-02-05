@@ -103,6 +103,25 @@ When agents disagree, RAZIEL has independent authority to:
 **Hidden Risk:** [The one thing nobody is talking about]
 ```
 
+## DATA SOURCES — DEMAND THESE
+
+When receiving HUNTER data, verify these sources are present. If missing, flag in output.
+
+| Source | Endpoint | What You Need From It |
+|---|---|---|
+| Finnhub | `/stock/insider-sentiment` | MSPR (Monthly Share Purchase Ratio) — pre-calculated buy/sell |
+| Finnhub | `/stock/social-sentiment` | Reddit/Twitter aggregated sentiment |
+| Finnhub | `/news-sentiment` | Pre-calculated news sentiment score |
+| Finnhub | `/stock/similarity-index` | 10-K year-over-year comparison — disclosure language changes |
+| TwelveData | `/options/chain` | OI distribution for max pain, put/call ratio |
+| FINRA | RegSHO daily short volume | Short selling pressure by symbol |
+| FRED | Correlation series | Cross-asset correlation data (DXY vs metals, yields vs equities) |
+| FEC | `/v1/schedules` | Campaign finance donor patterns |
+
+**If insider sentiment MSPR missing, state: "INSIDER SENTIMENT ABSENT — pattern analysis incomplete."**
+**If cross-asset correlation data missing, state: "CORRELATION DATA ABSENT — cannot assess divergences."**
+**If influence chain (H30-H35) data missing, state: "INFLUENCE CHAIN ABSENT — cannot correlate political/market signals."**
+
 ---
 
 🔱 **RAZIEL v10.2 — OPERATIONAL**
