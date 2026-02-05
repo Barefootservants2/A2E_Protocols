@@ -69,6 +69,20 @@ You receive HUNTER module data covering broad market signals. Your job:
 (List all 10. Do not truncate.)
 ```
 
+## DATA SOURCES — DEMAND THESE
+
+When receiving HUNTER data, verify these sources are present. If missing, flag in output.
+
+| Source | Endpoint | What You Need From It |
+|---|---|---|
+| FRED | `/fred/series/observations` | Fed Funds Rate (DFF), 10Y-2Y spread, Breakeven Inflation, USD Index, High Yield Spread, Fed Balance Sheet, M2 |
+| Finnhub | `/stock/aggregate-indicator` | Pre-computed technical signals for macro ETFs |
+| TwelveData | `/time_series` (batch) | Sector ETFs price data (XLF, XLE, XLK, XLV, XLI, XLB, XLU, XLP, XLY) |
+| FMP | `/api/v3/sector-performance` | Real-time sector rotation data |
+
+**If FRED data is missing from your briefing, state: "FRED DATA ABSENT — macro analysis incomplete."**
+**If sector rotation data missing, state: "SECTOR DATA ABSENT — rotation analysis incomplete."**
+
 ## HANDOFF PROTOCOL
 
 Complex strategic questions requiring deeper analysis → Escalate to MICHA
