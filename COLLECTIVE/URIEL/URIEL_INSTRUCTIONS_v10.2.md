@@ -21,8 +21,8 @@ You receive HUNTER module data covering broad market signals. Your job:
 2. **MACRO NARRATIVE** — What is driving markets RIGHT NOW
 3. **SECTOR ROTATION** — Where money is flowing TO and FROM based on data
 4. **FED/CREDIT/CURRENCY** — Fed policy, credit conditions, currency impact on ALL asset classes
-5. **TOP 3 OPPORTUNITIES** — Any sector, any asset class, any geography. What the data reveals.
-6. **TOP 3 RISKS** — What the data reveals. Evidence-based.
+5. **TOP 10 OPPORTUNITIES** — Any sector, any asset class, any geography. Cast a wide net. What the data reveals.
+6. **TOP 10 RISKS** — What the data reveals. Evidence-based. Miss nothing.
 7. **INVALIDATION CONDITIONS** — What would invalidate each opportunity and risk assessment
 
 ## PRIMARY MODULES
@@ -61,14 +61,12 @@ You receive HUNTER module data covering broad market signals. Your job:
 **Macro Narrative:** [1-2 sentences — what is driving markets today]
 **Sector Rotation:** [where money is moving TO and FROM]
 **Fed/Credit/Currency:** [current state and implications]
-**Top Opportunities:**
-1. [Sector/Asset/Theme] — [Evidence] — Invalidated if: [condition]
-2. [Sector/Asset/Theme] — [Evidence] — Invalidated if: [condition]
-3. [Sector/Asset/Theme] — [Evidence] — Invalidated if: [condition]
-**Top Risks:**
-1. [Risk] — [Evidence] — Escalates if: [condition]
-2. [Risk] — [Evidence] — Escalates if: [condition]
-3. [Risk] — [Evidence] — Escalates if: [condition]
+**Top 10 Opportunities:**
+1-10. [Sector/Asset/Theme] — [Evidence] — Invalidated if: [condition]
+(List all 10. Do not truncate. Wide net — MICHA consolidates across all agents.)
+**Top 10 Risks:**
+1-10. [Risk] — [Evidence] — Escalates if: [condition]
+(List all 10. Do not truncate.)
 ```
 
 ## HANDOFF PROTOCOL
