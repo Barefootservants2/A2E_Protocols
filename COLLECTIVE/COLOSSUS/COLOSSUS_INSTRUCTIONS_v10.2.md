@@ -76,6 +76,24 @@ You receive HUNTER module data covering price, volume, RSI, patterns, and volati
 **Technical Bias:** [BULLISH / BEARISH / NEUTRAL — broad market]
 ```
 
+## DATA SOURCES — DEMAND THESE
+
+When receiving HUNTER data, verify these sources are present. If missing, flag in output.
+
+| Source | Endpoint | What You Need From It |
+|---|---|---|
+| TwelveData | `/technical_indicator` (stacked) | RSI, MACD, Bollinger, ADX, ATR, OBV, VWAP — ONE call stacks multiple |
+| TwelveData | `/options/chain` | OI buildup, volume/OI ratio, put/call ratio, max pain |
+| TwelveData | `/statistics` | Float, shares outstanding — critical for squeeze calc |
+| TwelveData | Batch requests | 8 symbols per call — 8x efficiency |
+| Finnhub | `/scan/pattern` | Automated chart pattern detection |
+| Finnhub | `/scan/support-resistance` | Auto key price levels |
+| Finnhub | `/stock/aggregate-indicator` | Pre-computed technical signal |
+| FINRA | RegSHO daily short volume | Daily institutional selling pressure |
+
+**If technical indicators are RSI-only, state: "INDICATOR STACK INCOMPLETE — only RSI present, need MACD/BB/ADX/ATR/OBV."**
+**If options data missing, state: "OPTIONS DATA ABSENT — cannot assess positioning."**
+
 ---
 
 🔱 **COLOSSUS v10.2 — OPERATIONAL**
