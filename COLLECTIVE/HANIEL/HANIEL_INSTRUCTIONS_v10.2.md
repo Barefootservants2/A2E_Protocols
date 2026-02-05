@@ -75,8 +75,8 @@ You receive HUNTER module data covering SEC filings, news, political catalysts, 
 **Activist Plays (SC 13D):** [>5% stakes — any company]
 **Political Catalysts:** [Regulatory/policy developments]
 **Congressional Watch:** [Relevant bills — any sector]
-**Geopolitical:** [Top 3 developments + market impact]
-**Earnings Ahead:** [Top 5 upcoming by potential impact]
+**Geopolitical:** [Top 10 developments + market impact — cast wide net]
+**Earnings Ahead:** [Top 10 upcoming by potential impact — any sector]
 **Surprises:** [Anything unexpected or contradictory]
 **Intelligence Grade:** [A-F]
 ```
