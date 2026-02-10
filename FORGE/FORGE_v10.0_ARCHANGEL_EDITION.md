@@ -1,6 +1,6 @@
-# 🔱 FORGE v10.0 — THE DEFINITIVE PROMPT ENGINEERING SYSTEM
+# 🔱 FORGE v10.1 — THE DEFINITIVE PROMPT ENGINEERING SYSTEM
 
-**Version:** 10.0 "ARCHANGEL EDITION" | **Created:** February 9, 2026
+**Version:** 10.1 "ARCHANGEL EDITION" | **Created:** February 9, 2026 | **Amended:** February 10, 2026
 **Owner:** Ashes2Echoes, LLC | **Principal:** William Earl Lemon — ABSOLUTE
 **Classification:** Publication-Ready Draft | Pre-Test Harness
 
@@ -18,6 +18,7 @@ This document contains:
 5. The gap analysis — what nobody else teaches
 6. The teaching curriculum — FORGE's unique contributions to the field
 7. The test harness specification — how we prove it
+8. **The Universal Intake & Interactive Refinement amendments (v10.1) — universal input acceptance, autonomous research, multi-draft selection**
 
 ---
 
@@ -564,8 +565,171 @@ This closed loop is what makes FORGE a SYSTEM, not a framework. Frameworks are s
 
 ---
 
-*FORGE v10.0 "ARCHANGEL EDITION"*
+
+---
+
+## PART X: UNIVERSAL INTAKE & INTERACTIVE REFINEMENT (v10.1 Amendment)
+
+**Added:** February 10, 2026 | **Origin:** Principal directive during Magai M3 contest image generation — a two-day process that should have taken two hours revealed that FORGE's intake model was too narrow and its output model was single-path when it should be multi-path.
+
+### The Problem FORGE v10.0 Doesn't Solve
+
+FORGE v10.0 assumes the user arrives with a typed goal statement. Reality: users arrive with ANYTHING. A dropped image. A 100-page PDF. An email they want to respond to. A URL. A half-formed question. A screenshot. A CSV file. Code that's broken. A voice transcript. FORGE must accept ALL of these as first-contact input and derive the user's intent from observation, not interrogation.
+
+### Amendment 1: Universal Intake Parser
+
+**Principle:** FORGE accepts any input type. No restrictions on format, length, or medium. The system observes what was provided and begins from there.
+
+**Accepted input types:**
+- Raw text (questions, prompts, statements, stream of consciousness)
+- Images (screenshots, photographs, diagrams, charts, AI-generated art)
+- Documents (PDF, DOCX, XLSX, PPTX, TXT, MD, CSV — any file type)
+- URLs and web page links
+- Emails (full threads or single messages)
+- Code (any language, any state — working, broken, partial)
+- Audio transcripts
+- Multiple inputs simultaneously (e.g., an image + a question + a document)
+
+**Content Gate:** No content unfitting Ashes2Echoes values will be accepted. The existing safety list applies at the intake layer. Prohibited content is rejected before the question flow begins. This is non-negotiable and operates as Gate 0.
+
+**Intake Analysis Protocol:**
+1. FORGE receives input
+2. FORGE classifies input type(s) — text, image, document, code, URL, mixed
+3. FORGE extracts observable signals — topic, domain, complexity, emotional register, urgency
+4. FORGE generates an intake hypothesis — "Based on what you've provided, I believe you're looking for [X]. Let me confirm."
+5. FORGE proceeds to the question flow with the hypothesis as the baseline
+
+**What this replaces:** The v10.0 assumption that users type "Goal: [statement]" into a text field. That assumption was wrong. Users in the real world throw things at AI and expect the AI to figure it out. FORGE must figure it out.
+
+### Amendment 2: Interactive Question Flow (5-6 → 2-3 → Finalize)
+
+**Principle:** FORGE asks questions in two structured rounds to establish the complete ANVIL profile, then finalizes. Questions are presented as selectable options — not open-ended text fields — wherever possible. The user clicks, selects, ranks. Typing is the last resort.
+
+**Round 1 — Establishment (5-6 questions):**
+- Presented immediately after the intake hypothesis
+- Purpose: establish content domain, goal type, audience, and output format
+- Questions are multi-select or single-select with 4-6 options per question
+- FORGE adjusts subsequent questions based on selections (branching logic, not linear)
+- Teaching is embedded: question options themselves educate the user about what's possible ("Did you know you can request counter-arguments alongside your analysis?")
+- At minimum 5, at maximum 6 questions in Round 1 — not more
+
+**Between Rounds — FORGE Responds and Adjusts:**
+- FORGE processes Round 1 selections
+- FORGE presents a summary: "Here's what I understand so far: [summary]. Now let me dial this in."
+- FORGE identifies gaps in the ANVIL profile based on what's still missing
+- If the user's selections indicate expertise, FORGE skips beginner-level questions in Round 2
+- If the user's selections indicate they're exploring (not sure what they want), FORGE adds orienting questions
+
+**Round 2 — Precision (2-3 questions):**
+- Purpose: finish dialing in the remaining ANVIL dimensions
+- These questions are specific to what Round 1 revealed as incomplete
+- 2 questions minimum, 3 maximum — not more
+- By the end of Round 2, all five ANVIL dimensions should have a score ≥ 3
+
+**Subtraction/Edit Options:**
+- At any point during the question flow, the user can subtract elements they don't want
+- "Remove formal tone" / "Skip the sourcing requirement" / "I don't need a counter-thesis for this"
+- FORGE acknowledges the subtraction and adjusts the ANVIL profile accordingly
+- Selections should include 4-6 options, not just 4 — give the user room to steer
+
+### Amendment 3: Autonomous Research Phase
+
+**Principle:** Between the question flow and output generation, FORGE conducts autonomous research using all available tools — web search, document analysis, data retrieval, academic databases, code repositories — to inform the output. The user does not direct this research. FORGE decides what needs to be researched based on the ANVIL profile.
+
+**Research triggers:**
+- The topic requires current data (market prices, news, policy changes)
+- The topic references specific sources that should be verified
+- The topic involves technical claims that need validation
+- The user's input included a URL or document that needs analysis
+- The domain requires specialized knowledge (legal, medical, financial, engineering)
+
+**Research boundaries:**
+- FORGE announces that it is conducting research: "Let me pull the latest data on this before I build your response."
+- Research duration is bounded — FORGE does not spend 20 minutes searching. It conducts targeted, efficient research.
+- Research results are incorporated into the output, not presented as a separate section
+- Sources used in research are cited in the output per ASSAY Sourcing requirements
+
+**What this replaces:** The v10.0 flow goes directly from ANVIL scoring to FORGE processing to AI generation. There is no research step. The v10.1 flow inserts autonomous research between ANVIL completion and output generation, ensuring the response is informed by current, verified information — not just the AI's training data.
+
+### Amendment 4: Multi-Draft Selection (2-3 Formats)
+
+**Principle:** Instead of delivering a single output, FORGE generates 2-3 alternative responses that represent different strategic approaches to the same request. The user selects which direction aligns with their intent. Then FORGE finalizes.
+
+**How it works:**
+1. FORGE completes the ANVIL profile and conducts research
+2. FORGE identifies 2-3 meaningfully different approaches to the request
+   - These are NOT tone variations (formal vs. casual)
+   - These ARE strategic variations (aggressive vs. conservative, comprehensive vs. focused, narrative vs. analytical)
+3. FORGE generates a concise preview of each approach (not the full output — a preview)
+4. FORGE presents: "Which of these directions aligns more with what you need?"
+5. User selects one
+6. FORGE generates the full output in the selected direction
+7. FORGE asks: "Execute this, or save the prompt for later?"
+
+**What this models:** This is the Grok dual-response pattern applied systematically. Grok shows two responses and lets the user pick. FORGE shows 2-3 strategic directions and lets the user steer before committing compute to the full output. This eliminates the "that's not what I wanted" problem at the cheapest possible point — before the full generation.
+
+**When to skip multi-draft:**
+- Simple factual queries (one right answer)
+- User explicitly says "just give me the answer"
+- Time-critical requests where speed matters more than direction selection
+- Follow-up iterations where the direction is already established
+
+---
+
+## UPDATED CLOSED LOOP (v10.1)
+
+```
+USER provides ANY input (text, image, doc, URL, code, email, mixed)
+        ↓
+  Gate 0: Content safety check → reject if prohibited
+        ↓
+  UNIVERSAL INTAKE: Classify input, extract signals, generate hypothesis
+        ↓
+  "Based on what you've provided, I believe you're looking for [X]."
+        ↓
+  ROUND 1: 5-6 interactive questions (multi-select, branching)
+        ↓
+  FORGE summarizes understanding, identifies ANVIL gaps
+        ↓
+  ROUND 2: 2-3 precision questions (finalize ANVIL profile)
+        ↓
+  ANVIL scores the prompt (5 dimensions, 1-5 each)
+        ↓
+  Score < 15? → Reverse Builder activates → refine → re-score
+        ↓
+  Score ≥ 15 → AUTONOMOUS RESEARCH (web search, doc analysis, data pull)
+        ↓
+  MULTI-DRAFT: Generate 2-3 strategic direction previews
+        ↓
+  User selects direction → FORGE processes full output
+        ↓
+  FORGE processes (Format, Optimize, Refine, Gate, Execute)
+        ↓
+  Protocol injection (task-type specific constraints)
+        ↓
+  AI generates full response in selected direction
+        ↓
+  ASSAY scores the response (5 dimensions, 1-5 each)
+        ↓
+  Score < 15? → Feedback to ANVIL → refine prompt → re-submit
+        ↓
+  Score ≥ 15 → Gate 7.5 (counter-thesis check)
+        ↓
+  Counter-thesis present? → DELIVER
+        ↓
+  Counter-thesis absent? → Generate counter-thesis → DELIVER
+        ↓
+  User choice: EXECUTE or SAVE PROMPT
+        ↓
+  PHOENIX captures session state → persistent storage
+```
+
+This is the complete FORGE v10.1 operational flow. Every step exists because a real failure in a real session demanded it. The two-day image generation marathon that should have been a two-hour process is the case study that proved these amendments necessary.
+
+---
+
+*FORGE v10.1 "ARCHANGEL EDITION" — Amended*
 *Ashes2Echoes, LLC | Uriel Covenant AI Collective*
-*Principal: William Earl Lemon*
+*Principal: William Earl Lemon — ABSOLUTE*
 *"Loss is tuition for knowledge."*
 *© 2026 Ashes2Echoes, LLC. All rights reserved.*
