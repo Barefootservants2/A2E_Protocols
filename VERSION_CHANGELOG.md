@@ -2,9 +2,35 @@
 
 **Document:** Change Log & Migration Guide
 **Owner:** Ashes2Echoes, LLC | **Principal:** William Earl Lemon
-**Updated:** February 15, 2026
+**Updated:** February 17, 2026
 
 ---
+
+## v10.5.1 — February 17, 2026
+
+### Summary
+HUNTER PROTOCOL UPGRADE + PORTFOLIO SECTOR ALLOCATION FRAMEWORK. Principal directive to enforce 11-sector GICS scan every session after repeated omissions. 8-Sector Blind Scan replaced with comprehensive 11-sector + 3 macro overlay protocol. IRA deployment allocation framework established with 8-bucket diversification plan.
+
+### New Files
+- **HUNTER_11SECTOR_SCAN_v4.0.md** — Full 11 GICS sector scan protocol with enforcement mechanism. Replaces 8_SECTOR_BLIND_SCAN_PROTOCOL_v1.0.md. Includes drift detection, session checkpoints, and mandatory documentation requirements.
+- **PORTFOLIO_SECTOR_ALLOCATION_v1.0.md** — IRA (-6685) deployment framework. 8-sector allocation: Industrials/Defense (20%), Technology/Semis (20%), Healthcare/Biotech (15%), Income/Stability (15%), Energy/Nuclear (10%), Cash Reserve (10%), Materials (5%), Space/Innovation (5%). Tranche schedule, IRONCLAD risk controls, concentration limits.
+- **AIORA: SECTOR_SCAN_REPORT_TEMPLATE.md** — Standardized template for all session sector scans.
+- **AIORA: sector_scan_2026-02-17.md** — First report under HUNTER v4.0. Full 11-sector analysis identifying Industrials (+7.6%), Materials (+7.2%), Energy (+6.8%) as top sectors. Flagged Healthcare, Industrials, Energy as ZERO-exposure diversification gaps.
+
+### Protocol Changes
+- Sector scan is now MANDATORY before any position-level analysis
+- 3-session drift detection: if 3 consecutive sessions pass without scan, MICHA must flag protocol violation
+- All scans filed to AIORA/reports/hunter_daily/
+- HUNTER rule reinforced: market-wide NEVER thesis-specific. Wide net (10/agent, 25 consolidated). Data leads, Principal decides.
+
+### Identified Issues Addressed
+- Repeated tunnel-visioning on existing holdings instead of full market scan
+- Missing sector rotation signals (money flowing from software to industrials/defense)
+- No healthcare, industrials, or energy exposure despite being top-performing sectors
+- IRA ($346K) sitting 100% cash without a structured deployment plan
+
+---
+
 
 ## v10.5 — February 15, 2026
 
