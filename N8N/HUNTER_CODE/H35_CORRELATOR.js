@@ -10,6 +10,8 @@
 // ============================================================
 
 // Collect ALL normalized inputs from H30-H34
+
+try {
 const items = $input.all();
 
 // Separate by source
@@ -417,3 +419,17 @@ const report = {
 };
 
 return [{ json: report }];
+
+} catch (error) {
+  // Error handler for H35_CORRELATOR
+  console.error(`[H35_CORRELATOR] Error: ${error.message}`);
+  return [{
+    json: {
+      module: 'H35_CORRELATOR',
+      error: true,
+      error_message: error.message,
+      timestamp: new Date().toISOString(),
+      data: null
+    }
+  }];
+}
