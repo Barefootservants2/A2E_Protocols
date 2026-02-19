@@ -16,6 +16,8 @@
 // === CONFIGURATION ===
 // Update this watchlist to match current holdings + watchlist
 // This is the ONLY place portfolio awareness enters HUNTER output
+
+try {
 const PORTFOLIO_TICKERS = [
   // Current holdings
   'GOOG', 'GOOGL', 'AVGO', 'QQQ', 'GLD', 'SIL', 'SOXX',
@@ -177,3 +179,17 @@ function getMatchedTickers(data) {
 
 // Return the consolidated report
 return [{ json: report }];
+
+} catch (error) {
+  // Error handler for HUNTER_CONSOLIDATION
+  console.error(`[HUNTER_CONSOLIDATION] Error: ${error.message}`);
+  return [{
+    json: {
+      module: 'HUNTER_CONSOLIDATION',
+      error: true,
+      error_message: error.message,
+      timestamp: new Date().toISOString(),
+      data: null
+    }
+  }];
+}
