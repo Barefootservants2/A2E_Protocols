@@ -1,3 +1,47 @@
+## v10.6 — February 20, 2026 — CONFIDENCE CASCADE + MCP BULLSEYE
+
+### What Changed
+METATRON v10.6 adds the Confidence Cascade (8-gate trade qualification system targeting 90%+ win rate) and maps the entire platform to a Bullseye Architecture with 4 MCP servers.
+
+### Files Deployed
+
+| File | Path | Action |
+|------|------|--------|
+| METATRON_v10.6_PRIME_DIRECTIVE.md | PROTOCOLS/PRODUCTION/ | NEW — supersedes v10.5 |
+| MICHA_INSTRUCTIONS_v10.6.md | COLLECTIVE/MICHA/ | NEW — CASCADE ENFORCER, 9 locks |
+| URIEL_INSTRUCTIONS_v10.6.md | COLLECTIVE/URIEL/ | NEW — Gate 4 (Regime) owner |
+| COLOSSUS_INSTRUCTIONS_v10.6.md | COLLECTIVE/COLOSSUS/ | NEW — Gate 8 (Trajectory) owner |
+| HANIEL_INSTRUCTIONS_v10.6.md | COLLECTIVE/HANIEL/ | NEW — Gate 2/3 data feeder |
+| RAZIEL_INSTRUCTIONS_v10.6.md | COLLECTIVE/RAZIEL/ | NEW — Gate 6 PRIMARY OWNER |
+| SERAPH_INSTRUCTIONS_v10.6.md | COLLECTIVE/SERAPH/ | NEW — Cascade compliance audit |
+| GABRIEL_INSTRUCTIONS_v10.6.md | COLLECTIVE/GABRIEL/ | NEW — Cascade code execution |
+
+### Key Additions
+1. **Confidence Cascade v1.0** — 8 gates: Data Validity → Signal Convergence → Historical Pattern → Regime Alignment → Agent Consensus → Counter-Thesis Scoring → Cross-Sector Confirm → Trajectory Alignment
+2. **MCP Bullseye Architecture** — 4 servers: market-intel-mcp, trade-ops-mcp, collective-mcp, metatron-mcp
+3. **Track 1/2 Split** — 80% daily grind (EOD exit, 3-5% targets) / 20% thesis (full Cascade required)
+4. **Trade Logging** — trade_log.json as Phase 0 foundation for feedback loop
+5. **FIDELITY LOCK** — MICHA expanded to 9 locks (added Evidence+NULL, Attestation)
+6. **Funding Action Plan** — SAM.gov, Virginia SBIG, SBIR/STTR, R&D tax credits
+
+### Cascade Gate Ownership
+
+| Gate | Primary Owner | Role |
+|------|--------------|------|
+| 1 (Data) | ALL / GABRIEL | FIDELITY LOCK + zombie fix |
+| 2 (Convergence) | GABRIEL (code) / MICHA (aggregate) | 3+ H-modules required |
+| 3 (History) | MICHA (future) | Needs 50+ trade_log entries |
+| 4 (Regime) | URIEL | Risk-On/Neutral/Risk-Off declaration |
+| 5 (Consensus) | ALL / MICHA (aggregate) | 3/4 agent agreement |
+| 6 (Counter) | RAZIEL | Score 0-100, >70 = trade killed |
+| 7 (Cross-Sector) | GABRIEL (H35 code) | Adjacent sector confirmation |
+| 8 (Trajectory) | COLOSSUS | Entry timing GO/WAIT/PASS |
+
+### Archived
+- METATRON_v10.5_PRIME_DIRECTIVE.md → ARCHIVE/
+- All 7 agent instructions (v10.3/v10.4) → ARCHIVE/
+
+---
 # METATRON SYSTEM — VERSION CHANGELOG
 
 **Document:** Change Log & Migration Guide
