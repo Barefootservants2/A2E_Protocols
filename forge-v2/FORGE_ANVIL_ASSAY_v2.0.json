@@ -1,0 +1,234 @@
+{
+  "name": "FORGE — ANVIL + ASSAY Prompt Engineering v2.0",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "forge-intake",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "forge-webhook",
+      "name": "FORGE INTAKE — Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [200, 300],
+      "webhookId": "forge-intake-v2"
+    },
+    {
+      "parameters": {},
+      "id": "forge-manual",
+      "name": "MANUAL TRIGGER",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [200, 500]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ═══════════════════════════════════════════════════\n// NODE 1: INPUT VALIDATOR + DOMAIN CLASSIFIER\n// Validates input, classifies domain, selects template\n// ═══════════════════════════════════════════════════\n\nconst input = $input.first().json;\n\n// Validate required fields\nif (!input.query && !input.body?.query) {\n  throw new Error('FORGE REJECT: No query provided. Send {\"query\": \"your prompt request\", \"domain\": \"finance|academic|general\"}');\n}\n\nconst query = input.query || input.body?.query || '';\nconst domain = (input.domain || input.body?.domain || 'auto').toLowerCase();\nconst template = (input.template || input.body?.template || 'auto').toUpperCase();\nconst mode = (input.mode || input.body?.mode || 'guided').toLowerCase();\n\n// Domain auto-detection keywords\nconst FINANCE_KEYWORDS = ['stock', 'trade', 'invest', 'portfolio', 'hedge', 'options', 'earnings', 'insider', 'sector', 'momentum', 'thesis', 'position', 'etf', 'bond', 'yield', 'fed', 'market', 'bull', 'bear', 'short', 'long', 'stop-loss', 'catalyst', 'ticker'];\nconst ACADEMIC_KEYWORDS = ['research', 'hypothesis', 'methodology', 'literature', 'peer-review', 'thesis', 'dissertation', 'study', 'experiment', 'variable', 'statistical', 'regression', 'qualitative', 'quantitative', 'framework', 'citation'];\n\nlet detectedDomain = domain;\nif (domain === 'auto') {\n  const queryLower = query.toLowerCase();\n  const finScore = FINANCE_KEYWORDS.filter(k => queryLower.includes(k)).length;\n  const acadScore = ACADEMIC_KEYWORDS.filter(k => queryLower.includes(k)).length;\n  \n  if (finScore > acadScore && finScore >= 2) detectedDomain = 'finance';\n  else if (acadScore > finScore && acadScore >= 2) detectedDomain = 'academic';\n  else detectedDomain = 'general';\n}\n\n// Template auto-selection based on query analysis\nlet selectedTemplate = template;\nif (template === 'AUTO') {\n  const ql = query.toLowerCase();\n  if (detectedDomain === 'finance') {\n    if (ql.includes('insider') || ql.includes('form 4')) selectedTemplate = 'FIN-001';\n    else if (ql.includes('sector') || ql.includes('momentum')) selectedTemplate = 'FIN-002';\n    else if (ql.includes('politic') || ql.includes('congress') || ql.includes('lobby')) selectedTemplate = 'FIN-003';\n    else if (ql.includes('oversold') || ql.includes('undervalued') || ql.includes('screen')) selectedTemplate = 'FIN-004';\n    else if (ql.includes('contract') || ql.includes('pipeline') || ql.includes('government')) selectedTemplate = 'FIN-005';\n    else if (ql.includes('position size') || ql.includes('risk calc')) selectedTemplate = 'FIN-006';\n    else if (ql.includes('counter') || ql.includes('bear case') || ql.includes('invalidat')) selectedTemplate = 'FIN-007';\n    else selectedTemplate = 'FIN-002'; // default finance\n  } else if (detectedDomain === 'academic') {\n    if (ql.includes('literature') || ql.includes('review')) selectedTemplate = 'ACA-001';\n    else if (ql.includes('methodolog')) selectedTemplate = 'ACA-002';\n    else if (ql.includes('data analy') || ql.includes('statistic')) selectedTemplate = 'ACA-003';\n    else if (ql.includes('propos') || ql.includes('grant')) selectedTemplate = 'ACA-004';\n    else selectedTemplate = 'ACA-005'; // general academic\n  } else {\n    selectedTemplate = 'GEN-001';\n  }\n}\n\nreturn [{\n  json: {\n    query,\n    domain: detectedDomain,\n    template: selectedTemplate,\n    mode,\n    timestamp: new Date().toISOString(),\n    session_id: `FORGE-${Date.now()}`\n  }\n}];"
+      },
+      "id": "forge-validator",
+      "name": "INPUT VALIDATOR + CLASSIFIER",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ═══════════════════════════════════════════════════\n// NODE 2: SOPHISTICATION DETECTOR\n// Generates probing questions to reveal expertise level\n// Uses FORGE Question Bank methodology\n// ═══════════════════════════════════════════════════\n\nconst input = $input.first().json;\nconst { query, domain, template, mode } = input;\n\n// Question Bank by domain\nconst QUESTION_BANK = {\n  finance: [\n    { q: \"What's your current thesis on this investment?\", signals: { novice: 'no thesis or hype-based', intermediate: 'basic bull/bear case', expert: 'multi-factor with catalysts' }},\n    { q: \"What would invalidate your bull/bear case?\", signals: { novice: 'cannot articulate', intermediate: 'single factor', expert: 'multiple specific failure modes' }},\n    { q: \"What's your position sizing methodology?\", signals: { novice: 'fixed dollar amount', intermediate: 'percentage-based', expert: 'Kelly Criterion or risk-adjusted' }},\n    { q: \"What's your stop-loss strategy?\", signals: { novice: 'no stop or just hold', intermediate: 'fixed percentage', expert: 'volatility-adjusted technical levels' }},\n    { q: \"What's the catalyst timeline?\", signals: { novice: 'whenever it goes up', intermediate: 'general timeframe', expert: 'specific dated catalysts' }},\n  ],\n  academic: [\n    { q: \"What's your research question?\", signals: { novice: 'vague topic', intermediate: 'focused question', expert: 'testable hypothesis' }},\n    { q: \"What methodology are you using?\", signals: { novice: 'I will research it', intermediate: 'named methodology', expert: 'justified methodology choice with alternatives considered' }},\n    { q: \"What's your null hypothesis?\", signals: { novice: 'does not understand concept', intermediate: 'basic null statement', expert: 'formal null with significance criteria' }},\n    { q: \"What are the limitations of your approach?\", signals: { novice: 'none identified', intermediate: 'acknowledges some', expert: 'systematic threat analysis' }},\n  ],\n  general: [\n    { q: \"What's the specific outcome you need from this?\", signals: { novice: 'vague goal', intermediate: 'clear deliverable', expert: 'measurable success criteria' }},\n    { q: \"Who is the audience for this output?\", signals: { novice: 'unspecified', intermediate: 'general audience', expert: 'specific stakeholder with context' }},\n    { q: \"What have you already tried?\", signals: { novice: 'nothing', intermediate: 'basic attempts', expert: 'systematic approach with identified gaps' }},\n  ]\n};\n\n// In expert mode, skip questions\nif (mode === 'expert') {\n  return [{\n    json: {\n      ...input,\n      sophistication: 'expert',\n      sophistication_score: 90,\n      questions_asked: 0,\n      skip_reason: 'Expert mode — direct template access'\n    }\n  }];\n}\n\n// Select 3 questions for domain\nconst questions = QUESTION_BANK[domain] || QUESTION_BANK.general;\nconst selected = questions.slice(0, 3);\n\n// Auto-score based on query content (since n8n can't do interactive Q&A in a single run)\n// This analyzes the original query for sophistication signals\nconst ql = query.toLowerCase();\nlet score = 50; // baseline\n\n// Expert signals\nif (ql.includes('thesis') || ql.includes('hypothesis')) score += 10;\nif (ql.includes('invalidat') || ql.includes('counter')) score += 10;\nif (ql.includes('methodology') || ql.includes('framework')) score += 8;\nif (ql.includes('position siz') || ql.includes('risk')) score += 8;\nif (ql.includes('catalyst') || ql.includes('timeline')) score += 6;\nif (ql.includes('stop-loss') || ql.includes('hedge')) score += 6;\nif (ql.match(/\\d+%/) || ql.match(/\\$[\\d,]+/)) score += 5; // specific numbers\nif (ql.includes('json') || ql.includes('schema') || ql.includes('output format')) score += 5;\n\n// Novice signals (reduce score)\nif (ql.includes('going up') || ql.includes('moon') || ql.includes('easy money')) score -= 15;\nif (ql.length < 30) score -= 10; // very short query\nif (!ql.includes('?') && ql.split(' ').length < 10) score -= 5;\n\nscore = Math.max(10, Math.min(100, score));\n\nlet level = 'novice';\nif (score >= 75) level = 'expert';\nelse if (score >= 45) level = 'intermediate';\n\nreturn [{\n  json: {\n    ...input,\n    sophistication: level,\n    sophistication_score: score,\n    questions_asked: selected.length,\n    probing_questions: selected\n  }\n}];"
+      },
+      "id": "forge-sophistication",
+      "name": "SOPHISTICATION DETECTOR",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ═══════════════════════════════════════════════════\n// NODE 3: TEMPLATE ROUTER + PROMPT BUILDER\n// Routes to correct template, builds the FORGE prompt\n// with role, methodology, thresholds, schema,\n// counter-thesis, and HUNTER module cross-validation\n// ═══════════════════════════════════════════════════\n\nconst input = $input.first().json;\nconst { query, domain, template, sophistication, sophistication_score, session_id } = input;\n\n// Template definitions with full FORGE specs\nconst TEMPLATES = {\n  'FIN-001': {\n    name: 'Insider Trading Analysis',\n    role: 'You are a senior SEC enforcement analyst with 15+ years of experience analyzing Form 4 filings, insider transaction clusters, and beneficial ownership patterns. You hold a CFA charter and have testified as an expert witness in securities fraud cases.',\n    methodology: 'Follow the Seyhun (1998) methodology for insider trading analysis: (1) Aggregate Form 4 filings from SEC EDGAR for the specified period, (2) Classify transactions by insider role (CEO, CFO, Director, 10%+ owner), (3) Calculate net insider sentiment ratio, (4) Identify cluster patterns (3+ insiders within 14 days), (5) Compare against sector baseline insider activity, (6) Flag anomalies exceeding 2 standard deviations.',\n    thresholds: { min_transaction: '$100,000', lookback_days: 90, cluster_window: '14 days', anomaly_std: 2.0 },\n    hunter_modules: ['H1', 'H4'],\n    metatron_gates: ['0', '0.5', '1', '2', '5.5', '7.5', '8', '9'],\n    counter_thesis: 'Consider: (1) Insider sells for tax/diversification, not bearish signal, (2) Scheduled 10b5-1 plans creating noise, (3) Lock-up expirations distorting patterns.'\n  },\n  'FIN-002': {\n    name: 'Sector Momentum Scan',\n    role: 'You are a quantitative portfolio strategist at a $5B AUM fund specializing in factor-based sector rotation. You use momentum, relative strength, and breadth indicators to identify sector regime changes.',\n    methodology: '(1) Calculate 1-month, 3-month, and 6-month momentum for all 11 GICS sectors, (2) Rank by composite momentum score, (3) Identify breadth divergences (advancing vs declining issues), (4) Check volume confirmation, (5) Overlay VIX regime filter, (6) Flag sectors with momentum acceleration (rate of change increasing).',\n    thresholds: { momentum_lookback: '1m/3m/6m', breadth_min: '60%', volume_confirm: '1.5x 20-day avg', vix_regime: 'below 25 = risk-on' },\n    hunter_modules: ['H3'],\n    metatron_gates: ['0', '0.5', '1', '5.5', '8', '9', '11'],\n    counter_thesis: 'Consider: (1) Momentum reversal risk at extremes, (2) Sector crowding increasing fragility, (3) Macro regime shift negating technical signals.'\n  },\n  'FIN-003': {\n    name: 'Political Catalyst Analysis',\n    role: 'You are a senior political risk analyst combining K Street lobbying intelligence with quantitative market impact modeling. You track congressional trading disclosures, lobbying expenditure flows, and regulatory calendar events.',\n    methodology: '(1) Pull congressional trading disclosures from House/Senate STOCK Act filings, (2) Map lobbying expenditure flows from Senate LDA database, (3) Cross-reference with upcoming committee hearings and markup schedules, (4) Identify stocks with convergent political signals (multiple members trading + active lobbying + pending legislation), (5) Calculate historical political catalyst return premium.',\n    thresholds: { disclosure_lag: '45 days max', lobbying_min: '$500K quarterly', convergence_min: '3 signals' },\n    hunter_modules: ['H2'],\n    metatron_gates: ['0', '0.5', '1', '2', '5.5', '7.5', '8', '9'],\n    counter_thesis: 'Consider: (1) Disclosure delays making data stale, (2) Bipartisan opposition killing expected catalysts, (3) Executive action bypassing legislative process.'\n  },\n  'FIN-004': {\n    name: 'Oversold Quality Screen',\n    role: 'You are a value-oriented equity analyst specializing in identifying quality companies trading at distressed valuations due to temporary, addressable factors rather than structural decline.',\n    methodology: '(1) Screen for RSI(14) < 30 AND P/E below 5-year average, (2) Filter for positive free cash flow and debt/equity < 1.5, (3) Check institutional ownership stability, (4) Identify catalyst for mean reversion, (5) Calculate margin of safety using DCF with conservative assumptions.',\n    thresholds: { rsi_max: 30, pe_discount: '20% below 5yr avg', fcf: 'positive trailing 4Q', debt_equity_max: 1.5 },\n    hunter_modules: ['H5'],\n    metatron_gates: ['0', '0.5', '1', '7.5', '8', '9'],\n    counter_thesis: 'Consider: (1) Value trap — cheap for a reason, (2) Secular decline disguised as cyclical, (3) Balance sheet deterioration not yet visible.'\n  },\n  'FIN-005': {\n    name: 'Contract Pipeline Tracker',\n    role: 'You are a defense/government contracts analyst tracking federal procurement pipelines, contract awards, and spending patterns across USASpending.gov, SAM.gov, and agency-specific procurement portals.',\n    methodology: '(1) Query USASpending.gov for recent contract awards by NAICS code, (2) Track SAM.gov opportunity pipeline for upcoming solicitations, (3) Cross-reference with congressional appropriations and continuing resolutions, (4) Identify companies with expanding contract backlogs, (5) Calculate government revenue dependency ratio.',\n    thresholds: { contract_min: '$10M', backlog_growth: '10% YoY', gov_revenue_max: '70% of total' },\n    hunter_modules: ['H6'],\n    metatron_gates: ['0', '0.5', '1', '5.5', '8', '9'],\n    counter_thesis: 'Consider: (1) Continuing resolution freezing new awards, (2) Sequestration risk, (3) Contract protests delaying execution.'\n  },\n  'FIN-006': {\n    name: 'Position Sizing Calculator',\n    role: 'You are a risk management specialist applying modified Kelly Criterion and IRONCLAD v1.0 position sizing rules to portfolio allocation decisions.',\n    methodology: '(1) Calculate maximum position size per IRONCLAD: 1.5% risk per trade, 20% max single position, 35% max sector, (2) Determine stop-loss distance, (3) Calculate shares = (portfolio × risk%) / (entry - stop), (4) Verify sector concentration limits, (5) Check portfolio heat (total open risk).',\n    thresholds: { risk_per_trade: '1.5%', max_position: '20%', max_sector: '35%', trim_rules: '-5% stop, +10% sell 50%, +20% sell 60%' },\n    hunter_modules: [],\n    metatron_gates: ['0', '0.5', '7.5', '8'],\n    counter_thesis: 'Consider: (1) Correlation risk making positions effectively larger, (2) Liquidity risk in small caps affecting exit, (3) Gap risk bypassing stops.'\n  },\n  'FIN-007': {\n    name: 'Counter-Thesis Generator',\n    role: 'You are a steelmanning specialist tasked with constructing the strongest possible bear case against any investment thesis. You must argue the opposing position with genuine conviction and specific evidence.',\n    methodology: '(1) Identify the core thesis assumptions, (2) For each assumption, find the strongest counter-evidence, (3) Construct 3+ independent failure modes, (4) Assign probability-weighted impact to each, (5) Identify the single most likely thesis-killer, (6) Define the specific data point that would confirm thesis invalidation.',\n    thresholds: { min_failure_modes: 3, min_evidence_sources: 2, probability_required: true },\n    hunter_modules: [],\n    metatron_gates: ['0', '7.5'],\n    counter_thesis: 'Meta: The counter-thesis itself must be counter-argued. What would make the bear case wrong?'\n  },\n  'ACA-001': {\n    name: 'Literature Review Framework',\n    role: 'You are a senior research methodologist with expertise in systematic literature reviews following PRISMA guidelines and meta-analytic techniques.',\n    methodology: '(1) Define inclusion/exclusion criteria, (2) Search academic databases (Google Scholar, PubMed, IEEE, SSRN), (3) Apply PRISMA flow diagram, (4) Extract key findings, (5) Synthesize themes, (6) Identify research gaps.',\n    thresholds: { min_sources: 20, recency: '5 years', databases_min: 3 },\n    hunter_modules: [],\n    metatron_gates: ['0', '0.5', '1', '2', '3', '8', '9'],\n    counter_thesis: 'Consider publication bias, methodological limitations of included studies, and replication crisis concerns.'\n  },\n  'GEN-001': {\n    name: 'General Purpose Prompt',\n    role: 'You are a domain expert appropriate to the specific query, with deep practical experience and academic grounding in the relevant field.',\n    methodology: '(1) Clarify the specific deliverable, (2) Define success criteria, (3) Outline step-by-step approach, (4) Specify output format, (5) Include verification steps.',\n    thresholds: {},\n    hunter_modules: [],\n    metatron_gates: ['0', '0.5', '8'],\n    counter_thesis: 'Consider alternative approaches and potential failure modes.'\n  }\n};\n\nconst tmpl = TEMPLATES[template] || TEMPLATES['GEN-001'];\n\n// Adjust depth based on sophistication\nlet depth_modifier = '';\nif (sophistication === 'novice') {\n  depth_modifier = '\\n\\nIMPORTANT: Explain your reasoning at each step. Define technical terms when first used. Include a glossary of key concepts at the end.';\n} else if (sophistication === 'expert') {\n  depth_modifier = '\\n\\nThis user is an expert. Skip introductory explanations. Use precise technical language. Focus on edge cases and nuanced analysis.';\n}\n\n// Build the FORGE prompt\nconst forgePrompt = `# FORGE v2.0 Generated Prompt\\n# Template: ${template} — ${tmpl.name}\\n# Session: ${session_id}\\n# Sophistication: ${sophistication} (score: ${sophistication_score})\\n\\n---\\n\\n## ROLE\\n${tmpl.role}\\n\\n## QUERY\\n${query}\\n\\n## METHODOLOGY\\n${tmpl.methodology}\\n\\n## THRESHOLDS\\n${JSON.stringify(tmpl.thresholds, null, 2)}\\n\\n## OUTPUT FORMAT\\nRespond in structured JSON with the following schema:\\n{\\n  \"analysis\": {\\n    \"summary\": \"Executive summary in 2-3 sentences\",\\n    \"findings\": [{ \"finding\": \"...\", \"confidence\": 0.0-1.0, \"evidence\": \"...\" }],\\n    \"recommendation\": \"BUY|SELL|HOLD|WATCH|NO_ACTION\",\\n    \"confidence_score\": 0.0-1.0\\n  },\\n  \"counter_thesis\": {\\n    \"bear_case\": \"Strongest argument against\",\\n    \"failure_modes\": [\"...\"],\\n    \"thesis_killer\": \"Single most likely invalidation\"\\n  },\\n  \"sources\": [\"...\"],\\n  \"audit\": {\\n    \"template\": \"${template}\",\\n    \"gates_required\": ${JSON.stringify(tmpl.metatron_gates)},\\n    \"hunter_modules\": ${JSON.stringify(tmpl.hunter_modules)},\\n    \"timestamp\": \"${new Date().toISOString()}\"\\n  }\\n}\\n\\n## COUNTER-THESIS REQUIREMENT (MANDATORY — Gate 7.5)\\n${tmpl.counter_thesis}\\n\\n## HUNTER MODULE CROSS-VALIDATION\\n${tmpl.hunter_modules.length > 0 ? 'Cross-reference findings with HUNTER modules: ' + tmpl.hunter_modules.join(', ') : 'No HUNTER modules required for this template.'}\\n${depth_modifier}\\n\\n---\\nFORGE v2.0 | ANVIL Build + ASSAY Score | Ashes2Echoes, LLC`;\n\nreturn [{\n  json: {\n    ...input,\n    template_name: tmpl.name,\n    template_config: tmpl,\n    forge_prompt: forgePrompt,\n    prompt_length: forgePrompt.length,\n    hunter_modules: tmpl.hunter_modules,\n    metatron_gates: tmpl.metatron_gates\n  }\n}];"
+      },
+      "id": "forge-template-router",
+      "name": "ANVIL — Template Router + Prompt Builder",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [920, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ═══════════════════════════════════════════════════\n// NODE 4: ASSAY — CREATE SCORER\n// Scores the generated prompt against CREATE rubric:\n// C-Clarity R-Role E-Execution A-Accountability\n// T-Thesis-Testing E-Evidence\n// Minimum 85/100 to pass\n// ═══════════════════════════════════════════════════\n\nconst input = $input.first().json;\nconst prompt = input.forge_prompt || '';\nconst tmpl = input.template_config || {};\nconst pl = prompt.toLowerCase();\n\n// C — Clarity (20 points)\nlet C = 5;\nif (pl.includes('threshold') || pl.includes('specific')) C += 5;\nif (pl.match(/\\d+%/) || pl.match(/\\$[\\d,]+/) || pl.match(/\\d+ day/)) C += 5; // numeric thresholds\nif (pl.includes('json') && pl.includes('schema')) C += 3;\nif (!pl.includes('vague') && !pl.includes('general')) C += 2;\nC = Math.min(20, C);\n\n// R — Role (25 points)\nlet R = 5;\nif (pl.includes('you are a')) R += 5;\nif (pl.includes('years') || pl.includes('experience') || pl.includes('senior')) R += 5;\nif (pl.includes('cfa') || pl.includes('phd') || pl.includes('charter') || pl.includes('expert witness') || pl.includes('specialist')) R += 5;\nif (pl.includes('expertise') || pl.includes('domain')) R += 3;\nif (tmpl.role && tmpl.role.length > 100) R += 2; // detailed role\nR = Math.min(25, R);\n\n// E — Execution (20 points)\nlet E = 5;\nif (pl.includes('methodology') || pl.includes('step')) E += 5;\nif (pl.match(/\\(\\d+\\)/g) && pl.match(/\\(\\d+\\)/g).length >= 4) E += 5; // numbered steps\nif (pl.includes('seyhun') || pl.includes('prisma') || pl.includes('kelly') || pl.includes('citation')) E += 3;\nif (pl.includes('calculate') || pl.includes('analyze') || pl.includes('identify')) E += 2;\nE = Math.min(20, E);\n\n// A — Accountability (15 points)\nlet A = 5;\nif (pl.includes('json') && pl.includes('output')) A += 5;\nif (pl.includes('audit') || pl.includes('trail') || pl.includes('ledger')) A += 3;\nif (pl.includes('confidence') && (pl.includes('score') || pl.includes('0.0'))) A += 2;\nA = Math.min(15, A);\n\n// T — Thesis-Testing (10 points)\nlet T = 0;\nif (pl.includes('counter-thesis') || pl.includes('counter_thesis')) T += 4;\nconst failureModeMatch = pl.match(/failure.mode/gi);\nif (failureModeMatch && failureModeMatch.length >= 1) T += 3;\nif (pl.includes('invalidat') || pl.includes('bear case') || pl.includes('thesis-killer')) T += 3;\nT = Math.min(10, T);\n\n// E2 — Evidence (10 points)\nlet E2 = 0;\nif (pl.includes('source') || pl.includes('evidence')) E2 += 4;\nif (pl.includes('edgar') || pl.includes('sec') || pl.includes('primary source') || pl.includes('database')) E2 += 3;\nif (pl.includes('cross-reference') || pl.includes('cross-validat') || pl.includes('hunter module')) E2 += 3;\nE2 = Math.min(10, E2);\n\nconst total = C + R + E + A + T + E2;\nconst passed = total >= 85;\n\nconst scorecard = {\n  C_clarity: { score: C, max: 20 },\n  R_role: { score: R, max: 25 },\n  E_execution: { score: E, max: 20 },\n  A_accountability: { score: A, max: 15 },\n  T_thesis_testing: { score: T, max: 10 },\n  E_evidence: { score: E2, max: 10 },\n  total: total,\n  max: 100,\n  passed: passed,\n  grade: total >= 95 ? 'A+' : total >= 90 ? 'A' : total >= 85 ? 'B+' : total >= 75 ? 'B' : total >= 65 ? 'C' : 'F'\n};\n\nreturn [{\n  json: {\n    ...input,\n    create_scorecard: scorecard,\n    create_passed: passed,\n    create_total: total\n  }\n}];"
+      },
+      "id": "forge-create-scorer",
+      "name": "ASSAY — CREATE Scorer",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1160, 400]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.create_passed }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "forge-gate-check",
+      "name": "CREATE ≥ 85 CHECK",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1400, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ═══════════════════════════════════════════════════\n// NODE 5: METATRON GATE VALIDATOR\n// Validates prompt against required METATRON gates\n// based on template configuration\n// ═══════════════════════════════════════════════════\n\nconst input = $input.first().json;\nconst prompt = input.forge_prompt || '';\nconst requiredGates = input.metatron_gates || [];\nconst pl = prompt.toLowerCase();\n\nconst GATE_CHECKS = {\n  '0': { name: 'Self-Verification', check: () => pl.includes('role') && pl.includes('methodology') },\n  '0.5': { name: 'Premise Challenge', check: () => pl.includes('counter') || pl.includes('invalidat') || pl.includes('consider') },\n  '1': { name: 'RAG Retrieval', check: () => pl.includes('source') || pl.includes('database') || pl.includes('data') },\n  '2': { name: 'Authority Scoring', check: () => pl.includes('expert') || pl.includes('senior') || pl.includes('credential') },\n  '3': { name: 'Academic Rigor', check: () => pl.includes('methodology') || pl.includes('citation') || pl.includes('peer') },\n  '5.5': { name: 'Cross-Validation', check: () => pl.includes('cross-ref') || pl.includes('hunter') || pl.includes('cross-validat') },\n  '7.5': { name: 'Counter-Thesis', check: () => pl.includes('counter-thesis') || pl.includes('bear case') || pl.includes('failure mode') },\n  '8': { name: 'Output Schema', check: () => pl.includes('json') && pl.includes('schema') },\n  '9': { name: 'Audit Trail', check: () => pl.includes('audit') || pl.includes('timestamp') || pl.includes('session') },\n  '11': { name: 'HUNTER Scan', check: () => pl.includes('hunter') || pl.includes('scan') || pl.includes('momentum') }\n};\n\nlet gateResults = [];\nlet gatesPassed = 0;\nlet gatesFailed = 0;\n\nfor (const gateId of requiredGates) {\n  const gate = GATE_CHECKS[gateId];\n  if (gate) {\n    const passed = gate.check();\n    gateResults.push({ gate: gateId, name: gate.name, passed });\n    if (passed) gatesPassed++;\n    else gatesFailed++;\n  }\n}\n\nconst allPassed = gatesFailed === 0;\n\nreturn [{\n  json: {\n    ...input,\n    metatron_validation: {\n      gates_required: requiredGates.length,\n      gates_passed: gatesPassed,\n      gates_failed: gatesFailed,\n      all_passed: allPassed,\n      gate_results: gateResults\n    }\n  }\n}];"
+      },
+      "id": "forge-metatron-validator",
+      "name": "METATRON Gate Validator",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1640, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ═══════════════════════════════════════════════════\n// NODE 6: OUTPUT FORMATTER\n// Packages the final FORGE output with full audit trail\n// ═══════════════════════════════════════════════════\n\nconst input = $input.first().json;\n\nconst output = {\n  forge_version: '2.0',\n  branding: 'ANVIL (Build) + ASSAY (Score)',\n  session_id: input.session_id,\n  timestamp: new Date().toISOString(),\n  \n  // Input summary\n  input: {\n    query: input.query,\n    domain: input.domain,\n    template: input.template,\n    template_name: input.template_name,\n    sophistication: input.sophistication,\n    sophistication_score: input.sophistication_score\n  },\n  \n  // The generated prompt\n  prompt: input.forge_prompt,\n  prompt_length: input.prompt_length,\n  \n  // CREATE scorecard\n  quality: input.create_scorecard,\n  \n  // METATRON validation\n  metatron: input.metatron_validation,\n  \n  // Execution readiness\n  status: input.create_passed && input.metatron_validation?.all_passed ? 'READY_TO_EXECUTE' : 'NEEDS_REVIEW',\n  \n  // HUNTER modules for downstream\n  hunter_modules: input.hunter_modules,\n  \n  // Audit\n  audit: {\n    forge_session: input.session_id,\n    create_score: input.create_total,\n    metatron_gates_passed: input.metatron_validation?.gates_passed || 0,\n    metatron_gates_required: input.metatron_validation?.gates_required || 0,\n    output_hash: `sha256:${Date.now().toString(16)}`,\n    ledger_entry: `FORGE_${new Date().toISOString().replace(/[-:T.Z]/g, '').slice(0, 18)}`\n  }\n};\n\nreturn [{ json: output }];"
+      },
+      "id": "forge-output-formatter",
+      "name": "OUTPUT FORMATTER",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1880, 300]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://api.github.com/repos/Barefootservants2/AIORA/contents/FORGE/sessions/{{ $json.session_id }}.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": \"[FORGE] {{ $json.input.template }} — {{ $json.status }} — CREATE {{ $json.quality.total }}/100\",\n  \"content\": \"{{ Buffer.from(JSON.stringify($json, null, 2)).toString('base64') }}\"\n}",
+        "options": {}
+      },
+      "id": "forge-github-push",
+      "name": "GITHUB PUSH — FORGE Session",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [2120, 200],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "github-token",
+          "name": "GitHub Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "forge-webhook-response",
+      "name": "WEBHOOK RESPONSE",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2120, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// CREATE SCORE FAILURE — Return error with scorecard\nconst input = $input.first().json;\n\nreturn [{\n  json: {\n    forge_version: '2.0',\n    status: 'CREATE_SCORE_FAILED',\n    session_id: input.session_id,\n    error: `CREATE score ${input.create_total}/100 — minimum 85 required`,\n    scorecard: input.create_scorecard,\n    query: input.query,\n    template: input.template,\n    suggestion: 'Prompt needs enhancement. Low-scoring components need attention. Re-submit with more specificity.',\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "forge-fail-handler",
+      "name": "CREATE FAIL HANDLER",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1640, 520]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 422
+        }
+      },
+      "id": "forge-fail-response",
+      "name": "FAIL RESPONSE",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1880, 520]
+    }
+  ],
+  "connections": {
+    "FORGE INTAKE — Webhook": {
+      "main": [
+        [{ "node": "INPUT VALIDATOR + CLASSIFIER", "type": "main", "index": 0 }]
+      ]
+    },
+    "MANUAL TRIGGER": {
+      "main": [
+        [{ "node": "INPUT VALIDATOR + CLASSIFIER", "type": "main", "index": 0 }]
+      ]
+    },
+    "INPUT VALIDATOR + CLASSIFIER": {
+      "main": [
+        [{ "node": "SOPHISTICATION DETECTOR", "type": "main", "index": 0 }]
+      ]
+    },
+    "SOPHISTICATION DETECTOR": {
+      "main": [
+        [{ "node": "ANVIL — Template Router + Prompt Builder", "type": "main", "index": 0 }]
+      ]
+    },
+    "ANVIL — Template Router + Prompt Builder": {
+      "main": [
+        [{ "node": "ASSAY — CREATE Scorer", "type": "main", "index": 0 }]
+      ]
+    },
+    "ASSAY — CREATE Scorer": {
+      "main": [
+        [{ "node": "CREATE ≥ 85 CHECK", "type": "main", "index": 0 }]
+      ]
+    },
+    "CREATE ≥ 85 CHECK": {
+      "main": [
+        [{ "node": "METATRON Gate Validator", "type": "main", "index": 0 }],
+        [{ "node": "CREATE FAIL HANDLER", "type": "main", "index": 0 }]
+      ]
+    },
+    "METATRON Gate Validator": {
+      "main": [
+        [{ "node": "OUTPUT FORMATTER", "type": "main", "index": 0 }]
+      ]
+    },
+    "OUTPUT FORMATTER": {
+      "main": [
+        [
+          { "node": "GITHUB PUSH — FORGE Session", "type": "main", "index": 0 },
+          { "node": "WEBHOOK RESPONSE", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "CREATE FAIL HANDLER": {
+      "main": [
+        [{ "node": "FAIL RESPONSE", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "instanceId": "a2e-forge-v2",
+    "templateCredsSetupCompleted": false
+  },
+  "tags": [
+    { "name": "FORGE" },
+    { "name": "ANVIL" },
+    { "name": "ASSAY" },
+    { "name": "A2E" },
+    { "name": "prompt-engineering" }
+  ]
+}
