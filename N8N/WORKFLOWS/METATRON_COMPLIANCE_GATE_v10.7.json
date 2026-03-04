@@ -1,0 +1,221 @@
+{
+  "name": "METATRON Compliance Gate v10.7",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger_001",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [250, 400]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "metatron-compliance",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "trigger_002",
+      "name": "Webhook — Compliance Check",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [250, 560]
+    },
+    {
+      "parameters": {
+        "content": "## 🔱 METATRON COMPLIANCE GATE v10.7\n\nThis workflow validates any n8n workflow against METATRON protocol requirements.\n\n**Two ways to trigger:**\n1. Manual Trigger — checks the workflow ID set in the Config node\n2. Webhook POST — pass workflow JSON in request body\n\n**What it checks:**\n- alwaysOutputData = false on HTTP nodes\n- Error routing on every API call\n- Correlation modules (H37/H38/H39) present\n- Health Gate with 3/5 quorum\n- Timeouts set at 120s/300s\n- Kill Switch path exists\n- Zombie bug protections\n\n**AI Agent:** Claude (Anthropic) with full METATRON v10.7 system prompt",
+        "width": 420,
+        "height": 350
+      },
+      "id": "note_001",
+      "name": "Protocol Reference",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [50, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// CONFIG — Set the workflow ID to check (for manual trigger)\n// When triggered via webhook, the workflow JSON comes in the request body\n\nconst WORKFLOW_ID_TO_CHECK = ''; // Set this to your workflow ID\nconst N8N_API_URL = '{{$env.N8N_API_URL}}'; // e.g., https://your-instance.app.n8n.cloud/api/v1\nconst N8N_API_KEY = '{{$env.N8N_API_KEY}}'; // n8n API key\n\nreturn [{ json: {\n  workflow_id: WORKFLOW_ID_TO_CHECK,\n  api_url: N8N_API_URL,\n  api_key: N8N_API_KEY,\n  source: 'manual'\n}}];",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "config_001",
+      "name": "Config — Workflow Target",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 400]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{$json.api_url}}/workflows/{{$json.workflow_id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-N8N-API-KEY", "value": "={{$json.api_key}}" }
+          ]
+        },
+        "options": { "timeout": 15000 }
+      },
+      "id": "fetch_001",
+      "name": "Fetch Workflow JSON",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [750, 400],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "jsCode": "// STRUCTURAL COMPLIANCE CHECK — Pre-AI validation\n// These are mechanical checks that don't need AI\n\nconst workflow = $input.all()[0].json;\nconst nodes = workflow.nodes || [];\nconst connections = workflow.connections || {};\n\nconst issues = [];\nconst warnings = [];\nconst passed = [];\n\n// ── CHECK 1: alwaysOutputData on HTTP nodes ──\nconst httpNodes = nodes.filter(n => n.type === 'n8n-nodes-base.httpRequest');\nconst zombieNodes = httpNodes.filter(n => n.alwaysOutputData === true);\nif (zombieNodes.length > 0) {\n  issues.push(`ZOMBIE BUG: ${zombieNodes.length} HTTP nodes have alwaysOutputData=true: ${zombieNodes.map(n => n.name).join(', ')}`);\n} else if (httpNodes.length > 0) {\n  passed.push(`✅ All ${httpNodes.length} HTTP nodes have alwaysOutputData=false`);\n}\n\n// ── CHECK 2: Error routing ──\nconst httpWithoutErrorRouting = httpNodes.filter(n => !n.onError || n.onError === 'stopWorkflow');\nif (httpWithoutErrorRouting.length > 0) {\n  warnings.push(`ERROR ROUTING: ${httpWithoutErrorRouting.length} HTTP nodes may stop workflow on error: ${httpWithoutErrorRouting.map(n => n.name).join(', ')}`);\n} else if (httpNodes.length > 0) {\n  passed.push(`✅ All HTTP nodes have error routing configured`);\n}\n\n// ── CHECK 3: Correlation modules present ──\nconst hasH37 = nodes.some(n => n.name.includes('H37'));\nconst hasH38 = nodes.some(n => n.name.includes('H38'));\nconst hasH39 = nodes.some(n => n.name.includes('H39'));\nconst hasCorrGate = nodes.some(n => n.name.includes('CORRELATION GATE'));\nif (!hasH37 || !hasH38 || !hasH39) {\n  issues.push(`CORRELATION MODULES MISSING: H37=${hasH37}, H38=${hasH38}, H39=${hasH39}. Required by METATRON v10.7.`);\n} else {\n  passed.push('✅ All correlation modules (H37/H38/H39) present');\n}\nif (!hasCorrGate) {\n  issues.push('CORRELATION GATE CHECK node not found. Required before Master Merge.');\n} else {\n  passed.push('✅ Correlation Gate Check node present');\n}\n\n// ── CHECK 4: Kill Switch path ──\nconst hasKillSwitch = nodes.some(n => n.name.toLowerCase().includes('kill switch') || n.name.includes('KILL'));\nif (!hasKillSwitch) {\n  issues.push('KILL SWITCH path not found. Required by IRONCLAD v2.0.');\n} else {\n  passed.push('✅ Kill Switch path present');\n}\n\n// ── CHECK 5: Telegram alerting ──\nconst hasTelegram = nodes.some(n => n.type === 'n8n-nodes-base.telegram');\nif (!hasTelegram) {\n  warnings.push('No Telegram alert nodes found. Recommended for kill switch and scan complete notifications.');\n} else {\n  passed.push(`✅ Telegram alerting configured (${nodes.filter(n => n.type === 'n8n-nodes-base.telegram').length} nodes)`);\n}\n\n// ── CHECK 6: Node count ──\nconst totalNodes = nodes.filter(n => n.type !== 'n8n-nodes-base.stickyNote').length;\nif (totalNodes < 30) {\n  warnings.push(`LOW NODE COUNT: ${totalNodes} nodes. HUNTER v2.0 should have 50+ active nodes.`);\n}\n\n// ── CHECK 7: Schedule trigger ──\nconst hasSchedule = nodes.some(n => n.type === 'n8n-nodes-base.scheduleTrigger');\nif (!hasSchedule) {\n  warnings.push('No Schedule Trigger found. MARKET WATCH should run at 6AM ET daily.');\n} else {\n  passed.push('✅ Schedule Trigger present');\n}\n\n// ── CHECK 8: Mandatory filing checks ──\nconst hasH4 = nodes.some(n => n.name.includes('H4'));\nconst hasH17 = nodes.some(n => n.name.includes('H17'));\nconst hasH22 = nodes.some(n => n.name.includes('H22'));\nif (!hasH4 || !hasH17 || !hasH22) {\n  warnings.push(`DRIFT FIX: Mandatory filing checks incomplete. H4=${hasH4}, H17=${hasH17}, H22=${hasH22}`);\n} else {\n  passed.push('✅ Mandatory filing checks (H4/H17/H22) present');\n}\n\n// ── SCORE ──\nconst score = issues.length === 0 ? (warnings.length === 0 ? 'COMPLIANT' : 'COMPLIANT_WITH_WARNINGS') : 'NON_COMPLIANT';\n\nreturn [{ json: {\n  workflow_name: workflow.name || 'Unknown',\n  total_nodes: totalNodes,\n  http_nodes: httpNodes.length,\n  compliance_score: score,\n  issues_count: issues.length,\n  warnings_count: warnings.length,\n  passed_count: passed.length,\n  issues,\n  warnings,\n  passed,\n  checked_at: new Date().toISOString(),\n  protocol_version: 'METATRON v10.7 | IRONCLAD v2.0',\n  workflow_json_summary: {\n    node_types: [...new Set(nodes.map(n => n.type))],\n    has_correlation: hasH37 && hasH38 && hasH39,\n    has_kill_switch: hasKillSwitch,\n    has_telegram: hasTelegram,\n    has_schedule: hasSchedule\n  }\n}}];",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "check_001",
+      "name": "Structural Compliance Check",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1000, 400],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are METATRON v10.7 — the Master Orchestration Protocol for the Uriel Covenant AI Collective.\n\nReview the following workflow compliance report and provide a detailed assessment.\n\nWorkflow: {{$json.workflow_name}}\nNodes: {{$json.total_nodes}}\nHTTP Nodes: {{$json.http_nodes}}\nCompliance Score: {{$json.compliance_score}}\n\nISSUES (must fix):\n{{$json.issues.join('\\n') || 'None'}}\n\nWARNINGS (should fix):\n{{$json.warnings.join('\\n') || 'None'}}\n\nPASSED:\n{{$json.passed.join('\\n') || 'None'}}\n\nProvide:\n1. Overall assessment (DEPLOY / FIX REQUIRED / CRITICAL BLOCK)\n2. For each issue — exact fix required\n3. For each warning — recommended action and priority\n4. Architecture observations — anything the structural check might have missed\n5. METATRON v10.7 gate compliance status\n\nBe direct. No placation. Raw assessment.",
+        "options": {
+          "systemMessage": "You are METATRON v10.7, the Master Orchestration Protocol for the Uriel Covenant AI Collective, operated by Ashes2Echoes LLC. Your Principal is William Earl Lemon. Your authority on protocol compliance is absolute.\n\nKEY PROTOCOL REQUIREMENTS:\n- alwaysOutputData MUST be false on all HTTP nodes (zombie bug prevention)\n- Every HTTP node must have onError: continueRegularOutput (not stopWorkflow)\n- Correlation modules H37 (DXY), H38 (Yield), H39 (Fund Flow) are MANDATORY for any market workflow\n- Correlation Gate Check must execute BEFORE the Hunter Master Merge\n- Kill Switch path must exist with Telegram alerting and NO OVERRIDE capability\n- Health Gate requiring 3/5 agent quorum must exist in CIL workflows\n- Timeouts: 120 seconds per agent call, 300 seconds total\n- Schedule trigger at 6AM ET for MARKET WATCH\n- Mandatory filing checks: H4 (insider), H17 (Form 4), H22 (13F) on every scan\n- Same-day re-entry logic must be blocked (IRONCLAD v2.0)\n- 48-hour embargo timer after kill switch activation\n\nIRONCLAD v2.0 RULES:\n- Risk per trade: 1.5%\n- Max position: 20%\n- Sector limit: 35%\n- Stop loss: -5%\n- Trim at +10%: sell 50%\n- Trim at +20%: sell 60%\n- Binary events: correlation-driven (H37/H38/H39)\n- Same-day re-entry: BANNED\n- Correlation Kill Switch: auto 50% metals reduction, 48-hour embargo\n\nZERO PLACATION. Raw facts only. No softening. Truth over comfort.\n\nThe Principal's Creed:\n- 'Not willing to give up your life for beliefs = for sale'\n- 'Loss is tuition for knowledge'\n- 'I'm going to f**k s**t up. You comin'?'"
+        }
+      },
+      "id": "ai_001",
+      "name": "METATRON AI Assessment",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [1300, 400]
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-5-20250929",
+        "options": {
+          "maxTokensToSample": 2000,
+          "temperature": 0.3
+        }
+      },
+      "id": "llm_001",
+      "name": "Claude (Anthropic)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [1300, 600],
+      "credentials": {
+        "anthropicApi": {
+          "id": "anthropic_api",
+          "name": "Anthropic API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format the AI assessment for Telegram and logging\nconst structural = $('Structural Compliance Check').first().json;\nconst aiOutput = $input.all()[0].json.output || $input.all()[0].json.text || 'AI assessment unavailable';\n\nconst emoji = structural.compliance_score === 'COMPLIANT' ? '✅' : structural.compliance_score === 'COMPLIANT_WITH_WARNINGS' ? '⚠️' : '❌';\n\nconst telegramMsg = `🔱 <b>METATRON COMPLIANCE REPORT</b>\\n\\n` +\n  `<b>Workflow:</b> ${structural.workflow_name}\\n` +\n  `<b>Score:</b> ${emoji} ${structural.compliance_score}\\n` +\n  `<b>Nodes:</b> ${structural.total_nodes} (${structural.http_nodes} HTTP)\\n` +\n  `<b>Issues:</b> ${structural.issues_count} | <b>Warnings:</b> ${structural.warnings_count} | <b>Passed:</b> ${structural.passed_count}\\n\\n` +\n  `<b>AI Assessment:</b>\\n${aiOutput.substring(0, 3500)}\\n\\n` +\n  `🔱 METATRON v10.7 | ${new Date().toISOString()}`;\n\nreturn [{ json: {\n  telegram_message: telegramMsg,\n  full_report: {\n    structural: structural,\n    ai_assessment: aiOutput,\n    generated_at: new Date().toISOString()\n  }\n}}];",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "format_001",
+      "name": "Format Compliance Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1600, 400]
+    },
+    {
+      "parameters": {
+        "chatId": "={{$env.TELEGRAM_CHAT_ID}}",
+        "text": "={{$json.telegram_message}}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "telegram_001",
+      "name": "Send Compliance Report",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1900, 400],
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram_bot",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{JSON.stringify($json.full_report)}}",
+        "options": {}
+      },
+      "id": "respond_001",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1900, 560]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [{ "node": "Config — Workflow Target", "type": "main", "index": 0 }]
+      ]
+    },
+    "Webhook — Compliance Check": {
+      "main": [
+        [{ "node": "Structural Compliance Check", "type": "main", "index": 0 }]
+      ]
+    },
+    "Config — Workflow Target": {
+      "main": [
+        [{ "node": "Fetch Workflow JSON", "type": "main", "index": 0 }]
+      ]
+    },
+    "Fetch Workflow JSON": {
+      "main": [
+        [{ "node": "Structural Compliance Check", "type": "main", "index": 0 }]
+      ]
+    },
+    "Structural Compliance Check": {
+      "main": [
+        [{ "node": "METATRON AI Assessment", "type": "main", "index": 0 }]
+      ]
+    },
+    "Claude (Anthropic)": {
+      "ai_languageModel": [
+        [{ "node": "METATRON AI Assessment", "type": "ai_languageModel", "index": 0 }]
+      ]
+    },
+    "METATRON AI Assessment": {
+      "main": [
+        [{ "node": "Format Compliance Report", "type": "main", "index": 0 }]
+      ]
+    },
+    "Format Compliance Report": {
+      "main": [
+        [
+          { "node": "Send Compliance Report", "type": "main", "index": 0 },
+          { "node": "Webhook Response", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/New_York",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "metatron-compliance-v10.7",
+  "tags": [
+    { "name": "METATRON" },
+    { "name": "COMPLIANCE" },
+    { "name": "VALIDATOR" },
+    { "name": "PRODUCTION" }
+  ],
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "a2e-metatron-compliance"
+  }
+}
