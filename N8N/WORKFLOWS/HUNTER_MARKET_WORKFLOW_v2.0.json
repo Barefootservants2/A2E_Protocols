@@ -1,0 +1,2653 @@
+{
+  "name": "HUNTER Market Workflow v2.0 — METATRON v10.7",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 6,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "node_001",
+      "name": "Schedule Trigger 6AM ET",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        300,
+        700
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "node_002",
+      "name": "Manual Trigger (Test)",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        300,
+        550
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🔱 METATRON v10.7 — MARKET WATCH WORKFLOW\n\n**RULES:**\n- alwaysOutputData = FALSE on ALL HTTP nodes\n- H37/H38/H39 MUST complete BEFORE Master Merge\n- Correlation Gate Check BEFORE any analysis\n- Kill Switch = NO OVERRIDE\n- 30 gates total (9 Cascade + 21 METATRON)\n\n**IRONCLAD v2.0:**\n- Same-day re-entry BANNED\n- Kill Switch = auto 50% metals reduction\n- 48-hour embargo after kill",
+        "width": 400,
+        "height": 350
+      },
+      "id": "node_003",
+      "name": "METATRON v10.7",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        50,
+        50
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## API Keys\n- SEC EDGAR: User-Agent header only\n- Finnhub: query param `token`\n- TwelveData: query param `apikey`\n- Alpha Vantage: query param `apikey`\n- NewsAPI: query param `apiKey`\n- Congress.gov: query param `api_key`\n- FRED: query param `api_key`\n- metals.dev: query param `api_key`\n- FEC: query param `api_key`\n- Yahoo/Senate LDA/USASpending: No key",
+        "width": 400,
+        "height": 300
+      },
+      "id": "node_004",
+      "name": "API KEY REFERENCE",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        50,
+        430
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// Calculate dates needed across all modules\nconst now = new Date();\nconst today = now.toISOString().split('T')[0];\nconst thirtyDaysAgo = new Date(now - 30 * 86400000).toISOString().split('T')[0];\nconst sevenDaysAgo = new Date(now - 7 * 86400000).toISOString().split('T')[0];\nconst ninetyDaysAgo = new Date(now - 90 * 86400000).toISOString().split('T')[0];\nconst unixNow = Math.floor(now.getTime() / 1000);\nconst unix30d = Math.floor((now - 30 * 86400000) / 1000);\n\nreturn [{json: {\n  today, thirtyDaysAgo, sevenDaysAgo, ninetyDaysAgo,\n  unixNow, unix30d,\n  timestamp: now.toISOString(),\n  scan_id: \"MWATCH_\" + today.replace(/-/g,\"\") + \"_\" + String(now.getHours()).padStart(2,\"0\") + String(now.getMinutes()).padStart(2,\"0\")\n}}];\n",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "node_005",
+      "name": "Date Setup",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        650,
+        650
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://efts.sec.gov/LATEST/search-index?q=*&dateRange=custom&startdt={{$json.sevenDaysAgo}}&enddt={{$json.today}}&forms=10-K,10-Q,8-K,4,13F-HR",
+        "sendQuery": false,
+        "queryParameters": {
+          "parameters": []
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Ashes2Echoes LLC william@ashes2echoes.com"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_006",
+      "name": "H1 — SEC EDGAR Filings",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1000,
+        800
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.alphavantage.co/query",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "function",
+              "value": "TOP_GAINERS_LOSERS"
+            },
+            {
+              "name": "apikey",
+              "value": "{{$env.ALPHAVANTAGE_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_007",
+      "name": "H2a — AV Top Movers",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1000,
+        920
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://newsapi.org/v2/everything",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "stock market OR earnings OR Fed OR inflation"
+            },
+            {
+              "name": "language",
+              "value": "en"
+            },
+            {
+              "name": "sortBy",
+              "value": "publishedAt"
+            },
+            {
+              "name": "pageSize",
+              "value": "50"
+            },
+            {
+              "name": "apiKey",
+              "value": "{{$env.NEWSAPI_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_008",
+      "name": "H2b — NewsAPI Market News",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1000,
+        1040
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.alphavantage.co/query",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "function",
+              "value": "SECTOR"
+            },
+            {
+              "name": "apikey",
+              "value": "{{$env.ALPHAVANTAGE_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_009",
+      "name": "H3 — AV Sector Performance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1000,
+        1160
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/stock/insider-transactions",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": ""
+            },
+            {
+              "name": "from",
+              "value": "={{$json.thirtyDaysAgo}}"
+            },
+            {
+              "name": "to",
+              "value": "={{$json.today}}"
+            },
+            {
+              "name": "token",
+              "value": "{{$env.FINNHUB_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_010",
+      "name": "H4 — Finnhub Insider Transactions",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1000,
+        1280
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/news",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "category",
+              "value": "general"
+            },
+            {
+              "name": "minId",
+              "value": "0"
+            },
+            {
+              "name": "token",
+              "value": "{{$env.FINNHUB_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_011",
+      "name": "H5 — Finnhub Market News",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1000,
+        1400
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/calendar/ipo",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "from",
+              "value": "={{$json.today}}"
+            },
+            {
+              "name": "to",
+              "value": "={{$json.thirtyDaysAgo}}"
+            },
+            {
+              "name": "token",
+              "value": "{{$env.FINNHUB_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_012",
+      "name": "H6 — Finnhub IPO Calendar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1000,
+        1520
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.twelvedata.com/time_series",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "SPY,QQQ,DIA,IWM,VIX"
+            },
+            {
+              "name": "interval",
+              "value": "1day"
+            },
+            {
+              "name": "outputsize",
+              "value": "20"
+            },
+            {
+              "name": "apikey",
+              "value": "{{$env.TWELVEDATA_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_013",
+      "name": "H7 — TD Major Indices",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1700,
+        800
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.twelvedata.com/rsi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "SPY,QQQ,IWM"
+            },
+            {
+              "name": "interval",
+              "value": "1day"
+            },
+            {
+              "name": "time_period",
+              "value": "14"
+            },
+            {
+              "name": "apikey",
+              "value": "{{$env.TWELVEDATA_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_014",
+      "name": "H8 — TD RSI Scan",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1700,
+        920
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.twelvedata.com/macd",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "SPY,QQQ,IWM"
+            },
+            {
+              "name": "interval",
+              "value": "1day"
+            },
+            {
+              "name": "apikey",
+              "value": "{{$env.TWELVEDATA_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_015",
+      "name": "H9 — TD MACD Scan",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1700,
+        1040
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.twelvedata.com/bbands",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "SPY,QQQ"
+            },
+            {
+              "name": "interval",
+              "value": "1day"
+            },
+            {
+              "name": "time_period",
+              "value": "20"
+            },
+            {
+              "name": "apikey",
+              "value": "{{$env.TWELVEDATA_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_016",
+      "name": "H11 — TD Bollinger Bands",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1700,
+        1160
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.twelvedata.com/adx",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "SPY,QQQ,IWM"
+            },
+            {
+              "name": "interval",
+              "value": "1day"
+            },
+            {
+              "name": "time_period",
+              "value": "14"
+            },
+            {
+              "name": "apikey",
+              "value": "{{$env.TWELVEDATA_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_017",
+      "name": "H14 — TD ADX Trend",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1700,
+        1280
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.twelvedata.com/time_series",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "SPY,QQQ,IWM,SLV,GLD"
+            },
+            {
+              "name": "interval",
+              "value": "1day"
+            },
+            {
+              "name": "outputsize",
+              "value": "20"
+            },
+            {
+              "name": "apikey",
+              "value": "{{$env.TWELVEDATA_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_018",
+      "name": "H15 — TD Volume Analysis",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1700,
+        1400
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/stock/recommendation",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "AAPL"
+            },
+            {
+              "name": "token",
+              "value": "{{$env.FINNHUB_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_019",
+      "name": "H16 — Finnhub Recommendations",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1700,
+        1520
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://efts.sec.gov/LATEST/search-index?forms=4&dateRange=custom&startdt={{$json.sevenDaysAgo}}&enddt={{$json.today}}",
+        "sendQuery": false,
+        "queryParameters": {
+          "parameters": []
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Ashes2Echoes LLC william@ashes2echoes.com"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_020",
+      "name": "H17 — SEC Form 4 Filings",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2400,
+        800
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.twelvedata.com/ema",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "SPY,QQQ"
+            },
+            {
+              "name": "interval",
+              "value": "1day"
+            },
+            {
+              "name": "time_period",
+              "value": "50"
+            },
+            {
+              "name": "apikey",
+              "value": "{{$env.TWELVEDATA_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_021",
+      "name": "H18 — TD EMA Cross",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2400,
+        920
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.twelvedata.com/stoch",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "SPY,QQQ,IWM"
+            },
+            {
+              "name": "interval",
+              "value": "1day"
+            },
+            {
+              "name": "apikey",
+              "value": "{{$env.TWELVEDATA_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_022",
+      "name": "H19 — TD Stochastic",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2400,
+        1040
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.twelvedata.com/atr",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "SPY,QQQ,IWM,SLV,AG"
+            },
+            {
+              "name": "interval",
+              "value": "1day"
+            },
+            {
+              "name": "time_period",
+              "value": "14"
+            },
+            {
+              "name": "apikey",
+              "value": "{{$env.TWELVEDATA_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_023",
+      "name": "H20 — TD ATR Volatility",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2400,
+        1160
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.congress.gov/v3/bill",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "format",
+              "value": "json"
+            },
+            {
+              "name": "limit",
+              "value": "20"
+            },
+            {
+              "name": "sort",
+              "value": "updateDate+desc"
+            },
+            {
+              "name": "api_key",
+              "value": "{{$env.CONGRESS_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_024",
+      "name": "H21 — Congress Bills",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2400,
+        1280
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://efts.sec.gov/LATEST/search-index?forms=13F-HR&dateRange=custom&startdt={{$json.thirtyDaysAgo}}&enddt={{$json.today}}",
+        "sendQuery": false,
+        "queryParameters": {
+          "parameters": []
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Ashes2Echoes LLC william@ashes2echoes.com"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_025",
+      "name": "H22 — SEC 13F Filings",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3100,
+        800
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://efts.sec.gov/LATEST/search-index?forms=8-K&dateRange=custom&startdt={{$json.sevenDaysAgo}}&enddt={{$json.today}}",
+        "sendQuery": false,
+        "queryParameters": {
+          "parameters": []
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Ashes2Echoes LLC william@ashes2echoes.com"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_026",
+      "name": "H23 — SEC 8-K Events",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3100,
+        920
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://query1.finance.yahoo.com/v1/finance/trending/US",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "count",
+              "value": "20"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_027",
+      "name": "H24 — Yahoo Trending",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3100,
+        1040
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/calendar/earnings",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "from",
+              "value": "={{$json.today}}"
+            },
+            {
+              "name": "to",
+              "value": "={{$json.sevenDaysAgo}}"
+            },
+            {
+              "name": "token",
+              "value": "{{$env.FINNHUB_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_028",
+      "name": "H25 — Finnhub Earnings Cal",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3100,
+        1160
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/calendar/economic",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "from",
+              "value": "={{$json.today}}"
+            },
+            {
+              "name": "to",
+              "value": "={{$json.sevenDaysAgo}}"
+            },
+            {
+              "name": "token",
+              "value": "{{$env.FINNHUB_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_029",
+      "name": "H26 — Finnhub Economic Cal",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3100,
+        1280
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.stlouisfed.org/fred/series/observations",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "series_id",
+              "value": "UNRATE"
+            },
+            {
+              "name": "api_key",
+              "value": "{{$env.FRED_KEY}}"
+            },
+            {
+              "name": "file_type",
+              "value": "json"
+            },
+            {
+              "name": "sort_order",
+              "value": "desc"
+            },
+            {
+              "name": "limit",
+              "value": "5"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_030",
+      "name": "H27 — FRED Macro Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3100,
+        1400
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://newsapi.org/v2/everything",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "technology OR energy OR healthcare OR financials OR real estate"
+            },
+            {
+              "name": "language",
+              "value": "en"
+            },
+            {
+              "name": "sortBy",
+              "value": "publishedAt"
+            },
+            {
+              "name": "pageSize",
+              "value": "30"
+            },
+            {
+              "name": "apiKey",
+              "value": "{{$env.NEWSAPI_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_031",
+      "name": "H28 — NewsAPI Sector News",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3100,
+        1520
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.metals.dev/v1/latest",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "api_key",
+              "value": "XHCNK8MBR58LWFMK3BUS114MK3BUS"
+            },
+            {
+              "name": "currency",
+              "value": "USD"
+            },
+            {
+              "name": "unit",
+              "value": "toz"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_032",
+      "name": "H29 — Metals Spot Prices",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3100,
+        1640
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/stock/congressional-trading",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": ""
+            },
+            {
+              "name": "from",
+              "value": "={{$json.thirtyDaysAgo}}"
+            },
+            {
+              "name": "to",
+              "value": "={{$json.today}}"
+            },
+            {
+              "name": "token",
+              "value": "{{$env.FINNHUB_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_033",
+      "name": "H30 — Finnhub Congress Trades",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3800,
+        800
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.congress.gov/v3/bill",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "format",
+              "value": "json"
+            },
+            {
+              "name": "limit",
+              "value": "10"
+            },
+            {
+              "name": "sort",
+              "value": "updateDate+desc"
+            },
+            {
+              "name": "api_key",
+              "value": "{{$env.CONGRESS_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_034",
+      "name": "H31a — Congress Recent Laws",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3800,
+        920
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.congress.gov/v3/amendment",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "format",
+              "value": "json"
+            },
+            {
+              "name": "limit",
+              "value": "10"
+            },
+            {
+              "name": "sort",
+              "value": "updateDate+desc"
+            },
+            {
+              "name": "api_key",
+              "value": "{{$env.CONGRESS_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_035",
+      "name": "H31b — Congress Amendments",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3800,
+        1040
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://lda.senate.gov/api/v1/filings/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "filing_period",
+              "value": "Q1"
+            },
+            {
+              "name": "filing_year",
+              "value": "2026"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_036",
+      "name": "H32 — Senate LDA Lobbying",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3800,
+        1160
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.usaspending.gov/api/v2/search/spending_by_award/",
+        "sendQuery": false,
+        "queryParameters": {
+          "parameters": []
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_037",
+      "name": "H33 — USASpending Awards",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3800,
+        1280
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.open.fec.gov/v1/schedules/schedule_a/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "sort_hide_null",
+              "value": "true"
+            },
+            {
+              "name": "per_page",
+              "value": "20"
+            },
+            {
+              "name": "sort",
+              "value": "-contribution_receipt_date"
+            },
+            {
+              "name": "api_key",
+              "value": "{{$env.FEC_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_038",
+      "name": "H34 — FEC Contributions",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3800,
+        1400
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://lda.senate.gov/api/v1/filings/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "ordering",
+              "value": "-dt_posted"
+            },
+            {
+              "name": "page_size",
+              "value": "10"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_039",
+      "name": "H36 — Senate LDA Recent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3800,
+        1520
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "content": "## H37/H38/H39 — CORRELATION MODULES\n\nAdded March 3, 2026\nRoot cause fix: $9K metals loss\n\n**KILL SWITCH fires when:**\n- DXY above SMA20 AND rising\n- AND 10Y yield above 4.5% AND rising\n- OR 2/3 ETFs show institutional exit\n\n**NO OVERRIDE. NO EXCEPTIONS.**",
+        "width": 380,
+        "height": 250
+      },
+      "id": "node_040",
+      "name": "⚡ CORRELATION GATE v10.7",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        4450,
+        650
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.stlouisfed.org/fred/series/observations",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "series_id",
+              "value": "DTWEXBGS"
+            },
+            {
+              "name": "api_key",
+              "value": "{{$env.FRED_KEY}}"
+            },
+            {
+              "name": "file_type",
+              "value": "json"
+            },
+            {
+              "name": "sort_order",
+              "value": "desc"
+            },
+            {
+              "name": "limit",
+              "value": "30"
+            },
+            {
+              "name": "observation_start",
+              "value": "={{$json.thirtyDaysAgo}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_041",
+      "name": "H37 — FRED DXY Dollar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4500,
+        800
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// H37-CALC: Dollar Strength Assessment\nconst observations = $input.all()[0].json.observations;\nif (!observations || observations.length < 20) {\n  return [{ json: { module: \"H37-DXY\", status: \"INSUFFICIENT_DATA\", signal: \"NEUTRAL\", gate_pass: true, timestamp: new Date().toISOString() }}];\n}\nconst values = observations.filter(o => o.value !== \".\").map(o => ({ date: o.date, value: parseFloat(o.value) })).slice(0, 30);\nconst current = values[0].value;\nconst prev = values[1].value;\nconst sma20 = values.slice(0, 20).reduce((sum, v) => sum + v.value, 0) / 20;\nconst fiveDayAgo = values[4]?.value || values[values.length - 1].value;\nconst roc5 = ((current - fiveDayAgo) / fiveDayAgo) * 100;\nconst dailyChange = ((current - prev) / prev) * 100;\nlet signal = \"NEUTRAL\", gate_pass = true, urgency = \"NONE\";\nif (current > sma20 && roc5 > 0.5) { signal = \"DOLLAR_STRENGTHENING\"; gate_pass = false; urgency = roc5 > 1.5 ? \"CRITICAL\" : \"WARNING\"; }\nelse if (current > sma20 && roc5 > 0) { signal = \"DOLLAR_ELEVATED\"; gate_pass = true; urgency = \"MONITOR\"; }\nelse if (current < sma20 && roc5 < -0.5) { signal = \"DOLLAR_WEAKENING\"; gate_pass = true; urgency = \"NONE\"; }\nreturn [{ json: { module: \"H37-DXY\", current_dxy: current, sma20_dxy: Math.round(sma20*100)/100, roc_5day: Math.round(roc5*100)/100, daily_change_pct: Math.round(dailyChange*100)/100, above_sma20: current > sma20, signal, gate_pass, urgency, assessment: \"DXY at \" + current + \" (SMA20: \" + Math.round(sma20*100)/100 + \"). \" + (current > sma20 ? \"ABOVE\" : \"BELOW\") + \" 20-day average. 5-day momentum: \" + (roc5>0?\"+\":\"\") + Math.round(roc5*100)/100 + \"%. Signal: \" + signal, timestamp: new Date().toISOString() }}];\n",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "node_042",
+      "name": "H37-CALC DXY Assessment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4850,
+        800
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.stlouisfed.org/fred/series/observations",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "series_id",
+              "value": "DGS10"
+            },
+            {
+              "name": "api_key",
+              "value": "{{$env.FRED_KEY}}"
+            },
+            {
+              "name": "file_type",
+              "value": "json"
+            },
+            {
+              "name": "sort_order",
+              "value": "desc"
+            },
+            {
+              "name": "limit",
+              "value": "30"
+            },
+            {
+              "name": "observation_start",
+              "value": "={{$json.thirtyDaysAgo}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_043",
+      "name": "H38 — FRED 10Y Yield",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4500,
+        1040
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// H38-CALC: Treasury Yield Assessment\nconst observations = $input.all()[0].json.observations;\nif (!observations || observations.length < 10) {\n  return [{ json: { module: \"H38-YIELD\", status: \"INSUFFICIENT_DATA\", signal: \"NEUTRAL\", gate_pass: true, timestamp: new Date().toISOString() }}];\n}\nconst values = observations.filter(o => o.value !== \".\").map(o => ({ date: o.date, value: parseFloat(o.value) })).slice(0, 30);\nconst current = values[0].value, prev = values[1]?.value || current;\nconst fiveDayAgo = values[4]?.value || current;\nconst velocity5 = current - fiveDayAgo;\nconst CAUTION = 4.5, DANGER = 5.0, CRIT_VEL = 0.25;\nlet signal = \"NEUTRAL\", gate_pass = true, urgency = \"NONE\";\nif (current >= DANGER && velocity5 > 0) { signal = \"YIELD_CRITICAL\"; gate_pass = false; urgency = \"CRITICAL\"; }\nelse if (current >= CAUTION && velocity5 > CRIT_VEL) { signal = \"YIELD_SPIKE\"; gate_pass = false; urgency = \"CRITICAL\"; }\nelse if (current >= CAUTION && velocity5 > 0) { signal = \"YIELD_ELEVATED_RISING\"; gate_pass = false; urgency = \"WARNING\"; }\nelse if (current >= CAUTION) { signal = \"YIELD_ELEVATED_STABLE\"; urgency = \"MONITOR\"; }\nelse if (velocity5 > CRIT_VEL) { signal = \"YIELD_RISING_FAST\"; urgency = \"MONITOR\"; }\nreturn [{ json: { module: \"H38-YIELD\", current_10y: current, prev_10y: prev, velocity_5day_bps: Math.round(velocity5*100), above_caution: current >= CAUTION, above_danger: current >= DANGER, signal, gate_pass, urgency, assessment: \"10Y yield at \" + current + \"%. 5-day change: \" + (velocity5>0?\"+\":\"\") + Math.round(velocity5*100) + \"bps. Signal: \" + signal, timestamp: new Date().toISOString() }}];\n",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "node_044",
+      "name": "H38-CALC Yield Assessment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4850,
+        1040
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/stock/candle",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "SLV"
+            },
+            {
+              "name": "resolution",
+              "value": "D"
+            },
+            {
+              "name": "from",
+              "value": "={{$json.unix30d}}"
+            },
+            {
+              "name": "to",
+              "value": "={{$json.unixNow}}"
+            },
+            {
+              "name": "token",
+              "value": "{{$env.FINNHUB_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_045",
+      "name": "H39a — SLV Volume",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4500,
+        1280
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/stock/candle",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "GLD"
+            },
+            {
+              "name": "resolution",
+              "value": "D"
+            },
+            {
+              "name": "from",
+              "value": "={{$json.unix30d}}"
+            },
+            {
+              "name": "to",
+              "value": "={{$json.unixNow}}"
+            },
+            {
+              "name": "token",
+              "value": "{{$env.FINNHUB_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_046",
+      "name": "H39b — GLD Volume",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4500,
+        1400
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/stock/candle",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "SIL"
+            },
+            {
+              "name": "resolution",
+              "value": "D"
+            },
+            {
+              "name": "from",
+              "value": "={{$json.unix30d}}"
+            },
+            {
+              "name": "to",
+              "value": "={{$json.unixNow}}"
+            },
+            {
+              "name": "token",
+              "value": "{{$env.FINNHUB_KEY}}"
+            }
+          ]
+        },
+        "sendHeaders": false,
+        "headerParameters": {
+          "parameters": []
+        },
+        "options": {
+          "timeout": 30000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "node_047",
+      "name": "H39c — SIL Volume",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4500,
+        1520
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "node_048",
+      "name": "H39 — ETF Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        4850,
+        1400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// H39-CALC: Fund Flow Assessment\nconst items = $input.all();\nconst slv = items[0]?.json || {};\nconst gld = items[1]?.json || {};\nfunction analyzeFlow(data, symbol) {\n  if (!data.v || data.v.length < 10) return { symbol, status: \"INSUFFICIENT_DATA\", signal: \"NEUTRAL\", liquidation_signal: false, accumulation_signal: false };\n  const volumes = data.v, closes = data.c, len = volumes.length;\n  const currentVol = volumes[len-1], currentClose = closes[len-1], prevClose = closes[len-2];\n  const priceChange = ((currentClose - prevClose) / prevClose) * 100;\n  const avgVol = volumes.slice(0, -1).reduce((s, v) => s + v, 0) / (len - 1);\n  const volRatio = currentVol / avgVol;\n  return { symbol, current_volume: currentVol, avg_volume: Math.round(avgVol), volume_ratio: Math.round(volRatio*100)/100, price_change_pct: Math.round(priceChange*100)/100, liquidation_signal: volRatio > 2.0 && priceChange < -2, accumulation_signal: volRatio > 1.5 && priceChange > 1 };\n}\nconst slvFlow = analyzeFlow(slv, \"SLV\");\nconst gldFlow = analyzeFlow(gld, \"GLD\");\nconst flows = [slvFlow, gldFlow];\nconst liqCount = flows.filter(f => f.liquidation_signal).length;\nconst accCount = flows.filter(f => f.accumulation_signal).length;\nlet signal = \"NEUTRAL\", gate_pass = true, urgency = \"NONE\";\nif (liqCount >= 2) { signal = \"INSTITUTIONAL_EXIT\"; gate_pass = false; urgency = \"CRITICAL\"; }\nelse if (liqCount === 1) { signal = \"FLOW_WARNING\"; urgency = \"WARNING\"; }\nelse if (accCount >= 2) { signal = \"INSTITUTIONAL_ACCUMULATION\"; }\nreturn [{ json: { module: \"H39-FLOW\", slv: slvFlow, gld: gldFlow, composite_signal: signal, liquidation_count: liqCount, accumulation_count: accCount, gate_pass, urgency, assessment: \"Fund flow: \" + liqCount + \"/2 ETFs showing liquidation. \" + accCount + \"/2 accumulation. SLV vol ratio: \" + slvFlow.volume_ratio + \"x. Signal: \" + signal, timestamp: new Date().toISOString() }}];\n",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "node_049",
+      "name": "H39-CALC Flow Assessment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5200,
+        1400
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "node_050",
+      "name": "Correlation Signal Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        5550,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "node_051",
+      "name": "Correlation Full Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        5900,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// CORRELATION GATE CHECK — METATRON v10.7\n// Evaluates Kill Switch conditions\n// NO OVERRIDE. Circuit breaker.\nconst items = $input.all();\nlet h37 = null, h38 = null, h39 = null;\nfor (const item of items) {\n  const m = item.json.module;\n  if (m === \"H37-DXY\") h37 = item.json;\n  if (m === \"H38-YIELD\") h38 = item.json;\n  if (m === \"H39-FLOW\") h39 = item.json;\n}\n// Default to safe if data missing\nif (!h37) h37 = { signal: \"NEUTRAL\", gate_pass: true };\nif (!h38) h38 = { signal: \"NEUTRAL\", gate_pass: true };\nif (!h39) h39 = { composite_signal: \"NEUTRAL\", gate_pass: true };\n\nlet kill_switch = false;\nlet kill_reason = [];\n\n// Condition A: Dollar + Yield convergence\nif (h37.signal === \"DOLLAR_STRENGTHENING\" && [\"YIELD_ELEVATED_RISING\",\"YIELD_SPIKE\",\"YIELD_CRITICAL\"].includes(h38.signal)) {\n  kill_switch = true;\n  kill_reason.push(\"DXY strengthening + yields rising — second-order metals crush in progress\");\n}\n// Condition B: Institutional exit + dollar not weak\nif (h39.composite_signal === \"INSTITUTIONAL_EXIT\" && h37.signal !== \"DOLLAR_WEAKENING\") {\n  kill_switch = true;\n  kill_reason.push(\"Institutional metals exit detected while dollar not weakening\");\n}\n// Condition C: Triple block\nif (!h37.gate_pass && !h38.gate_pass && !h39.gate_pass) {\n  kill_switch = true;\n  kill_reason.push(\"All three correlation modules blocking — macro fully adverse\");\n}\n\nreturn [{ json: {\n  gate: \"CORRELATION_GATE_CHECK\",\n  kill_switch,\n  kill_reason: kill_reason.join(\" | \") || \"CLEAR\",\n  h37_signal: h37.signal,\n  h38_signal: h38.signal,\n  h39_signal: h39.composite_signal || h39.signal,\n  h37_gate: h37.gate_pass,\n  h38_gate: h38.gate_pass,\n  h39_gate: h39.gate_pass,\n  correlation_status: kill_switch ? \"ADVERSE\" : (!h37.gate_pass || !h38.gate_pass || !h39.gate_pass) ? \"WARNING\" : \"CLEAR\",\n  embargo_start: kill_switch ? new Date().toISOString() : null,\n  embargo_end: kill_switch ? new Date(Date.now() + 48*3600000).toISOString() : null,\n  timestamp: new Date().toISOString()\n}}];\n",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "node_052",
+      "name": "CORRELATION GATE CHECK",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6250,
+        1040
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true
+          },
+          "conditions": [
+            {
+              "id": "kill_check",
+              "leftValue": "={{$json.kill_switch}}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        }
+      },
+      "id": "node_053",
+      "name": "Kill Switch Decision",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        6600,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{$env.TELEGRAM_CHAT_ID}}",
+        "text": "🚨 <b>CORRELATION KILL SWITCH FIRED</b> 🚨\\n\\n<b>H37-DXY:</b> {{$json.h37_signal}}\\n<b>H38-YIELD:</b> {{$json.h38_signal}}\\n<b>H39-FLOW:</b> {{$json.h39_signal}}\\n\\n<b>REASON:</b> {{$json.kill_reason}}\\n\\n<b>ACTION REQUIRED:</b>\\n1. REDUCE ALL METALS 50% within 60 min\\n2. Set 1x ATR trailing stops on remainder\\n3. 48-HOUR METALS EMBARGO started\\n   Embargo ends: {{$json.embargo_end}}\\n\\n<b>NO OVERRIDE. NO EXCEPTIONS.</b>\\n🔱 METATRON v10.7 | IRONCLAD v2.0",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "node_054",
+      "name": "🚨 KILL SWITCH ALERT",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        6950,
+        800
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram_bot",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// Log kill switch activation for audit trail\nconst data = $input.all()[0].json;\nreturn [{ json: {\n  event: \"CORRELATION_KILL_SWITCH\",\n  fired_at: new Date().toISOString(),\n  h37: data.h37_signal,\n  h38: data.h38_signal,\n  h39: data.h39_signal,\n  reason: data.kill_reason,\n  embargo_until: data.embargo_end,\n  action: \"REDUCE_METALS_50PCT_WITHIN_60MIN\"\n}}];\n",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "node_055",
+      "name": "Kill Switch Log",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7300,
+        800
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "node_056",
+      "name": "Intel Merge (H1-H6)",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1350,
+        1760
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "node_057",
+      "name": "Technical Merge (H7-H16)",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        2050,
+        1760
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// HUNTER MASTER MERGE — Combines all H-module outputs\n// Includes correlation data from Gate Check\nconst items = $input.all();\nconst modules = {};\nconst errors = [];\nfor (const item of items) {\n  const d = item.json;\n  if (d.module) modules[d.module] = d;\n  else if (d.gate === \"CORRELATION_GATE_CHECK\") modules.CORRELATION = d;\n  else if (d.error) errors.push(d);\n}\nconst moduleCount = Object.keys(modules).length;\nconst scan_id = \"MWATCH_\" + new Date().toISOString().split('T')[0].replace(/-/g,\"\");\nreturn [{ json: {\n  scan_id,\n  timestamp: new Date().toISOString(),\n  module_count: moduleCount,\n  modules,\n  errors,\n  correlation_status: modules.CORRELATION?.correlation_status || \"UNKNOWN\",\n  data_quality: moduleCount >= 30 ? \"HIGH\" : moduleCount >= 20 ? \"MEDIUM\" : \"LOW\"\n}}];\n",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "node_058",
+      "name": "HUNTER MASTER MERGE",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6950,
+        1280
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// DATA AGGREGATOR — Formats merged data for Collective analysis\n// Output: structured JSON ready for MICHA PASS 1 and CIL\nconst data = $input.all()[0].json;\nreturn [{ json: {\n  type: \"MARKET_WATCH_SCAN\",\n  scan_id: data.scan_id,\n  timestamp: data.timestamp,\n  module_count: data.module_count,\n  data_quality: data.data_quality,\n  correlation_status: data.correlation_status,\n  summary: {\n    intelligence: \"H1-H6 data collected\",\n    technical: \"H7-H16 indicators processed\",\n    flow: \"H15-H21 positioning analyzed\",\n    market_intel: \"H22-H29 macro/sector data\",\n    influence: \"H30-H36 political intelligence\",\n    correlation: \"H37-H39 macro correlation: \" + data.correlation_status\n  },\n  full_data: data.modules,\n  errors: data.errors,\n  ready_for_cil: true\n}}];\n",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "node_059",
+      "name": "DATA AGGREGATOR",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7300,
+        1280
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "chatId": "={{$env.TELEGRAM_CHAT_ID}}",
+        "text": "🔱 <b>MARKET WATCH SCAN COMPLETE</b>\\n\\n<b>Scan ID:</b> {{$json.scan_id}}\\n<b>Modules:</b> {{$json.module_count}}\\n<b>Data Quality:</b> {{$json.data_quality}}\\n<b>Correlation:</b> {{$json.correlation_status}}\\n<b>Errors:</b> {{$json.errors.length || 0}}\\n\\nReady for CIL processing.\\n🔱 METATRON v10.7",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "node_060",
+      "name": "Scan Complete Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        7650,
+        1280
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram_bot",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "READY_FOR_CIL"
+            }
+          ]
+        }
+      },
+      "id": "node_061",
+      "name": "Output → CIL",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        8000,
+        1280
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger 6AM ET": {
+      "main": [
+        [
+          {
+            "node": "Date Setup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger (Test)": {
+      "main": [
+        [
+          {
+            "node": "Date Setup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date Setup": {
+      "main": [
+        [
+          {
+            "node": "H1 — SEC EDGAR Filings",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H2a — AV Top Movers",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H2b — NewsAPI Market News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H3 — AV Sector Performance",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H4 — Finnhub Insider Transactions",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H5 — Finnhub Market News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H6 — Finnhub IPO Calendar",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H7 — TD Major Indices",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H8 — TD RSI Scan",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H9 — TD MACD Scan",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H11 — TD Bollinger Bands",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H14 — TD ADX Trend",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H15 — TD Volume Analysis",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H16 — Finnhub Recommendations",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H17 — SEC Form 4 Filings",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H18 — TD EMA Cross",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H19 — TD Stochastic",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H20 — TD ATR Volatility",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H21 — Congress Bills",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H22 — SEC 13F Filings",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H23 — SEC 8-K Events",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H24 — Yahoo Trending",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H25 — Finnhub Earnings Cal",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H26 — Finnhub Economic Cal",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H27 — FRED Macro Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H28 — NewsAPI Sector News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H29 — Metals Spot Prices",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H30 — Finnhub Congress Trades",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H31a — Congress Recent Laws",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H31b — Congress Amendments",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H32 — Senate LDA Lobbying",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H33 — USASpending Awards",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H34 — FEC Contributions",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H36 — Senate LDA Recent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H37 — FRED DXY Dollar",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H38 — FRED 10Y Yield",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H39a — SLV Volume",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H39b — GLD Volume",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "H39c — SIL Volume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "H37 — FRED DXY Dollar": {
+      "main": [
+        [
+          {
+            "node": "H37-CALC DXY Assessment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "H38 — FRED 10Y Yield": {
+      "main": [
+        [
+          {
+            "node": "H38-CALC Yield Assessment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "H39a — SLV Volume": {
+      "main": [
+        [
+          {
+            "node": "H39 — ETF Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "H39b — GLD Volume": {
+      "main": [
+        [
+          {
+            "node": "H39 — ETF Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "H39 — ETF Merge": {
+      "main": [
+        [
+          {
+            "node": "H39-CALC Flow Assessment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "H37-CALC DXY Assessment": {
+      "main": [
+        [
+          {
+            "node": "Correlation Signal Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "H38-CALC Yield Assessment": {
+      "main": [
+        [
+          {
+            "node": "Correlation Signal Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Correlation Signal Merge": {
+      "main": [
+        [
+          {
+            "node": "Correlation Full Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "H39-CALC Flow Assessment": {
+      "main": [
+        [
+          {
+            "node": "Correlation Full Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Correlation Full Merge": {
+      "main": [
+        [
+          {
+            "node": "CORRELATION GATE CHECK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CORRELATION GATE CHECK": {
+      "main": [
+        [
+          {
+            "node": "Kill Switch Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kill Switch Decision": {
+      "main": [
+        [
+          {
+            "node": "🚨 KILL SWITCH ALERT",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HUNTER MASTER MERGE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🚨 KILL SWITCH ALERT": {
+      "main": [
+        [
+          {
+            "node": "Kill Switch Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "H1 — SEC EDGAR Filings": {
+      "main": [
+        [
+          {
+            "node": "Intel Merge (H1-H6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "H2a — AV Top Movers": {
+      "main": [
+        [
+          {
+            "node": "Intel Merge (H1-H6)",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "H7 — TD Major Indices": {
+      "main": [
+        [
+          {
+            "node": "Technical Merge (H7-H16)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "H8 — TD RSI Scan": {
+      "main": [
+        [
+          {
+            "node": "Technical Merge (H7-H16)",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HUNTER MASTER MERGE": {
+      "main": [
+        [
+          {
+            "node": "DATA AGGREGATOR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DATA AGGREGATOR": {
+      "main": [
+        [
+          {
+            "node": "Scan Complete Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scan Complete Alert": {
+      "main": [
+        [
+          {
+            "node": "Output → CIL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/New_York",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "versionId": "hunter-v2.0-metatron-v10.7",
+  "tags": [
+    {
+      "name": "HUNTER"
+    },
+    {
+      "name": "METATRON"
+    },
+    {
+      "name": "MARKET_WATCH"
+    },
+    {
+      "name": "CORRELATION"
+    },
+    {
+      "name": "PRODUCTION"
+    }
+  ],
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "a2e-hunter-v2"
+  }
+}
