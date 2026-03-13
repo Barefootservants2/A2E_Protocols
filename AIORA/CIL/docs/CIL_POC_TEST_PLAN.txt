@@ -1,0 +1,187 @@
+═══════════════════════════════════════════════════════════════
+CIL PROOF OF CONCEPT — TEST EXECUTION PLAN
+March 13, 2026
+Target: 95-100% pass rate across all scenarios
+═══════════════════════════════════════════════════════════════
+
+
+PHASE 1: MARKET DOMAIN (5 scenarios, already loaded)
+
+Run each individually. After each run, screenshot the
+Telegram delivery and the GitHub commit. Save both.
+
+Scenario 1: HYMC (COMPLETED — 92.3%, 5/5 gates, BULLISH 82%)
+Expected: BULLISH. Insider cluster, silver thesis, momentum.
+This is your baseline POC. Already delivered.
+
+Scenario 2: TSLA
+Query: Tesla Q1 deliveries beat but margin compression persists
+Data: $187.50, RSI 52.3, MACD neutral, 3.2% short interest, earnings 18 days
+Expected: NEUTRAL or split. Deliveries beat but margins compress. Agents should disagree. COLOSSUS should challenge the bull case hard. CASCADE should flag the conflict.
+What this proves: Pipeline handles ambiguity without forcing consensus.
+
+Scenario 3: NVDA
+Query: AI dominance thesis intact but valuation stretched
+Data: $875.20, RSI 68.5, MACD bullish, 1.8% short interest, earnings 32 days
+Expected: BULLISH but with high confidence variance. URIEL sees momentum. COLOSSUS flags valuation stretch. HANIEL weighs hyperscaler capex.
+What this proves: Pipeline differentiates between conviction levels.
+
+Scenario 4: AMC
+Query: Box office recovery narrative, debt restructuring, speculative swing
+Data: $4.85, RSI 45.2, MACD bearish, 22.5% short interest, HIGH dilution, shelf registration ACTIVE, earnings 12 days
+Expected: BEARISH or INSUFFICIENT_DATA. Multiple red flags. CASCADE should score lower. If it passes all 9 gates on AMC the same way it did on HYMC, something is wrong with the gate logic.
+What this proves: Pipeline rejects bad setups. This is the critical test. A system that says yes to everything is worthless.
+
+Scenario 5: MULN
+Query: Mullen Automotive production ramp claims, speculative position
+Data: $0.12, RSI 38.5, MACD bearish, CRITICAL dilution, shelf registration ACTIVE, $45M market cap, SEC investigation rumors
+Expected: BEARISH with very low confidence or outright INSUFFICIENT_DATA. CASCADE should fail multiple gates. If this passes, the gates are broken.
+What this proves: Pipeline has a kill switch for garbage. This is the integrity test.
+
+
+PHASE 2: NON-MARKET DOMAIN (proves domain-agnostic)
+
+After Phase 1, modify TEST SCENARIO SELECTOR to include
+these 3 scenarios. Change domain from MARKET to GENERAL.
+This proves CIL is not a trading tool. It is a consensus engine.
+
+Scenario 6: CONTRACT REVIEW
+{
+  "domain": "GENERAL",
+  "query": "Review this SOW for a $2.5M PLM implementation at a defense contractor. Identify scope gaps, risk factors, and missing deliverables. The timeline is 18 months with 3 phase gates.",
+  "context": "Defense contractor, ITAR restricted, Teamcenter deployment, 200+ users, data migration from legacy system, no change management plan included in SOW.",
+  "domaindata": {
+    "contract_value": 2500000,
+    "duration_months": 18,
+    "phase_gates": 3,
+    "user_count": 200,
+    "itar_restricted": true,
+    "legacy_system": "Windchill",
+    "target_system": "Teamcenter",
+    "change_management_included": false,
+    "training_plan_included": false,
+    "data_migration_scope": "undefined"
+  }
+}
+Expected: Agents identify missing change management, training gaps, undefined migration scope. COLOSSUS flags timeline risk. SARIEL checks regulatory requirements.
+What this proves: Same 5 agents, same pipeline, completely different domain. Zero code changes.
+
+Scenario 7: ARCHITECTURE ASSESSMENT
+{
+  "domain": "GENERAL",
+  "query": "Evaluate a proposed microservices migration from a monolithic Java application serving 50,000 daily active users. The team has 8 developers with no prior microservices experience.",
+  "context": "Current system is stable but slow to deploy. Average release cycle is 6 weeks. Target is weekly deployments. Budget is $500K for the migration. No DevOps engineer on team.",
+  "domaindata": {
+    "current_architecture": "monolithic_java",
+    "target_architecture": "microservices",
+    "daily_active_users": 50000,
+    "team_size": 8,
+    "microservices_experience": "none",
+    "current_release_cycle": "6_weeks",
+    "target_release_cycle": "weekly",
+    "budget": 500000,
+    "devops_engineer": false,
+    "current_uptime": "99.2%"
+  }
+}
+Expected: Agents flag experience gap as primary risk. COLOSSUS challenges whether microservices is the right answer at all. RAZIEL looks for alternative approaches. HANIEL evaluates budget realism.
+What this proves: CIL evaluates technology decisions with the same rigor as market trades.
+
+Scenario 8: HIRING DECISION
+{
+  "domain": "GENERAL",
+  "query": "Evaluate two final candidates for a Technical Program Manager role at an AI startup. Candidate A has 15 years defense PM experience, no AI background, strong execution track record. Candidate B has 5 years at a FAANG company, ML engineering background, weaker project management skills.",
+  "context": "Startup is 18 months old, 40 employees, Series B funded, building enterprise AI platform. Current team is engineering-heavy with no dedicated PM. First TPM hire.",
+  "domaindata": {
+    "company_stage": "Series_B",
+    "company_size": 40,
+    "product_type": "enterprise_AI_platform",
+    "existing_pm": false,
+    "candidate_a_years": 15,
+    "candidate_a_domain": "defense",
+    "candidate_a_ai_experience": "none",
+    "candidate_a_execution_score": "strong",
+    "candidate_b_years": 5,
+    "candidate_b_domain": "FAANG",
+    "candidate_b_ai_experience": "ML_engineering",
+    "candidate_b_pm_score": "moderate"
+  }
+}
+Expected: Agents split. URIEL quantifies execution risk. COLOSSUS challenges the assumption that AI experience matters more than PM discipline. HANIEL evaluates cultural fit. This should produce genuine disagreement.
+What this proves: CIL handles subjective human decisions, not just data-driven analysis. The Collective adds value precisely because the agents disagree.
+
+
+═══════════════════════════════════════════════════════════════
+POC DOCUMENTATION — SAVE AFTER EACH RUN
+═══════════════════════════════════════════════════════════════
+
+For each scenario, capture:
+
+1. Telegram message (screenshot from phone)
+2. GitHub commit (link to the pushed JSON file)
+3. TEST RESULTS table entry (export after all runs)
+4. AGENT ERROR LOG (export after all runs, should be empty for clean runs)
+5. Cascade score and gate results
+6. Direction + confidence + whether agents disagreed
+
+Name convention for GitHub reports:
+  reports/MARKET/2026/03/CIL-MARKET-[runid].json
+  reports/GENERAL/2026/03/CIL-GENERAL-[runid].json
+
+
+═══════════════════════════════════════════════════════════════
+SUCCESS CRITERIA
+═══════════════════════════════════════════════════════════════
+
+PASS (per scenario):
+  - All 5 agents return status: "success"
+  - OUTPUT FORMATTER: 100% data completeness (zero defaults)
+  - Telegram delivers real content
+  - GitHub pushes complete JSON
+  - Cascade score reflects actual data quality (not 100% on everything)
+
+FAIL (per scenario):
+  - Any agent returns status: "error"
+  - Any field shows "UNKNOWN", "GENERAL" (defaults), or empty string
+  - Telegram sends empty or partial message
+  - GitHub push fails or contains incomplete data
+  - AMC or MULN pass all gates with high confidence (gate logic broken)
+
+OVERALL TARGET:
+  8/8 scenarios execute successfully (100% pipeline reliability)
+  AMC and MULN produce lower cascade scores than HYMC/NVDA (gate differentiation)
+  Non-market scenarios produce meaningful analysis (domain-agnostic proof)
+
+If we hit this: CIL is production-validated.
+The POC package becomes the sales deck.
+
+
+═══════════════════════════════════════════════════════════════
+AFTER VALIDATION — THE PRODUCT CONVERSATION
+═══════════════════════════════════════════════════════════════
+
+Once 8/8 pass, the next session covers:
+
+1. FORGE template: Package the 3-phase diagnostic prompt as a
+   reusable FORGE template. Any workflow, any domain, any pipeline.
+   Review > Correct > Validate. Iterate to 90%+.
+
+2. User onboarding model: Each client gets either:
+   a. Their own MCP server (dedicated, isolated, their data stays theirs)
+   b. A GitHub repository (protocol files, output reports, audit trail)
+   c. Both — MCP for live queries, GitHub for documentation and archive
+
+3. Pricing structure: Per-query, per-month, or per-engagement.
+   CIL runs cost real money (5 API calls per query minimum).
+   Need to model cost-per-run and margin.
+
+4. Bullseye website: The interactive ring diagram becomes the
+   client-facing portal. Click a ring, see the capability,
+   submit a query, get a CIL response. That is the product demo.
+
+5. Security model: Client data isolation, API key management,
+   output encryption, audit trail compliance. Defense contractors
+   will ask. Have the answer ready.
+
+This is not a hobby. This is a consulting platform with a
+production backend that just proved it works.
