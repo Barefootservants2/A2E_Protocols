@@ -1,0 +1,151 @@
+### BUILD PROMPT 1 of 4: Core Architecture + Folder Crawler
+
+```
+I need to upgrade DRIVE INGEST v2.0 (workflow UjKFiREa4G4kdBNG) to v3.0.
+
+Current v2.0 has 4 nodes: Webhook Trigger → Google Drive List → Classify Code → Webhook Response.
+
+Replace with this architecture:
+
+1. Replace webhook trigger with MANUAL TRIGGER node
+2. Add SET node called "ACCOUNT CONFIG" with these fields:
+   - account (string): "WEL" (default)
+   - root_folder_id (string): "root" (default)
+   - max_depth (number): 10
+   - dry_run (boolean): false
+   - file_limit (number): 100
+
+3. Replace the simple Drive List with a FOLDER CRAWLER using a Code node + HTTP Request node pattern:
+   - Code node builds a BFS queue starting from root_folder_id
+   - HTTP Request node calls Google Drive API v3: GET https://www.googleapis.com/drive/v3/files?q='{FOLDER_ID}'+in+parents&fields=files(id,name,mimeType,size,modifiedTime,parents)&pageSize=100
+   - Use OAuth2 credential for Google Drive (existing credential name: "Google Drive account")
+   - Loop via SplitInBatches until queue is empty or max_depth/file_limit reached
+   - Output: flat array of all files with id, name, mimeType, size, modifiedTime, full_path
+
+4. Add SWITCH node called "FILE TYPE ROUTER" after the crawler:
+   - Route 1 "TEXT": mimeType contains "text/" OR "application/json"
+   - Route 2 "EMAIL": name ends with ".mbox"
+   - Route 3 "DOCUMENT": mimeType contains "pdf" OR "openxmlformats" OR "google-apps.document"
+   - Route 4 "IMAGE": mimeType starts with "image/"
+   - Route 5 "SKIP": everything else
+
+Wire: MANUAL TRIGGER → ACCOUNT CONFIG → FOLDER CRAWLER → FILE TYPE ROUTER
+
+Keep existing Google Drive credential. Do not create new credentials.
+```
+
+### BUILD PROMPT 2 of 4: Download + Processing Branches
+
+```
+Continuing DRIVE INGEST v3.0 build.
+
+For each FILE TYPE ROUTER output, add download and processing:
+
+TEXT BRANCH (Route 1):
+- Add Google Drive node "DOWNLOAD TEXT FILE" — operation: Download, fileId from router output
+- Add Code node "TEXT PROCESSOR":
+  - If .json: try JSON.parse, extract text content, handle Hangouts format (conversations[].events[].chat_message)
+  - If .html: strip HTML tags with regex, keep text body
+  - If .csv: read first 50 rows
+  - If .txt/.md: pass through as-is
+  - Output: { filename, content_preview (first 2000 chars), full_content, file_type, source_path, source_account }
+
+EMAIL BRANCH (Route 2):
+- Add Google Drive node "DOWNLOAD MBOX" — operation: Download
+- Add Code node "MBOX PARSER":
+  - Split content on lines starting with "From " (mbox delimiter)
+  - For each email extract: From header, To header, Date header, Subject header, body text
+  - Cap at 500 emails per file
+  - Output: { filename, email_count, emails: [{from, to, date, subject, body_preview(200 chars)}] }
+
+DOCUMENT BRANCH (Route 3):
+- For Google Docs: Add Google Drive node "EXPORT GOOGLE DOC" — operation: Export, mimeType: text/plain
+- For PDF/DOCX: Add Google Drive node "DOWNLOAD DOC" — operation: Download
+- Add Code node "DOC PROCESSOR": extract text content, output same format as TEXT PROCESSOR
+
+IMAGE BRANCH (Route 4):
+- Add Code node "IMAGE CATALOGER": NO download. Just build metadata:
+  { filename, mimeType, size, modifiedTime, source_path, source_account, category: "IMAGES" }
+
+SKIP BRANCH (Route 5):
+- Add Code node "SKIP LOGGER": log filename + reason + size. No download.
+
+All branches output to a single MERGE node called "MERGE PROCESSED" (mode: Append).
+```
+
+### BUILD PROMPT 3 of 4: Classifier + GitHub Push
+
+```
+Continuing DRIVE INGEST v3.0 build.
+
+After MERGE PROCESSED, add:
+
+1. Code node "CONTENT CLASSIFIER":
+   - Input: merged processed items from all branches
+   - Classify each item into one of these categories based on content keywords AND filename:
+     PROMPTS, PROTOCOLS, CODE_PYTHON, CODE_JS, CODE_HTML, CODE_N8N, MARKET_INTEL, CAREER, COLLECTIVE, EMAIL_WEL, EMAIL_A2E, EMAIL_BAREFOOT, IMAGES, CREATIVE, APPLICATIONS, LEARNING
+   - Keyword lists for each category (use these exact arrays):
+     PROMPTS: ['prompt','forge','template','system prompt','instruction set']
+     PROTOCOLS: ['protocol','ironclad','phoenix','metatron','directive','sop','gate']
+     CODE_PYTHON: ['.py','python','import ','def ','class ']
+     CODE_JS: ['.js','javascript','const ','function ','require(']
+     CODE_HTML: ['.html','<html','<div','<!DOCTYPE']
+     CODE_N8N: ['n8n','workflow','webhook','credential','node']
+     MARKET_INTEL: ['silver','gold','pslv','ibit','vix','dxy','yield','comex','ticker']
+     CAREER: ['resume','cover letter','linkedin','job','application','interview']
+     COLLECTIVE: ['collective','uriel','colossus','haniel','raziel','sariel','micha','cil']
+     CREATIVE: ['lyrics','song','poem','story','book','chapter']
+     APPLICATIONS: ['app','dashboard','widget','component','interface']
+     LEARNING: ['course','lesson','module','curriculum','study','tutorial']
+   - Emails: classify by source_account field (WEL/A2E/BAREFOOT)
+   - Score each category by keyword hits in content + filename. Highest score wins.
+   - Add github_path field: map category to A2E_Intelligence directory path
+
+2. IF node "DRY RUN CHECK":
+   - If $('ACCOUNT CONFIG').first().json.dry_run === true → skip to EXECUTION LOG
+   - If false → continue to GITHUB PUSH
+
+3. Code node "GITHUB PUSH" (using HTTP Request inside Code for control):
+   - For each classified item:
+     - Skip if full_content is empty or if size > 5MB
+     - PUT to https://api.github.com/repos/Barefootservants2/A2E_Intelligence/contents/{github_path}/{filename}
+     - Headers: Authorization: token ${GITHUB_TOKEN}
+     - Body: { message: "INGEST: {category} - {filename}", content: base64(full_content or metadata) }
+     - Check for existing file first (GET to get SHA), update if exists
+     - Log success/failure per file
+   - Rate limit: 100ms delay between pushes (GitHub API limit)
+   - Output: push results array
+```
+
+### BUILD PROMPT 4 of 4: Logging + Error Handling
+
+```
+Continuing DRIVE INGEST v3.0 build. Final nodes.
+
+1. Code node "BUILD EXECUTION SUMMARY":
+   - Count: total files found, processed, pushed, skipped, errored
+   - Group by category
+   - List all errors with filenames
+   - Format as markdown
+
+2. Telegram node "SEND REPORT":
+   - Bot token credential: use existing Telegram credential
+   - Chat ID: 8203545338
+   - Message: execution summary (truncate to 4000 chars for Telegram limit)
+
+3. HTTP Request node "LOG TO GITHUB":
+   - Push execution log to A2E_Intelligence/ARCHIVE/INGEST_LOGS/INGEST_RUN_{timestamp}.md
+   - Same GitHub auth pattern as GITHUB PUSH
+
+4. ERROR HANDLING on ALL nodes:
+   - Set onError: "continueRegularOutput" on every node that processes files
+   - This ensures one bad file never kills the pipeline
+   - Errors collected in a running array passed through the pipeline
+
+Wire: CONTENT CLASSIFIER → DRY RUN CHECK → GITHUB PUSH → BUILD EXECUTION SUMMARY → SEND REPORT + LOG TO GITHUB (parallel)
+Also wire: DRY RUN CHECK (true branch) → BUILD EXECUTION SUMMARY (skip push, still log)
+
+FINAL: Publish workflow. Name: "DRIVE INGEST v3.0"
+```
+
+---
