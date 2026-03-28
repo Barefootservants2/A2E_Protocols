@@ -103,21 +103,28 @@ Verdict: NEUTRAL/leaning RISK-OFF. Hold $20K. April 6 binary.
 
 ## OPEN ISSUES — MUST ADDRESS NEXT SESSION
 
-### PRIORITY 1 — RKLB CLASSIFICATION
+### PRIORITY 1 — RKLB ✅ CLASSIFIED
 37 shares at $72.11 cost, currently -$414.
-No Ring assignment. No protocol basis. Needs:
-- When was this bought and why?
-- Ring assignment (Ring 4 tactical? Ring 5 lottery?)
-- If no thesis: exit plan
+Ring 3 — Structural. Rocket Lab. Space launch + satellite manufacturing.
+Part of the SpaceX/commercial space thesis entry.
+Defense satellite contracts + commercial launch market.
+HOLD. Thesis intact.
 
-### PRIORITY 2 — CEF CLASSIFICATION  
+### PRIORITY 2 — CEF ✅ CLASSIFIED
 65 shares at $53.35 cost, currently -$524.
-CEF = Calvert/Cohen & Steers/other? Which closed-end fund?
-- Identify the specific fund and its thesis
-- Assign to Ring or exit
+CEF = Sprott Physical Gold and Silver Trust.
+Same Sprott family as PSLV — holds physical gold AND silver.
+Ring 2 — Metals thesis. Same hold logic as PSLV.
+TAX FLAG: CEF is a PFIC (Passive Foreign Investment Company).
+Held in 4898 TAXABLE — requires Form 8621 annually.
+Flag this for tax preparer immediately.
+52-week high $61.38 (Jan 29, same day silver peaked at $121).
+Cost $53.35 — down with rest of metals thesis. Hold.
 
 ### PRIORITY 3 — PSLV STOP WATCH
-865 shares, cost $25.11, loss -$2,207.
+865 shares, cost $25.11, loss -$2,207 (CONFIRMED — not -$7K).
+Note: The -$7K confusion = total historical PSLV losses including
+March 3 realized losses + current open position. Current open = -$2,207.
 IRONCLAD Ring 2 stop: 10% = $22.60 trigger.
 Current price approximately $23.05.
 Distance to stop: ~$0.45 (~2%).
