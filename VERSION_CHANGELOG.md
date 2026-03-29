@@ -1,5 +1,19 @@
 ## v10.6 — February 20, 2026 — CONFIDENCE CASCADE + MCP BULLSEYE
 
+## 2026-03-29 — Unified Session Onboarding Architecture v1.0
+
+**CLAUDE.md v1.0** — Added to repo root. Claude Code session instructions encoding METATRON v10.7 gates, IRONCLAD v2.1 risk rules, n8n coding standards, versioning rules, PHOENIX session protocol, and testing patterns. This is the single source of truth for all Claude Code terminal sessions working on the A2E codebase.
+
+**micha-session SKILL.md v1.0** — Added to `.agents/skills/micha-session/`. MICHA protocol skill for claude.ai and Codex sessions. Encodes session startup, gate logic, IRONCLAD rules, collective agent roster, build queue, and HUNTER drift guard.
+
+**Architecture:** Three deployment surfaces now served from one repo:
+- `CLAUDE.md` → Claude Code (local terminal)
+- `AGENTS.md` → Codex (bulk build tasks)
+- `.agents/skills/micha-session/SKILL.md` → claude.ai (web sessions) + Codex skills
+
+All three reference the same protocol versions. Update source docs in PROTOCOLS/, then regenerate these three files.
+
+
 ### What Changed
 METATRON v10.6 adds the Confidence Cascade (8-gate trade qualification system targeting 90%+ win rate) and maps the entire platform to a Bullseye Architecture with 4 MCP servers.
 
