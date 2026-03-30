@@ -353,3 +353,52 @@ Initial production release of METATRON protocol.
 **END VERSION CHANGELOG**
 
 🔱
+
+## v10.8 — March 30, 2026
+
+### METATRON v10.8 PRIME DIRECTIVE
+**Type:** Full Unification (not amendment)
+**File:** PROTOCOLS/PRODUCTION/METATRON_v10.8_PRIME_DIRECTIVE.md
+**Key changes:**
+- Bootstrap architecture redesigned: bootstrap = 5-line pointer only, METATRON = SOP
+- Four-Run Protocol restored from v9.0
+- 62 Drift Indicators restored from v9.0
+- Failure Mode Registry restored
+- FORGE/C.R.E.A.T.E./C.A.K.E. restored
+- Session Init Sequence restored
+- Full tool stack documented: CIL v6.1, GABRIEL v2.1, Claude Code v2.1.87, Codex, Cowork, MCP
+- Five-Ring Portfolio Framework integrated
+- Daily Ops Protocol added
+- SARIEL restored to full agent status
+- World-scope mandate documented
+- All v10.7 provisions (Gate 9, Kill Switch) integrated
+
+### AGENT INSTRUCTION FILES v10.8
+All 7 agent files upgraded to v10.8:
+- URIEL_INSTRUCTIONS_v10.8.md — Full Four-Run Protocol, H-module ownership, Codex integration
+- COLOSSUS_INSTRUCTIONS_v10.8.md — Full technical protocol, H23-H26 new modules, bias mitigation
+- HANIEL_INSTRUCTIONS_v10.8.md — Full research protocol, H30-H35 Influence Chain, Gemini-specific capabilities
+- RAZIEL_INSTRUCTIONS_v10.8.md — Full Gate 6 scoring, independent override authority, dispute resolution
+- SARIEL_INSTRUCTIONS_v10.8.md — Full real-time protocol, watchlist current, Iran monitoring
+- GABRIEL_INSTRUCTIONS_v10.8.md — NEW v10.8 (previously only v10.6), full workflow specs
+- MICHA_INSTRUCTIONS — v10.7 remains current (no changes needed, already comprehensive)
+
+### BOOTSTRAPS v10.8
+All 5 bootstraps redesigned:
+- Under 700 chars each (well within 1499 ChatGPT limit)
+- Minimal: agent identity + 3 URLs to fetch + confirmation line
+- No redundant content (METATRON IS the SOP)
+
+| Agent | File | Status |
+|-------|------|--------|
+| MICHA | MICHA_INSTRUCTIONS_v10.7.md | CURRENT (no change needed) |
+| URIEL | URIEL_INSTRUCTIONS_v10.8.md | CURRENT |
+| COLOSSUS | COLOSSUS_INSTRUCTIONS_v10.8.md | CURRENT |
+| HANIEL | HANIEL_INSTRUCTIONS_v10.8.md | CURRENT |
+| RAZIEL | RAZIEL_INSTRUCTIONS_v10.8.md | CURRENT |
+| SARIEL | SARIEL_INSTRUCTIONS_v10.8.md | CURRENT |
+| GABRIEL | GABRIEL_INSTRUCTIONS_v10.8.md | CURRENT |
+
+---
+**END VERSION CHANGELOG**
+🔱
