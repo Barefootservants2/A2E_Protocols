@@ -1,3 +1,31 @@
+## March 30, 2026
+
+### CLAUDE.md v2.0
+- Full rewrite to METATRON v10.8 state
+- Added Gate 0.75 Twelve Fidelity Locks as runnable checklist
+- Added HUNTER module map H1-H42
+- Four-Run Protocol restored
+- FORGE/C.R.E.A.T.E./C.A.K.E. standards restored
+- Kill Switch corrected to DX=F/ZB=F
+- Ring 3 Thesis Rule codified (PLTR lesson)
+- P0 build queue current as of March 30
+
+### A2E_TRADING_STRATEGY_v1.0.md (NEW)
+- Core trading strategy document — first production version
+- 5-layer signal stack (VWAP, Opening Range, Momentum, Volume, Catalyst)
+- 30/15/5 tiered position system (PRIME/STRONG/PROBE)
+- Daily target math ($300-$1,500/day model)
+- Hard exit rules: VWAP cross, Two-Check, Time Stop, Profit Lock
+- Auto-execution framework (exits auto, entries manual pending E*TRADE write)
+- HUNTER signal output format specification
+- Whale/Congressional/Elite tracking requirements
+- Daily operational flow (6AM HUNTER → 7:30AM brief → 9:30AM open → 3:45PM close)
+- Long-term wealth architecture and monthly target model
+- Test harness requirements per component
+- 5 open decisions for Principal
+
+---
+
 
 ## v10.8 — March 29, 2026
 
