@@ -1,3 +1,48 @@
+
+## v10.8 — March 29, 2026
+
+**Major revision. Restores full-spectrum scope.**
+
+### What changed
+- Full-spectrum domain coverage restored: market analysis is ONE domain alongside consulting, research, teaching, coding, design, business operations, prompt engineering
+- Four-Run Protocol restored from v9.0
+- 62 Drift Indicators restored from v9.0
+- FORGE/C.R.E.A.T.E./C.A.K.E. protocol restored
+- Failure Mode Registry restored
+- Session Initialization Sequence restored
+- Five-Ring Portfolio Framework added (was missing entirely)
+- CIL / Collective Intelligence Layer added to platform architecture
+- SARIEL added to all agent references
+- GABRIEL v10.8 instruction file created (first full file)
+- Claude Code, Codex, Cowork added to tool stack
+- Domain Routing Matrix added
+- NULL Protocol tightened
+- MCP-first search rule added (GitHub/Supabase before memory)
+- 90-95% quality target codified
+- Error logging and triage path to final 5-10% defined
+- All Bootstrap files updated to reference v10.8
+
+### What stays
+- v10.7 Gate 9 Correlation and Kill Switch (fully integrated, not amendment anymore)
+- IRONCLAD v2.1 risk rules
+- Confidence Cascade 9-gate structure
+- Hub-and-spoke Collective architecture
+- PHOENIX session management
+- 30-gate total architecture
+
+### Files pushed
+- PROTOCOLS/PRODUCTION/METATRON_v10.8_PRIME_DIRECTIVE.md
+- COLLECTIVE/GABRIEL/GABRIEL_INSTRUCTIONS_v10.8.md
+- COLLECTIVE/BOOTSTRAP/URIEL_BOOTSTRAP.md (v1.1)
+- COLLECTIVE/BOOTSTRAP/COLOSSUS_BOOTSTRAP.md (v1.1)
+- COLLECTIVE/BOOTSTRAP/HANIEL_BOOTSTRAP.md (v1.1)
+- COLLECTIVE/BOOTSTRAP/RAZIEL_BOOTSTRAP.md (v1.1)
+- COLLECTIVE/BOOTSTRAP/SARIEL_BOOTSTRAP.md (v1.1)
+- COLLECTIVE/BOOTSTRAP/MICHA_BOOTSTRAP.md (v1.1)
+
+
+---
+
 ## v10.6 — February 20, 2026 — CONFIDENCE CASCADE + MCP BULLSEYE
 
 ## 2026-03-29 — Unified Session Onboarding Architecture v1.0
