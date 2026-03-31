@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import os, sys
+sys.stdout.reconfigure(encoding="utf-8", errors="replace") if hasattr(sys.stdout, "reconfigure") else None
 """
 A2E BACKTESTING HARNESS v1.0
 Uriel Covenant AI Collective — Ashes2Echoes LLC
@@ -377,7 +380,7 @@ def print_report(stats: dict, all_trades: list, tickers: list):
         if 'error' in s:
             print(f"\n{tier}: {s['error']}")
             continue
-        verdict_icon = "✅" if s['profitable'] else "⚠️"
+        verdict_icon = "[OK]" if s['profitable'] else "[!!]"
         print(f"\n{verdict_icon}  {tier} TIER")
         print(f"   Trades:      {s['total_trades']} ({s['wins']}W / {s['losses']}L)")
         print(f"   Win Rate:    {s['win_rate_pct']}%  (target: 65%+)")
