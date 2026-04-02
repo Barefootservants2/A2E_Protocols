@@ -1928,9 +1928,14 @@
         "queryParameters": {
           "parameters": []
         },
-        "sendHeaders": false,
+        "sendHeaders": true,
         "headerParameters": {
-          "parameters": []
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{'Bearer ' + $vars.UNUSUAL_WHALES_API_KEY}}"
+            }
+          ]
         },
         "options": {
           "redirect": {
@@ -1946,16 +1951,10 @@
             }
           }
         },
-        "authentication": "genericCredentialType",
+        "authentication": "none",
         "genericAuthType": "httpHeaderAuth"
       },
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "",
-          "name": "UW API Key"
-        }
-      },
-      "notes": "H30: UW congressional trades (Unusual Whales). Replaces Finnhub lobbying. STOCK Act compliance tracking \u2014 flags trades by watched politicians."
+      "notes": "H30: UW congressional trades via $vars.UNUSUAL_WHALES_API_KEY. No credential required. STOCK Act compliance \u2014 flags watched politicians."
     },
     {
       "id": "f0033942-b5b6-46c4-b069-2a96eff6e346",
