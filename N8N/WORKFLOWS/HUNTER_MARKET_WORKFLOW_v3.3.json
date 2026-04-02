@@ -3534,7 +3534,7 @@
       "onError": "continueRegularOutput",
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "\nconst d=$input.first().json;\nconst ts=new Date().toISOString().replace(/[:.]/g,'-').substring(0,19);\nconst path=`AIORA/reports/hunter_daily/hunter_scan_${ts}.json`;\nconst content=btoa(unescape(encodeURIComponent(JSON.stringify(d,null,2))));\nreturn [{json:{github_path:path,content_b64:content,\n  github_put_body:JSON.stringify({\n    message:`HUNTER v3.1 scan ${ts} \u2014 ${d.prime_count||0} PRIME`,content})}}];\n"
+        "jsCode": "\nconst d=$input.first().json;\nconst ts=new Date().toISOString().replace(/[:.]/g,'-').substring(0,19);\nconst path=`AIORA/reports/hunter_daily/hunter_scan_${ts}.json`;\nconst content=btoa(unescape(encodeURIComponent(JSON.stringify(d,null,2))));\nreturn [{json:{github_path:path,content_b64:content,\n  github_put_body:JSON.stringify({\n    message:`HUNTER v3.3 scan ${ts} \u2014 ${d.prime_count||0} PRIME`,content})}}];\n"
       },
       "notes": "Archive: Prepares HUNTER scan results for GitHub archive commit."
     },
