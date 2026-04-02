@@ -3182,8 +3182,8 @@
           ]
         },
         "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\"model\":\"gpt-4.1\",\"max_tokens\":2000,\"messages\":[{\"role\":\"system\",\"content\":\"You are URIEL, CEO/Strategic Director of the Uriel Covenant AI Collective. HUNTER OPPORTUNITY SCAN \\\\u2014 pure market discovery, ZERO portfolio awareness. Find what the Principal does NOT know about. OUTPUT: JSON only. {\\\\\\\"agent\\\\\\\":\\\\\\\"URIEL\\\\\\\",\\\\\\\"opportunities\\\\\\\":[{\\\\\\\"ticker\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"signal_tier\\\\\\\":\\\\\\\"PRIME|STRONG|PROBE\\\\\\\",\\\\\\\"confidence\\\\\\\":0,\\\\\\\"thesis\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"key_signal\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"entry_zone\\\\\\\":\\\\\\\"$XX-$XX\\\\\\\",\\\\\\\"stop\\\\\\\":\\\\\\\"$XX\\\\\\\",\\\\\\\"target_5pct\\\\\\\":\\\\\\\"$XX\\\\\\\",\\\\\\\"catalyst\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"ring_fit\\\\\\\":\\\\\\\"Ring 2|3|4|5\\\\\\\",\\\\\\\"hold_duration\\\\\\\":\\\\\\\"intraday|1-3day|thesis\\\\\\\"}],\\\\\\\"macro_regime\\\\\\\":\\\\\\\"RISK_ON|NEUTRAL|RISK_OFF\\\\\\\",\\\\\\\"sector_rotation\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"top_risk\\\\\\\":\\\\\\\"\\\\\\\"}\"},{\"role\":\"user\",\"content\":\"DATA:\\n\\n\" + JSON.stringify($json.hunter_payload || {})}]}",
+        "specifyBody": "string",
+        "jsonBody": "",
         "options": {
           "redirect": {
             "redirect": {
@@ -3199,7 +3199,8 @@
           }
         },
         "authentication": "none",
-        "genericAuthType": "httpHeaderAuth"
+        "genericAuthType": "httpHeaderAuth",
+        "body": "=JSON.stringify({model:\"gpt-4.1\",max_tokens:2000,messages:[{role:\"system\",content:\"You are URIEL, CEO/Strategic Director of the Uriel Covenant AI Collective. HUNTER OPPORTUNITY SCAN \\\\\\\\u2014 pure market discovery, ZERO portfolio awareness. Find what the Principal does NOT know about. OUTPUT: JSON only. {\\\\\\\\\\\\\\\"agent\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"URIEL\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"opportunities\\\\\\\\\\\\\\\":[{\\\\\\\\\\\\\\\"ticker\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"signal_tier\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"PRIME|STRONG|PROBE\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"confidence\\\\\\\\\\\\\\\":0,\\\\\\\\\\\\\\\"thesis\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"key_signal\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"entry_zone\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"$XX-$XX\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"stop\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"$XX\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"target_5pct\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"$XX\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"catalyst\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"ring_fit\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"Ring 2|3|4|5\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"hold_duration\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"intraday|1-3day|thesis\\\\\\\\\\\\\\\"}],\\\\\\\\\\\\\\\"macro_regime\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"RISK_ON|NEUTRAL|RISK_OFF\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"sector_rotation\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"top_risk\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"}\"},{role:\"user\",content:\"DATA:\\n\\n\"+JSON.stringify($json.hunter_payload||{})}]})"
       },
       "notes": "Agent: URIEL (OpenAI). Strategic opportunity analysis \u2014 long-horizon thesis generation. Ring 3/4 specialist."
     },
@@ -3227,8 +3228,8 @@
           ]
         },
         "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\"model\":\"grok-3\",\"max_tokens\":2000,\"messages\":[{\"role\":\"system\",\"content\":\"You are COLOSSUS, CTO/Technical Analyst of the Uriel Covenant AI Collective. HUNTER TECHNICAL SCAN \\\\u2014 identify strongest setups: VWAP position, momentum, volume, breakouts. ZERO portfolio awareness. OUTPUT: JSON only. {\\\\\\\"agent\\\\\\\":\\\\\\\"COLOSSUS\\\\\\\",\\\\\\\"setups\\\\\\\":[{\\\\\\\"ticker\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"setup_type\\\\\\\":\\\\\\\"VWAP_BREAKOUT|MOMENTUM|OPENING_RANGE|REVERSAL\\\\\\\",\\\\\\\"signal_tier\\\\\\\":\\\\\\\"PRIME|STRONG|PROBE\\\\\\\",\\\\\\\"confidence\\\\\\\":0,\\\\\\\"vwap_position\\\\\\\":\\\\\\\"ABOVE|BELOW|AT\\\\\\\",\\\\\\\"volume_ratio\\\\\\\":0,\\\\\\\"rsi_14\\\\\\\":0,\\\\\\\"momentum_direction\\\\\\\":\\\\\\\"BULLISH|BEARISH|NEUTRAL\\\\\\\",\\\\\\\"entry_trigger\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"stop_technical\\\\\\\":\\\\\\\"$XX\\\\\\\",\\\\\\\"target_technical\\\\\\\":\\\\\\\"$XX\\\\\\\",\\\\\\\"time_window\\\\\\\":\\\\\\\"open|mid|close\\\\\\\"}],\\\\\\\"market_breadth\\\\\\\":\\\\\\\"EXPANDING|CONTRACTING|NEUTRAL\\\\\\\",\\\\\\\"vix_regime\\\\\\\":\\\\\\\"LOW|NORMAL|ELEVATED|EXTREME\\\\\\\",\\\\\\\"best_sector_momentum\\\\\\\":\\\\\\\"\\\\\\\"}\"},{\"role\":\"user\",\"content\":\"DATA:\\n\\n\" + JSON.stringify($json.hunter_payload || {})}]}",
+        "specifyBody": "string",
+        "jsonBody": "",
         "options": {
           "redirect": {
             "redirect": {
@@ -3244,7 +3245,8 @@
           }
         },
         "authentication": "none",
-        "genericAuthType": "httpHeaderAuth"
+        "genericAuthType": "httpHeaderAuth",
+        "body": "=JSON.stringify({model:\"grok-3\",max_tokens:2000,messages:[{role:\"system\",content:\"You are COLOSSUS, CTO/Technical Analyst of the Uriel Covenant AI Collective. HUNTER TECHNICAL SCAN \\\\\\\\u2014 identify strongest setups: VWAP position, momentum, volume, breakouts. ZERO portfolio awareness. OUTPUT: JSON only. {\\\\\\\\\\\\\\\"agent\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"COLOSSUS\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"setups\\\\\\\\\\\\\\\":[{\\\\\\\\\\\\\\\"ticker\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"setup_type\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"VWAP_BREAKOUT|MOMENTUM|OPENING_RANGE|REVERSAL\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"signal_tier\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"PRIME|STRONG|PROBE\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"confidence\\\\\\\\\\\\\\\":0,\\\\\\\\\\\\\\\"vwap_position\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"ABOVE|BELOW|AT\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"volume_ratio\\\\\\\\\\\\\\\":0,\\\\\\\\\\\\\\\"rsi_14\\\\\\\\\\\\\\\":0,\\\\\\\\\\\\\\\"momentum_direction\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"BULLISH|BEARISH|NEUTRAL\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"entry_trigger\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"stop_technical\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"$XX\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"target_technical\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"$XX\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"time_window\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"open|mid|close\\\\\\\\\\\\\\\"}],\\\\\\\\\\\\\\\"market_breadth\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"EXPANDING|CONTRACTING|NEUTRAL\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"vix_regime\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"LOW|NORMAL|ELEVATED|EXTREME\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"best_sector_momentum\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"}\"},{role:\"user\",content:\"DATA:\\n\\n\"+JSON.stringify($json.hunter_payload||{})}]})"
       },
       "notes": "Agent: COLOSSUS (xAI/Grok). Technical setup identification \u2014 chart patterns + momentum. Ring 4 specialist."
     },
@@ -3278,7 +3280,7 @@
       "onError": "continueRegularOutput",
       "parameters": {
         "method": "POST",
-        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+        "url": "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -3340,8 +3342,8 @@
           ]
         },
         "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\"model\":\"deepseek-chat\",\"max_tokens\":2000,\"messages\":[{\"role\":\"system\",\"content\":\"You are RAZIEL, CAO/Counter-Thesis Analyst of the Uriel Covenant AI Collective. Gate 6 adversarial analysis. Challenge every opportunity. Find failure modes before we trade. Low score = clean thesis. High score = dangerous. OUTPUT: JSON only. {\\\\\\\"agent\\\\\\\":\\\\\\\"RAZIEL\\\\\\\",\\\\\\\"counter_analyses\\\\\\\":[{\\\\\\\"ticker\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"raziel_score\\\\\\\":0,\\\\\\\"primary_risk\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"secondary_risk\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"correlation_risk\\\\\\\":\\\\\\\"Y|N\\\\\\\",\\\\\\\"timing_risk\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"liquidity_risk\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"verdict\\\\\\\":\\\\\\\"CLEAR|CAUTION|ABORT\\\\\\\",\\\\\\\"abort_reason\\\\\\\":\\\\\\\"\\\\\\\"}],\\\\\\\"market_risks\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"do_not_touch\\\\\\\":[],\\\\\\\"cleanest_thesis\\\\\\\":\\\\\\\"\\\\\\\"}\"},{\"role\":\"user\",\"content\":\"DATA:\\n\\n\" + JSON.stringify($json.hunter_payload || {})}]}",
+        "specifyBody": "string",
+        "jsonBody": "",
         "options": {
           "redirect": {
             "redirect": {
@@ -3358,7 +3360,7 @@
         },
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
-        "body": ""
+        "body": "=JSON.stringify({model:\"deepseek-chat\",max_tokens:2000,messages:[{role:\"system\",content:\"You are RAZIEL, CAO/Counter-Thesis Analyst of the Uriel Covenant AI Collective. Gate 6 adversarial analysis. Challenge every opportunity. Find failure modes before we trade. Low score = clean thesis. High score = dangerous. OUTPUT: JSON only. {\\\\\\\\\\\\\\\"agent\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"RAZIEL\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"counter_analyses\\\\\\\\\\\\\\\":[{\\\\\\\\\\\\\\\"ticker\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"raziel_score\\\\\\\\\\\\\\\":0,\\\\\\\\\\\\\\\"primary_risk\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"secondary_risk\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"correlation_risk\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"Y|N\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"timing_risk\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"liquidity_risk\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"verdict\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"CLEAR|CAUTION|ABORT\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"abort_reason\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"}],\\\\\\\\\\\\\\\"market_risks\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"do_not_touch\\\\\\\\\\\\\\\":[],\\\\\\\\\\\\\\\"cleanest_thesis\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"}\"},{role:\"user\",content:\"DATA:\\n\\n\"+JSON.stringify($json.hunter_payload||{})}]})"
       },
       "credentials": {
         "httpHeaderAuth": {
