@@ -3161,94 +3161,36 @@
     {
       "id": "edee76d6-af52-4330-8006-d42c35c8d8a1",
       "name": "URIEL \u2014 Strategic Opportunity",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         0,
         7420
       ],
       "alwaysOutputData": true,
       "onError": "continueRegularOutput",
+      "notes": "URIEL \u2014 Strategic Opportunity: Code node \u2014 direct API call via this.helpers.httpRequest. Zero serialization issues.",
       "parameters": {
-        "method": "POST",
-        "url": "https://api.openai.com/v1/chat/completions",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "={{'Bearer ' + $vars.Uriel_API_Key}}"
-            }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "string",
-        "jsonBody": "",
-        "options": {
-          "redirect": {
-            "redirect": {
-              "followRedirects": true,
-              "maxRedirects": 3
-            }
-          },
-          "timeout": 60000,
-          "response": {
-            "response": {
-              "neverError": true
-            }
-          }
-        },
-        "authentication": "none",
-        "genericAuthType": "httpHeaderAuth",
-        "body": "=JSON.stringify({model:\"gpt-4.1\",max_tokens:2000,messages:[{role:\"system\",content:\"You are URIEL, CEO/Strategic Director of the Uriel Covenant AI Collective. HUNTER OPPORTUNITY SCAN \\\\\\\\u2014 pure market discovery, ZERO portfolio awareness. Find what the Principal does NOT know about. OUTPUT: JSON only. {\\\\\\\\\\\\\\\"agent\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"URIEL\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"opportunities\\\\\\\\\\\\\\\":[{\\\\\\\\\\\\\\\"ticker\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"signal_tier\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"PRIME|STRONG|PROBE\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"confidence\\\\\\\\\\\\\\\":0,\\\\\\\\\\\\\\\"thesis\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"key_signal\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"entry_zone\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"$XX-$XX\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"stop\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"$XX\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"target_5pct\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"$XX\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"catalyst\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"ring_fit\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"Ring 2|3|4|5\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"hold_duration\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"intraday|1-3day|thesis\\\\\\\\\\\\\\\"}],\\\\\\\\\\\\\\\"macro_regime\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"RISK_ON|NEUTRAL|RISK_OFF\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"sector_rotation\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"top_risk\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"}\"},{role:\"user\",content:\"DATA:\\n\\n\"+JSON.stringify($json.hunter_payload||{})}]})"
-      },
-      "notes": "Agent: URIEL (OpenAI). Strategic opportunity analysis \u2014 long-horizon thesis generation. Ring 3/4 specialist."
+        "mode": "runOnceForEachItem",
+        "jsCode": "const payload = $input.first().json;\nconst hunterData = JSON.stringify(payload.hunter_payload || payload || {});\nconst apiKey = $vars['Uriel_API_Key'];\nconst body = {\n  model: 'gpt-4o',\n  max_tokens: 2000,\n  messages: [\n    { role: 'system', content: \"You are URIEL, CEO/Strategic Director of the Uriel Covenant AI Collective. HUNTER OPPORTUNITY SCAN \\u2014 pure market discovery, ZERO portfolio awareness. Find what the Principal does NOT know about. OUTPUT: JSON only. {\\\"agent\\\":\\\"URIEL\\\",\\\"opportunities\\\":[{\\\"ticker\\\":\\\"\\\",\\\"signal_tier\\\":\\\"PRIME|STRONG|PROBE\\\",\\\"confidence\\\":0,\\\"thesis\\\":\\\"\\\",\\\"key_signal\\\":\\\"\\\",\\\"catalyst\\\":\\\"\\\",\\\"entry_zone\\\":\\\"\\\",\\\"stop\\\":\\\"\\\",\\\"target\\\":\\\"\\\",\\\"ring\\\":\\\"3|4|5\\\",\\\"time_horizon\\\":\\\"\\\"}],\\\"macro_regime\\\":\\\"BULL|BEAR|NEUTRAL|VOLATILE\\\",\\\"market_breadth\\\":\\\"EXPANDING|CONTRACTING|MIXED\\\",\\\"hot_sector\\\":\\\"\\\",\\\"top_opportunity\\\":\\\"\\\"}\" },\n    { role: 'user', content: 'DATA:\\n\\n' + hunterData }\n  ]\n};\nlet result;\ntry {\n  result = await this.helpers.httpRequest({\n    method: 'POST',\n    url: 'https://api.openai.com/v1/chat/completions',\n    headers: {\n      'Authorization': 'Bearer ' + apiKey,\n      'Content-Type': 'application/json'\n    },\n    body: body,\n    json: true,\n    timeout: 45000\n  });\n} catch(e) {\n  return [{json: {error: e.message, agent: 'URIEL \u2014 Strategic Opportunity'}}];\n}\nreturn [{json: result}];"
+      }
     },
     {
       "id": "b72a6205-3ec9-422f-9ddf-fa8d730d4d02",
       "name": "COLOSSUS \u2014 Technical Setups",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         500,
         7420
       ],
       "alwaysOutputData": true,
       "onError": "continueRegularOutput",
+      "notes": "COLOSSUS \u2014 Technical Setups: Code node \u2014 direct API call via this.helpers.httpRequest. Zero serialization issues.",
       "parameters": {
-        "method": "POST",
-        "url": "https://api.x.ai/v1/chat/completions",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "={{'Bearer ' + $vars.Grok4_API_Key_20250809}}"
-            }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "string",
-        "jsonBody": "",
-        "options": {
-          "redirect": {
-            "redirect": {
-              "followRedirects": true,
-              "maxRedirects": 3
-            }
-          },
-          "timeout": 60000,
-          "response": {
-            "response": {
-              "neverError": true
-            }
-          }
-        },
-        "authentication": "none",
-        "genericAuthType": "httpHeaderAuth",
-        "body": "=JSON.stringify({model:\"grok-3\",max_tokens:2000,messages:[{role:\"system\",content:\"You are COLOSSUS, CTO/Technical Analyst of the Uriel Covenant AI Collective. HUNTER TECHNICAL SCAN \\\\\\\\u2014 identify strongest setups: VWAP position, momentum, volume, breakouts. ZERO portfolio awareness. OUTPUT: JSON only. {\\\\\\\\\\\\\\\"agent\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"COLOSSUS\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"setups\\\\\\\\\\\\\\\":[{\\\\\\\\\\\\\\\"ticker\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"setup_type\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"VWAP_BREAKOUT|MOMENTUM|OPENING_RANGE|REVERSAL\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"signal_tier\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"PRIME|STRONG|PROBE\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"confidence\\\\\\\\\\\\\\\":0,\\\\\\\\\\\\\\\"vwap_position\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"ABOVE|BELOW|AT\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"volume_ratio\\\\\\\\\\\\\\\":0,\\\\\\\\\\\\\\\"rsi_14\\\\\\\\\\\\\\\":0,\\\\\\\\\\\\\\\"momentum_direction\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"BULLISH|BEARISH|NEUTRAL\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"entry_trigger\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"stop_technical\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"$XX\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"target_technical\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"$XX\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"time_window\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"open|mid|close\\\\\\\\\\\\\\\"}],\\\\\\\\\\\\\\\"market_breadth\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"EXPANDING|CONTRACTING|NEUTRAL\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"vix_regime\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"LOW|NORMAL|ELEVATED|EXTREME\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"best_sector_momentum\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"}\"},{role:\"user\",content:\"DATA:\\n\\n\"+JSON.stringify($json.hunter_payload||{})}]})"
-      },
-      "notes": "Agent: COLOSSUS (xAI/Grok). Technical setup identification \u2014 chart patterns + momentum. Ring 4 specialist."
+        "mode": "runOnceForEachItem",
+        "jsCode": "const payload = $input.first().json;\nconst hunterData = JSON.stringify(payload.hunter_payload || payload || {});\nconst apiKey = $vars['Grok4_API_Key_20250809'];\nconst body = {\n  model: 'grok-3',\n  max_tokens: 2000,\n  messages: [\n    { role: 'system', content: \"You are COLOSSUS, CTO/Technical Analyst of the Uriel Covenant AI Collective. HUNTER TECHNICAL SCAN \\u2014 identify strongest setups: VWAP position, momentum, volume, breakouts. ZERO portfolio awareness. OUTPUT: JSON only. {\\\"agent\\\":\\\"COLOSSUS\\\",\\\"setups\\\":[{\\\"ticker\\\":\\\"\\\",\\\"setup_type\\\":\\\"BREAKOUT|VWAP_RECLAIM|MOMENTUM|REVERSAL\\\",\\\"confidence\\\":0,\\\"entry\\\":\\\"\\\",\\\"stop\\\":\\\"\\\",\\\"target\\\":\\\"\\\",\\\"r_r\\\":0,\\\"volume_signal\\\":\\\"HIGH|NORMAL|LOW\\\",\\\"momentum\\\":\\\"STRONG|MODERATE|WEAK\\\",\\\"timeframe\\\":\\\"\\\"}],\\\"market_structure\\\":\\\"TRENDING|RANGING|BREAKING\\\",\\\"vix_regime\\\":\\\"LOW|ELEVATED|HIGH\\\",\\\"top_setup\\\":\\\"\\\"}\" },\n    { role: 'user', content: 'DATA:\\n\\n' + hunterData }\n  ]\n};\nlet result;\ntry {\n  result = await this.helpers.httpRequest({\n    method: 'POST',\n    url: 'https://api.x.ai/v1/chat/completions',\n    headers: {\n      'Authorization': 'Bearer ' + apiKey,\n      'Content-Type': 'application/json'\n    },\n    body: body,\n    json: true,\n    timeout: 45000\n  });\n} catch(e) {\n  return [{json: {error: e.message, agent: 'COLOSSUS \u2014 Technical Setups'}}];\n}\nreturn [{json: result}];"
+      }
     },
     {
       "id": "6dcf01e0-4c88-4422-a402-08f1806dd494",
@@ -3263,112 +3205,55 @@
       "onError": "continueRegularOutput",
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "\nconst sys=`You are HANIEL, CPO and Research Director of the Uriel Covenant AI Collective.\nHUNTER INTELLIGENCE SCAN. Identify opportunities from filings, congressional activity, contracts, institutional positioning.\nFlag H35 Influence Chain correlations as HIGH PRIORITY. ZERO portfolio awareness.\nOUTPUT: JSON only.\n{\"agent\":\"HANIEL\",\"intelligence_signals\":[{\"ticker\":\"\",\"signal_type\":\"INSIDER_CLUSTER|CONGRESSIONAL_TRADE|CONTRACT_AWARD|WHALE_13F|LOBBYING_CORRELATION\",\"signal_tier\":\"PRIME|STRONG|PROBE\",\"confidence\":0,\"source_module\":\"\",\"key_finding\":\"\",\"dollars_involved\":0,\"days_since_event\":0,\"regulatory_risk\":\"LOW|MEDIUM|HIGH\",\"thesis_implication\":\"\"}],\"h35_alerts\":\"\",\"whale_activity\":\"\",\"top_intelligence_pick\":\"\"}`;\nconst fullText=sys+'\\n\\nDATA:\\n'+($json.hunter_payload||'{}');\nreturn [{json:{gemini_body:JSON.stringify({\n  contents:[{role:'user',parts:[{text:fullText}]}],\n  generationConfig:{maxOutputTokens:2000,temperature:0.3}\n})}}];\n"
+        "jsCode": "const d = $input.first().json;\nreturn [{json: {hunter_payload: d.hunter_payload || d, gemini_body: JSON.stringify(d.hunter_payload || d)}}];"
       },
       "notes": "Format: Structures HUNTER data payload for HANIEL (Google AI) API requirements."
     },
     {
       "id": "517774d7-2f00-4e3c-9298-c5b492586554",
       "name": "HANIEL \u2014 Intelligence Signals",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         1000,
         7680
       ],
       "alwaysOutputData": true,
       "onError": "continueRegularOutput",
+      "notes": "HANIEL: Code node \u2014 Gemini 2.0 Flash via httpRequestWithAuthentication.",
       "parameters": {
-        "method": "POST",
-        "url": "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{$json.gemini_body}}",
-        "options": {
-          "redirect": {
-            "redirect": {
-              "followRedirects": true,
-              "maxRedirects": 3
-            }
-          },
-          "timeout": 60000,
-          "response": {
-            "response": {
-              "neverError": true
-            }
-          }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        "mode": "runOnceForEachItem",
+        "jsCode": "const payload = $input.first().json;\nconst hunterData = JSON.stringify(payload.hunter_payload || payload || {});\nconst sysPrompt = \"You are HANIEL, CPO and Research Director of the Uriel Covenant AI Collective. HUNTER INTELLIGENCE SCAN. Identify opportunities from filings, congressional activity, contracts, institutional positioning. Flag H35 Influence Chain correlations as HIGH PRIORITY. ZERO portfolio awareness. OUTPUT: JSON only. {\\\"agent\\\":\\\"HANIEL\\\",\\\"intelligence_signals\\\":[{\\\"ticker\\\":\\\"\\\",\\\"signal_type\\\":\\\"INSIDER_CLUSTER|CONGRESSIONAL_TRADE|CONTRACT_AWARD|WHALE_13F|LOBBYING_CORRELATION\\\",\\\"signal_tier\\\":\\\"PRIME|STRONG|PROBE\\\",\\\"confidence\\\":0,\\\"source_module\\\":\\\"\\\",\\\"key_finding\\\":\\\"\\\",\\\"dollars_involved\\\":0,\\\"days_since_event\\\":0,\\\"regulatory_risk\\\":\\\"LOW|MEDIUM|HIGH\\\",\\\"thesis_implication\\\":\\\"\\\"}],\\\"h35_alerts\\\":\\\"\\\",\\\"whale_activity\\\":\\\"\\\",\\\"top_intelligence_pick\\\":\\\"\\\"}\";\nconst fullText = sysPrompt + '\\n\\nDATA:\\n\\n' + hunterData;\nconst body = {\n  contents: [{ role: 'user', parts: [{ text: fullText }] }],\n  generationConfig: { maxOutputTokens: 2000, temperature: 0.3 }\n};\nlet result;\ntry {\n  result = await this.helpers.httpRequestWithAuthentication.call(\n    this,\n    'HANIEL API Key',\n    {\n      method: 'POST',\n      url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',\n      headers: { 'Content-Type': 'application/json' },\n      body: body,\n      json: true,\n      timeout: 45000\n    }\n  );\n} catch(e) {\n  // Fallback: try with API key from credential name\n  return [{json: {error: e.message, agent: 'HANIEL'}}];\n}\nreturn [{json: result}];"
       },
       "credentials": {
         "httpHeaderAuth": {
           "id": "AitODdRhySgSD8nm",
           "name": "HANIEL API Key"
         }
-      },
-      "notes": "Agent: HANIEL (Google AI/Gemini). Intelligence signal synthesis \u2014 pattern recognition across wide data set."
+      }
     },
     {
       "id": "6c02339a-5605-49bc-b4ad-46747c2799ad",
       "name": "RAZIEL \u2014 Counter Thesis",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         1500,
         7420
       ],
       "alwaysOutputData": true,
       "onError": "continueRegularOutput",
+      "notes": "RAZIEL \u2014 Counter Thesis: Code node \u2014 direct API call via this.helpers.httpRequest. Zero serialization issues.",
       "parameters": {
-        "method": "POST",
-        "url": "https://api.deepseek.com/v1/chat/completions",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "string",
-        "jsonBody": "",
-        "options": {
-          "redirect": {
-            "redirect": {
-              "followRedirects": true,
-              "maxRedirects": 3
-            }
-          },
-          "timeout": 90000,
-          "response": {
-            "response": {
-              "neverError": true
-            }
-          }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "body": "=JSON.stringify({model:\"deepseek-chat\",max_tokens:2000,messages:[{role:\"system\",content:\"You are RAZIEL, CAO/Counter-Thesis Analyst of the Uriel Covenant AI Collective. Gate 6 adversarial analysis. Challenge every opportunity. Find failure modes before we trade. Low score = clean thesis. High score = dangerous. OUTPUT: JSON only. {\\\\\\\\\\\\\\\"agent\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"RAZIEL\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"counter_analyses\\\\\\\\\\\\\\\":[{\\\\\\\\\\\\\\\"ticker\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"raziel_score\\\\\\\\\\\\\\\":0,\\\\\\\\\\\\\\\"primary_risk\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"secondary_risk\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"correlation_risk\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"Y|N\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"timing_risk\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"liquidity_risk\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"verdict\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"CLEAR|CAUTION|ABORT\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"abort_reason\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"}],\\\\\\\\\\\\\\\"market_risks\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"do_not_touch\\\\\\\\\\\\\\\":[],\\\\\\\\\\\\\\\"cleanest_thesis\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"}\"},{role:\"user\",content:\"DATA:\\n\\n\"+JSON.stringify($json.hunter_payload||{})}]})"
+        "mode": "runOnceForEachItem",
+        "jsCode": "const payload = $input.first().json;\nconst hunterData = JSON.stringify(payload.hunter_payload || payload || {});\nconst apiKey = $vars['RAZIEL API Key'];\nconst body = {\n  model: 'deepseek-chat',\n  max_tokens: 2000,\n  messages: [\n    { role: 'system', content: \"You are RAZIEL, CAO/Counter-Thesis Analyst of the Uriel Covenant AI Collective. Gate 6 adversarial analysis. Challenge every opportunity. Find failure modes before we trade. Low score = clean thesis. High score = dangerous. OUTPUT: JSON only. {\\\"agent\\\":\\\"RAZIEL\\\",\\\"counter_analyses\\\":[{\\\"ticker\\\":\\\"\\\",\\\"raziel_score\\\":0,\\\"primary_risk\\\":\\\"\\\",\\\"secondary_risk\\\":\\\"\\\",\\\"correlation_risk\\\":\\\"Y|N\\\",\\\"timing_risk\\\":\\\"\\\",\\\"liquidity_risk\\\":\\\"\\\",\\\"verdict\\\":\\\"CLEAR|CAUTION|ABORT\\\",\\\"abort_reason\\\":\\\"\\\"}],\\\"market_risks\\\":\\\"\\\",\\\"do_not_touch\\\":[],\\\"cleanest_thesis\\\":\\\"\\\"}\" },\n    { role: 'user', content: 'DATA:\\n\\n' + hunterData }\n  ]\n};\nlet result;\ntry {\n  result = await this.helpers.httpRequest({\n    method: 'POST',\n    url: 'https://api.deepseek.com/v1/chat/completions',\n    headers: {\n      'Authorization': 'Bearer ' + apiKey,\n      'Content-Type': 'application/json'\n    },\n    body: body,\n    json: true,\n    timeout: 45000\n  });\n} catch(e) {\n  return [{json: {error: e.message, agent: 'RAZIEL \u2014 Counter Thesis'}}];\n}\nreturn [{json: result}];"
       },
       "credentials": {
         "httpHeaderAuth": {
           "id": "CnNJfQmlNmwePa7P",
           "name": "RAZIEL API Key"
         }
-      },
-      "notes": "Agent: RAZIEL (DeepSeek). Counter-thesis generation \u2014 Gate 7.5 adversarial analysis. Challenges every opportunity."
+      }
     },
     {
       "id": "0642ae59-fa9a-4e7f-9a10-c28af1172bda",
