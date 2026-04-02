@@ -3176,8 +3176,8 @@
         "headerParameters": {
           "parameters": [
             {
-              "name": "Content-Type",
-              "value": "application/json"
+              "name": "Authorization",
+              "value": "={{'Bearer ' + $vars.Uriel_API_Key}}"
             }
           ]
         },
@@ -3198,14 +3198,8 @@
             }
           }
         },
-        "authentication": "genericCredentialType",
+        "authentication": "none",
         "genericAuthType": "httpHeaderAuth"
-      },
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "HeSyKKuHzaqLk2tp",
-          "name": "URIEL API Key"
-        }
       },
       "notes": "Agent: URIEL (OpenAI). Strategic opportunity analysis \u2014 long-horizon thesis generation. Ring 3/4 specialist."
     },
@@ -3227,8 +3221,8 @@
         "headerParameters": {
           "parameters": [
             {
-              "name": "Content-Type",
-              "value": "application/json"
+              "name": "Authorization",
+              "value": "={{'Bearer ' + $vars.Grok4_API_Key_20250809}}"
             }
           ]
         },
@@ -3249,14 +3243,8 @@
             }
           }
         },
-        "authentication": "genericCredentialType",
+        "authentication": "none",
         "genericAuthType": "httpHeaderAuth"
-      },
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "PahnYDcKUA07lJZv",
-          "name": "COLOSSUS API Key"
-        }
       },
       "notes": "Agent: COLOSSUS (xAI/Grok). Technical setup identification \u2014 chart patterns + momentum. Ring 4 specialist."
     },
@@ -3290,7 +3278,7 @@
       "onError": "continueRegularOutput",
       "parameters": {
         "method": "POST",
-        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -3369,7 +3357,8 @@
           }
         },
         "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        "genericAuthType": "httpHeaderAuth",
+        "body": ""
       },
       "credentials": {
         "httpHeaderAuth": {
