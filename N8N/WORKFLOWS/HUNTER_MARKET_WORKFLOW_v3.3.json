@@ -217,7 +217,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "ImjP6dfYHgTNWWfo",
           "name": "Alpha Vantage API"
         }
       },
@@ -281,7 +281,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "sj27C965hpE5Y717",
           "name": "NewsAPI"
         }
       },
@@ -377,7 +377,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "ImjP6dfYHgTNWWfo",
           "name": "Alpha Vantage API"
         }
       },
@@ -437,7 +437,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "ZsRtqMO5tofoPRmJ",
           "name": "Finnhub API"
         }
       },
@@ -558,7 +558,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "ZsRtqMO5tofoPRmJ",
           "name": "Finnhub API"
         }
       },
@@ -669,7 +669,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "ZsRtqMO5tofoPRmJ",
           "name": "Finnhub API"
         }
       },
@@ -729,7 +729,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "3Jnfoq3LN9wTGMpu",
           "name": "Twelve Data API"
         }
       },
@@ -789,7 +789,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "3Jnfoq3LN9wTGMpu",
           "name": "Twelve Data API"
         }
       },
@@ -857,7 +857,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "3Jnfoq3LN9wTGMpu",
           "name": "Twelve Data API"
         }
       },
@@ -917,7 +917,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "3Jnfoq3LN9wTGMpu",
           "name": "Twelve Data API"
         }
       },
@@ -977,7 +977,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "3Jnfoq3LN9wTGMpu",
           "name": "Twelve Data API"
         }
       },
@@ -1037,7 +1037,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "3Jnfoq3LN9wTGMpu",
           "name": "Twelve Data API"
         }
       },
@@ -1097,7 +1097,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "3Jnfoq3LN9wTGMpu",
           "name": "Twelve Data API"
         }
       },
@@ -1218,7 +1218,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "3Jnfoq3LN9wTGMpu",
           "name": "Twelve Data API"
         }
       },
@@ -1270,7 +1270,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "ZsRtqMO5tofoPRmJ",
           "name": "Finnhub API"
         }
       },
@@ -1330,7 +1330,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "3Jnfoq3LN9wTGMpu",
           "name": "Twelve Data API"
         }
       },
@@ -1656,7 +1656,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "ZsRtqMO5tofoPRmJ",
           "name": "Finnhub API"
         }
       },
@@ -1712,7 +1712,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "ZsRtqMO5tofoPRmJ",
           "name": "Finnhub API"
         }
       },
@@ -1836,7 +1836,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "sj27C965hpE5Y717",
           "name": "NewsAPI"
         }
       },
@@ -2602,7 +2602,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "ZsRtqMO5tofoPRmJ",
           "name": "Finnhub API"
         }
       },
@@ -2666,7 +2666,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "ZsRtqMO5tofoPRmJ",
           "name": "Finnhub API"
         }
       },
@@ -2730,7 +2730,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "ZsRtqMO5tofoPRmJ",
           "name": "Finnhub API"
         }
       },
@@ -3049,7 +3049,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "telegramApi": {
-          "id": "",
+          "id": "1cUBFkMQENfAXP8x",
           "name": "Telegram account"
         }
       },
@@ -3203,7 +3203,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "HeSyKKuHzaqLk2tp",
           "name": "URIEL API Key"
         }
       },
@@ -3254,7 +3254,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "PahnYDcKUA07lJZv",
           "name": "COLOSSUS API Key"
         }
       },
@@ -3322,7 +3322,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "AitODdRhySgSD8nm",
           "name": "HANIEL API Key"
         }
       },
@@ -3373,7 +3373,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "CnNJfQmlNmwePa7P",
           "name": "RAZIEL API Key"
         }
       },
@@ -3458,7 +3458,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "telegramApi": {
-          "id": "",
+          "id": "1cUBFkMQENfAXP8x",
           "name": "Telegram account"
         }
       },
@@ -3598,7 +3598,7 @@
       },
       "credentials": {
         "httpHeaderAuth": {
-          "id": "",
+          "id": "jdjVIw73qgFd0a4Z",
           "name": "GitHub_A2E_Token"
         }
       },
