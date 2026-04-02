@@ -1387,7 +1387,7 @@
             },
             {
               "name": "api_key",
-              "value": "{{$env.CONGRESS_API_KEY}}"
+              "value": "{{$vars.CONGRESS_API_KEY}}"
             }
           ]
         },
@@ -1753,7 +1753,7 @@
             },
             {
               "name": "api_key",
-              "value": "{{$env.FRED_API_KEY}}"
+              "value": "{{$vars.FRED_API_KEY}}"
             }
           ]
         },
@@ -1861,7 +1861,7 @@
           "parameters": [
             {
               "name": "api_key",
-              "value": "{{$env.METALS_DEV_KEY}}"
+              "value": "{{$vars.METALS_DEV_KEY}}"
             },
             {
               "name": "currency",
@@ -1987,7 +1987,7 @@
             },
             {
               "name": "api_key",
-              "value": "{{$env.CONGRESS_API_KEY}}"
+              "value": "{{$vars.CONGRESS_API_KEY}}"
             }
           ]
         },
@@ -2039,7 +2039,7 @@
             },
             {
               "name": "api_key",
-              "value": "{{$env.CONGRESS_API_KEY}}"
+              "value": "{{$vars.CONGRESS_API_KEY}}"
             }
           ]
         },
@@ -2186,7 +2186,7 @@
             },
             {
               "name": "api_key",
-              "value": "{{$env.FEC_API_KEY}}"
+              "value": "{{$vars.FEC_API_KEY}}"
             }
           ]
         },
@@ -2459,7 +2459,7 @@
             },
             {
               "name": "api_key",
-              "value": "{{$env.FRED_API_KEY}}"
+              "value": "{{$vars.FRED_API_KEY}}"
             }
           ]
         },
@@ -2519,7 +2519,7 @@
             },
             {
               "name": "api_key",
-              "value": "{{$env.FRED_API_KEY}}"
+              "value": "{{$vars.FRED_API_KEY}}"
             }
           ]
         },
@@ -2823,7 +2823,7 @@
             },
             {
               "name": "api_key",
-              "value": "{{$env.FRED_API_KEY}}"
+              "value": "{{$vars.FRED_API_KEY}}"
             }
           ]
         },
@@ -3502,7 +3502,7 @@
       "onError": "continueRegularOutput",
       "parameters": {
         "method": "POST",
-        "url": "={{$env.CIL_WEBHOOK_URL}}",
+        "url": "={{$vars.CIL_WEBHOOK_URL}}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
