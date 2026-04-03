@@ -211,9 +211,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -275,9 +273,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -371,9 +367,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -431,9 +425,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -552,9 +544,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -663,9 +653,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -723,9 +711,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -783,9 +769,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -851,9 +835,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -911,9 +893,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -971,9 +951,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -1031,9 +1009,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -1091,9 +1067,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -1212,9 +1186,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -1264,9 +1236,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -1324,9 +1294,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -1650,9 +1618,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -1706,9 +1672,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -1830,9 +1794,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -1950,9 +1912,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "none",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "notes": "H30: UW congressional trades via $vars.UNUSUAL_WHALES_API_KEY. No credential required. STOCK Act compliance \u2014 flags watched politicians."
     },
@@ -2596,9 +2556,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -2660,9 +2618,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -2724,9 +2680,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -3055,7 +3009,7 @@
       },
       "parameters": {
         "chatId": "8203545338",
-        "text": "=('<b>\ud83d\udea8 KILL SWITCH \u2014 GATE 9 ACTIVATED</b>\\n'+'<b>Condition:</b> '+$json.condition+'\\n'+'<b>DXY:</b> '+$json.h37_regime+' | <b>Yield:</b> '+$json.h38_regime+'  | <b>Flow:</b> '+$json.h39_flow+'\\n\\n'+'<b>IRONCLAD AUTO-PROTOCOL:</b>\\n'+'\\u2192 50% metals reduction required\\n'+'\\u2192 48hr embargo on metals entries\\n'+'\\u2192 NO OVERRIDE\\n\\n'+'<i>METATRON v10.8 | HUNTER v3.1</i>')",
+        "text": "=<b>\ud83d\udea8 KILL SWITCH \u2014 GATE 9 ACTIVATED</b>\n<b>Condition:</b> {{ $json.condition }}\n<b>DXY:</b> {{ $json.h37_regime }} | <b>Yield:</b> {{ $json.h38_regime }}\n\n<b>IRONCLAD AUTO-PROTOCOL:</b>\n\u2192 50% metals reduction required\n\u2192 48hr embargo on metals entries\n\u2192 NO OVERRIDE\n\n<i>METATRON v10.8 | HUNTER v3.3</i>",
         "additionalFields": {
           "parse_mode": "HTML"
         }
@@ -3161,8 +3115,8 @@
     {
       "id": "edee76d6-af52-4330-8006-d42c35c8d8a1",
       "name": "URIEL \u2014 Strategic Opportunity",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
         0,
         7420
@@ -3171,15 +3125,53 @@
       "onError": "continueRegularOutput",
       "notes": "URIEL \u2014 Strategic Opportunity: Code node \u2014 direct API call via this.helpers.httpRequest. Zero serialization issues.",
       "parameters": {
-        "mode": "runOnceForEachItem",
-        "jsCode": "const payload = $input.first().json;\nconst hunterData = JSON.stringify(payload.hunter_payload || payload || {});\nconst apiKey = $vars['Uriel_API_Key'];\nconst body = {\n  model: 'gpt-4o',\n  max_tokens: 2000,\n  messages: [\n    { role: 'system', content: \"You are URIEL, CEO/Strategic Director of the Uriel Covenant AI Collective. HUNTER OPPORTUNITY SCAN \\u2014 pure market discovery, ZERO portfolio awareness. Find what the Principal does NOT know about. OUTPUT: JSON only. {\\\"agent\\\":\\\"URIEL\\\",\\\"opportunities\\\":[{\\\"ticker\\\":\\\"\\\",\\\"signal_tier\\\":\\\"PRIME|STRONG|PROBE\\\",\\\"confidence\\\":0,\\\"thesis\\\":\\\"\\\",\\\"key_signal\\\":\\\"\\\",\\\"catalyst\\\":\\\"\\\",\\\"entry_zone\\\":\\\"\\\",\\\"stop\\\":\\\"\\\",\\\"target\\\":\\\"\\\",\\\"ring\\\":\\\"3|4|5\\\",\\\"time_horizon\\\":\\\"\\\"}],\\\"macro_regime\\\":\\\"BULL|BEAR|NEUTRAL|VOLATILE\\\",\\\"market_breadth\\\":\\\"EXPANDING|CONTRACTING|MIXED\\\",\\\"hot_sector\\\":\\\"\\\",\\\"top_opportunity\\\":\\\"\\\"}\" },\n    { role: 'user', content: 'DATA:\\n\\n' + hunterData }\n  ]\n};\nlet result;\ntry {\n  result = await this.helpers.httpRequest({\n    method: 'POST',\n    url: 'https://api.openai.com/v1/chat/completions',\n    headers: {\n      'Authorization': 'Bearer ' + apiKey,\n      'Content-Type': 'application/json'\n    },\n    body: body,\n    json: true,\n    timeout: 45000\n  });\n} catch(e) {\n  return [{json: {error: e.message, agent: 'URIEL \u2014 Strategic Opportunity'}}];\n}\nreturn [{json: result}];"
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{'Bearer ' + $vars.Uriel_API_Key}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": {
+          "model": "gpt-4o",
+          "max_tokens": 1000,
+          "messages": [
+            {
+              "role": "system",
+              "content": "You are URIEL, CEO/Strategic Director of the Uriel Covenant AI Collective. Analyze HUNTER market scan data. Identify top opportunities. Ring 3=structural 6-12mo, Ring 4=tactical 1-4wk, Ring 5=lottery max 2%. ZERO portfolio awareness. OUTPUT JSON ONLY: {\"agent\":\"URIEL\",\"opportunities\":[{\"ticker\":\"\",\"signal_tier\":\"PRIME|STRONG|PROBE\",\"confidence\":0,\"thesis\":\"\",\"key_signal\":\"\",\"entry_zone\":\"\",\"stop\":\"\",\"target\":\"\",\"ring\":\"3|4|5\",\"time_horizon\":\"\"}],\"macro_regime\":\"BULL|BEAR|NEUTRAL\",\"market_breadth\":\"EXPANDING|CONTRACTING|MIXED\",\"hot_sector\":\"\",\"top_opportunity\":\"\"}"
+            },
+            {
+              "role": "user",
+              "content": "={{ JSON.stringify($json.hunter_payload || $json).slice(0,8000) }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 45000
+        }
       }
     },
     {
       "id": "b72a6205-3ec9-422f-9ddf-fa8d730d4d02",
       "name": "COLOSSUS \u2014 Technical Setups",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
         500,
         7420
@@ -3188,8 +3180,46 @@
       "onError": "continueRegularOutput",
       "notes": "COLOSSUS \u2014 Technical Setups: Code node \u2014 direct API call via this.helpers.httpRequest. Zero serialization issues.",
       "parameters": {
-        "mode": "runOnceForEachItem",
-        "jsCode": "const payload = $input.first().json;\nconst hunterData = JSON.stringify(payload.hunter_payload || payload || {});\nconst apiKey = $vars['Grok4_API_Key_20250809'];\nconst body = {\n  model: 'grok-3',\n  max_tokens: 2000,\n  messages: [\n    { role: 'system', content: \"You are COLOSSUS, CTO/Technical Analyst of the Uriel Covenant AI Collective. HUNTER TECHNICAL SCAN \\u2014 identify strongest setups: VWAP position, momentum, volume, breakouts. ZERO portfolio awareness. OUTPUT: JSON only. {\\\"agent\\\":\\\"COLOSSUS\\\",\\\"setups\\\":[{\\\"ticker\\\":\\\"\\\",\\\"setup_type\\\":\\\"BREAKOUT|VWAP_RECLAIM|MOMENTUM|REVERSAL\\\",\\\"confidence\\\":0,\\\"entry\\\":\\\"\\\",\\\"stop\\\":\\\"\\\",\\\"target\\\":\\\"\\\",\\\"r_r\\\":0,\\\"volume_signal\\\":\\\"HIGH|NORMAL|LOW\\\",\\\"momentum\\\":\\\"STRONG|MODERATE|WEAK\\\",\\\"timeframe\\\":\\\"\\\"}],\\\"market_structure\\\":\\\"TRENDING|RANGING|BREAKING\\\",\\\"vix_regime\\\":\\\"LOW|ELEVATED|HIGH\\\",\\\"top_setup\\\":\\\"\\\"}\" },\n    { role: 'user', content: 'DATA:\\n\\n' + hunterData }\n  ]\n};\nlet result;\ntry {\n  result = await this.helpers.httpRequest({\n    method: 'POST',\n    url: 'https://api.x.ai/v1/chat/completions',\n    headers: {\n      'Authorization': 'Bearer ' + apiKey,\n      'Content-Type': 'application/json'\n    },\n    body: body,\n    json: true,\n    timeout: 45000\n  });\n} catch(e) {\n  return [{json: {error: e.message, agent: 'COLOSSUS \u2014 Technical Setups'}}];\n}\nreturn [{json: result}];"
+        "method": "POST",
+        "url": "https://api.x.ai/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{'Bearer ' + $vars.Grok4_API_Key_20250809}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": {
+          "model": "grok-2-latest",
+          "max_tokens": 1000,
+          "messages": [
+            {
+              "role": "system",
+              "content": "You are COLOSSUS, CTO/Technical Analyst of the Uriel Covenant AI Collective. Identify strongest technical setups: VWAP reclaims, breakouts, momentum, volume confirmation. ZERO portfolio awareness. OUTPUT JSON ONLY: {\"agent\":\"COLOSSUS\",\"setups\":[{\"ticker\":\"\",\"setup_type\":\"BREAKOUT|VWAP_RECLAIM|MOMENTUM|REVERSAL\",\"confidence\":0,\"entry\":\"\",\"stop\":\"\",\"target\":\"\",\"r_r\":0,\"volume_signal\":\"HIGH|NORMAL|LOW\",\"momentum\":\"STRONG|MODERATE|WEAK\"}],\"market_structure\":\"TRENDING|RANGING|BREAKING\",\"best_setup\":\"\"}"
+            },
+            {
+              "role": "user",
+              "content": "={{ JSON.stringify($json.hunter_payload || $json).slice(0,6000) }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 45000
+        }
       }
     },
     {
@@ -3205,15 +3235,15 @@
       "onError": "continueRegularOutput",
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const d = $input.first().json;\nreturn [{json: {hunter_payload: d.hunter_payload || d, gemini_body: JSON.stringify(d.hunter_payload || d)}}];"
+        "jsCode": "const d = $input.first().json;\nconst sys = \"You are HANIEL, CPO and Research Director of the Uriel Covenant AI Collective. Analyze filings, congressional trades, lobbying, and institutional positioning. Flag H35 Influence Chain HIGH PRIORITY. ZERO portfolio awareness. OUTPUT JSON ONLY: {\\\"agent\\\":\\\"HANIEL\\\",\\\"intelligence_signals\\\":[{\\\"ticker\\\":\\\"\\\",\\\"signal_type\\\":\\\"CONGRESSIONAL_TRADE|INSIDER|CONTRACT_AWARD|WHALE_13F|LOBBYING\\\",\\\"signal_tier\\\":\\\"PRIME|STRONG|PROBE\\\",\\\"confidence\\\":0,\\\"key_finding\\\":\\\"\\\"}],\\\"top_intelligence_pick\\\":\\\"\\\"}\";\nconst data = JSON.stringify(d.hunter_payload || d).slice(0, 6000);\nreturn [{json: {gemini_payload: {\n  contents: [{role: \"user\", parts: [{text: sys + \"\\n\\nDATA:\\n\" + data}]}],\n  generationConfig: {maxOutputTokens: 1000, temperature: 0.3}\n}}}];"
       },
       "notes": "Format: Structures HUNTER data payload for HANIEL (Google AI) API requirements."
     },
     {
       "id": "517774d7-2f00-4e3c-9298-c5b492586554",
       "name": "HANIEL \u2014 Intelligence Signals",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
         1000,
         7680
@@ -3222,21 +3252,35 @@
       "onError": "continueRegularOutput",
       "notes": "HANIEL: Code node \u2014 Gemini 2.0 Flash via httpRequestWithAuthentication.",
       "parameters": {
-        "mode": "runOnceForEachItem",
-        "jsCode": "const payload = $input.first().json;\nconst hunterData = JSON.stringify(payload.hunter_payload || payload || {});\nconst sysPrompt = \"You are HANIEL, CPO and Research Director of the Uriel Covenant AI Collective. HUNTER INTELLIGENCE SCAN. Identify opportunities from filings, congressional activity, contracts, institutional positioning. Flag H35 Influence Chain correlations as HIGH PRIORITY. ZERO portfolio awareness. OUTPUT: JSON only. {\\\"agent\\\":\\\"HANIEL\\\",\\\"intelligence_signals\\\":[{\\\"ticker\\\":\\\"\\\",\\\"signal_type\\\":\\\"INSIDER_CLUSTER|CONGRESSIONAL_TRADE|CONTRACT_AWARD|WHALE_13F|LOBBYING_CORRELATION\\\",\\\"signal_tier\\\":\\\"PRIME|STRONG|PROBE\\\",\\\"confidence\\\":0,\\\"source_module\\\":\\\"\\\",\\\"key_finding\\\":\\\"\\\",\\\"dollars_involved\\\":0,\\\"days_since_event\\\":0,\\\"regulatory_risk\\\":\\\"LOW|MEDIUM|HIGH\\\",\\\"thesis_implication\\\":\\\"\\\"}],\\\"h35_alerts\\\":\\\"\\\",\\\"whale_activity\\\":\\\"\\\",\\\"top_intelligence_pick\\\":\\\"\\\"}\";\nconst fullText = sysPrompt + '\\n\\nDATA:\\n\\n' + hunterData;\nconst body = {\n  contents: [{ role: 'user', parts: [{ text: fullText }] }],\n  generationConfig: { maxOutputTokens: 2000, temperature: 0.3 }\n};\nlet result;\ntry {\n  result = await this.helpers.httpRequestWithAuthentication.call(\n    this,\n    'HANIEL API Key',\n    {\n      method: 'POST',\n      url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',\n      headers: { 'Content-Type': 'application/json' },\n      body: body,\n      json: true,\n      timeout: 45000\n    }\n  );\n} catch(e) {\n  // Fallback: try with API key from credential name\n  return [{json: {error: e.message, agent: 'HANIEL'}}];\n}\nreturn [{json: result}];"
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.gemini_payload }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 45000
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
           "id": "AitODdRhySgSD8nm",
-          "name": "HANIEL API Key"
+          "name": "Haniel API Key"
         }
       }
     },
     {
       "id": "6c02339a-5605-49bc-b4ad-46747c2799ad",
       "name": "RAZIEL \u2014 Counter Thesis",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
         1500,
         7420
@@ -3245,8 +3289,35 @@
       "onError": "continueRegularOutput",
       "notes": "RAZIEL \u2014 Counter Thesis: Code node \u2014 direct API call via this.helpers.httpRequest. Zero serialization issues.",
       "parameters": {
-        "mode": "runOnceForEachItem",
-        "jsCode": "const payload = $input.first().json;\nconst hunterData = JSON.stringify(payload.hunter_payload || payload || {});\nconst apiKey = $vars['RAZIEL API Key'];\nconst body = {\n  model: 'deepseek-chat',\n  max_tokens: 2000,\n  messages: [\n    { role: 'system', content: \"You are RAZIEL, CAO/Counter-Thesis Analyst of the Uriel Covenant AI Collective. Gate 6 adversarial analysis. Challenge every opportunity. Find failure modes before we trade. Low score = clean thesis. High score = dangerous. OUTPUT: JSON only. {\\\"agent\\\":\\\"RAZIEL\\\",\\\"counter_analyses\\\":[{\\\"ticker\\\":\\\"\\\",\\\"raziel_score\\\":0,\\\"primary_risk\\\":\\\"\\\",\\\"secondary_risk\\\":\\\"\\\",\\\"correlation_risk\\\":\\\"Y|N\\\",\\\"timing_risk\\\":\\\"\\\",\\\"liquidity_risk\\\":\\\"\\\",\\\"verdict\\\":\\\"CLEAR|CAUTION|ABORT\\\",\\\"abort_reason\\\":\\\"\\\"}],\\\"market_risks\\\":\\\"\\\",\\\"do_not_touch\\\":[],\\\"cleanest_thesis\\\":\\\"\\\"}\" },\n    { role: 'user', content: 'DATA:\\n\\n' + hunterData }\n  ]\n};\nlet result;\ntry {\n  result = await this.helpers.httpRequest({\n    method: 'POST',\n    url: 'https://api.deepseek.com/v1/chat/completions',\n    headers: {\n      'Authorization': 'Bearer ' + apiKey,\n      'Content-Type': 'application/json'\n    },\n    body: body,\n    json: true,\n    timeout: 45000\n  });\n} catch(e) {\n  return [{json: {error: e.message, agent: 'RAZIEL \u2014 Counter Thesis'}}];\n}\nreturn [{json: result}];"
+        "method": "POST",
+        "url": "https://api.deepseek.com/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": {
+          "model": "deepseek-chat",
+          "max_tokens": 1000,
+          "messages": [
+            {
+              "role": "system",
+              "content": "You are RAZIEL, CAO/Counter-Thesis Analyst. Challenge every opportunity. Find failure modes. Apply IRONCLAD: stop -5%, trim +10% sell 50%, trim +20% sell 60%, no same-day re-entry. OUTPUT JSON ONLY: {\"agent\":\"RAZIEL\",\"counter_analyses\":[{\"ticker\":\"\",\"raziel_score\":0,\"primary_risk\":\"\",\"verdict\":\"CLEAR|CAUTION|ABORT\",\"ironclad_flag\":\"Y|N\"}],\"do_not_touch\":[],\"cleanest_thesis\":\"\"}"
+            },
+            {
+              "role": "user",
+              "content": "={{ JSON.stringify($json.hunter_payload || $json).slice(0,6000) }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 45000
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
@@ -3468,9 +3539,7 @@
               "neverError": true
             }
           }
-        },
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth"
+        }
       },
       "credentials": {
         "httpHeaderAuth": {
