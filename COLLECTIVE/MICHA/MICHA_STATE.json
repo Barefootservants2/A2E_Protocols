@@ -1,0 +1,298 @@
+{
+  "meta": {
+    "version": "1.0",
+    "last_updated": "2026-04-04",
+    "purpose": "MICHA session ground truth \u2014 READ THIS BEFORE TOUCHING ANYTHING",
+    "protocol": "Session start: read this file. Session end: update this file. No exceptions.",
+    "updated_by": "MICHA session 2026-04-04 \u2014 3-day HUNTER v3.3 debug session"
+  },
+  "platform": {
+    "n8n_instance": "https://ashes2echoes.app.n8n.cloud",
+    "github_repo": "Barefootservants2/A2E_Protocols",
+    "github_token_expires": "2026-07-03",
+    "n8n_api_key_expires": "2027-01-29"
+  },
+  "workflows": {
+    "HUNTER_v3.3": {
+      "id": "orZPNtvvCB8RAlwF",
+      "active": true,
+      "schedule": "6AM ET daily",
+      "nodes_total": 96,
+      "last_modified": "2026-04-04T03:09:29.282Z",
+      "confirmed_working_nodes": [
+        "H5 \u2014 Insider Transactions",
+        "H7 \u2014 Earnings Calendar",
+        "H8 \u2014 FINRA Short Sale",
+        "H9 \u2014 IPO Calendar",
+        "H25 \u2014 Earnings Cal",
+        "H30 \u2014 Congress Trades",
+        "H36 \u2014 LDA Recent",
+        "H42 \u2014 COMEX Inventory",
+        "H30-Normalize",
+        "H36-Normalize",
+        "URIEL \u2014 Strategic Opportunity",
+        "Send Telegram Brief",
+        "CIL v6.1 Webhook",
+        "GitHub Archive Write",
+        "GATE 9 \u2014 Correlation Check"
+      ],
+      "known_broken_nodes": [
+        {
+          "node": "COLOSSUS \u2014 Technical Setups",
+          "error": "HTTP 400 \u2014 grok-4.20-0309-non-reasoning body format",
+          "last_attempt": "2026-04-04",
+          "fix_deployed": true
+        },
+        {
+          "node": "HANIEL \u2014 Intelligence Signals",
+          "error": "HTTP 400 \u2014 Gemini payload format fixed to contents/parts",
+          "last_attempt": "2026-04-04",
+          "fix_deployed": true
+        },
+        {
+          "node": "RAZIEL \u2014 Counter Thesis",
+          "error": "Body deserialization \u2014 converted to Code node",
+          "last_attempt": "2026-04-04",
+          "fix_deployed": true
+        },
+        {
+          "node": "H21/H31a/H31b Congress",
+          "error": "Expression syntax {{}} not ={{}} \u2014 fixed",
+          "last_attempt": "2026-04-04",
+          "fix_deployed": true
+        },
+        {
+          "node": "H34 FEC",
+          "error": "Expression syntax \u2014 fixed",
+          "last_attempt": "2026-04-04",
+          "fix_deployed": true
+        },
+        {
+          "node": "H27/H37/H38/H41 FRED",
+          "error": "Expression syntax \u2014 fixed",
+          "last_attempt": "2026-04-04",
+          "fix_deployed": true
+        },
+        {
+          "node": "H40 GEX/UW",
+          "error": "Credentials not wired \u2014 fixed via variable header",
+          "last_attempt": "2026-04-04",
+          "fix_deployed": true
+        },
+        {
+          "node": "H2a/H4 Alpha Vantage",
+          "error": "Key as header not query param \u2014 fix deployed",
+          "last_attempt": "2026-04-04",
+          "fix_deployed": true
+        }
+      ],
+      "permanently_disabled": [
+        {
+          "node": "H26 \u2014 Economic Cal",
+          "reason": "Finnhub paid plan required"
+        },
+        {
+          "node": "H39a \u2014 SLV",
+          "reason": "Finnhub paid plan required"
+        },
+        {
+          "node": "H39b \u2014 GLD",
+          "reason": "Finnhub paid plan required"
+        },
+        {
+          "node": "H39c \u2014 SIL",
+          "reason": "Finnhub paid plan required"
+        }
+      ],
+      "do_not_touch_without_reading_this_file": [
+        "TwelveData watchlists \u2014 MAX 5 symbols per indicator node (free tier limit)",
+        "Congress/FEC/FRED \u2014 use ={{ $vars.KEY }} syntax not {{$vars.KEY}}",
+        "Alpha Vantage \u2014 key must be query param not header",
+        "Agents \u2014 use Code nodes matching URIEL pattern, not HTTP Request nodes"
+      ]
+    },
+    "HUNTER_MICRO_v1.0": {
+      "id": "rsS4DFbOgTRQvqTX",
+      "active": true,
+      "trigger": "Execute Sub-workflow from HUNTER SYNTHESIS",
+      "nodes": 22,
+      "status": "CREATED \u2014 not yet run end-to-end"
+    },
+    "CIL_v6.1": {
+      "id": "V61BMUNNQDBpCOsp",
+      "active": true,
+      "status": "ACTIVE \u2014 receives TOP 10 from HUNTER"
+    },
+    "SENTINEL": {
+      "id": "CsTbRtchtCzxjKLX",
+      "active": true,
+      "status": "ACTIVE \u2014 now reads HUNTER synthesis from GitHub"
+    },
+    "GABRIEL": {
+      "id": "fwKiBHtedNQ1n34H",
+      "active": true,
+      "status": "ACTIVE \u2014 overnight watch"
+    }
+  },
+  "credentials": {
+    "Finnhub_API": {
+      "id": "ZsRtqMO5tofoPRmJ",
+      "header_name": "X-Finnhub-Token",
+      "status": "LIVE \u2014 new key set 2026-04-03",
+      "note": "Key updated after old key expired"
+    },
+    "TwelveData_API": {
+      "id": "3Jnfoq3LN9wTGMpu",
+      "header_name": "X-TD-APIKEY",
+      "status": "LIVE"
+    },
+    "Alpha_Vantage": {
+      "id": "ImjP6dfYHgTNWWfo",
+      "header_name": "apikey",
+      "status": "LIVE but AV ignores headers \u2014 use query param"
+    },
+    "NewsAPI": {
+      "id": "sj27C965hpE5Y717",
+      "status": "LIVE"
+    },
+    "GitHub_A2E_Token": {
+      "id": "jdjVIw73qgFd0a4Z",
+      "status": "LIVE"
+    },
+    "Telegram": {
+      "id": "1cUBFkMQENfAXP8x",
+      "status": "LIVE"
+    },
+    "URIEL_OpenAI": {
+      "id": "HeSyKKuHzaqLk2tp",
+      "status": "LIVE \u2014 GPT-4.1"
+    },
+    "HANIEL_Google": {
+      "id": "AitODdRhySgSD8nm",
+      "header_name": "x-goog-api-key",
+      "status": "LIVE \u2014 gemini-2.5-flash"
+    },
+    "RAZIEL_DeepSeek": {
+      "id": "CnNJfQmlNmwePa7P",
+      "status": "LIVE \u2014 deepseek-chat"
+    }
+  },
+  "variables": {
+    "GMAIL_CRED_1_TOKEN": {
+      "set": true,
+      "len": 17
+    },
+    "GMAIL_CRED_2_TOKEN": {
+      "set": true,
+      "len": 17
+    },
+    "Uriel_API_Key": {
+      "set": true,
+      "len": 164
+    },
+    "Grok4_API_Key_20250809": {
+      "set": true,
+      "len": 84
+    },
+    "GMAIL_OAUTH_Barefootservants": {
+      "set": true,
+      "len": 72
+    },
+    "Gmail_OAuth_Lemon": {
+      "set": true,
+      "len": 72
+    },
+    "CIL_WEBHOOK_URL": {
+      "set": true,
+      "len": 79
+    },
+    "ALPACA_PAPER_KEY_ID": {
+      "set": true,
+      "len": 26
+    },
+    "ALPACA_PAPER_SECRET": {
+      "set": true,
+      "len": 44
+    },
+    "ALPACA_PAPER_BASE_URL": {
+      "set": true,
+      "len": 35
+    },
+    "FRED_API_KEY": {
+      "set": true,
+      "len": 32
+    },
+    "FEC_API_KEY": {
+      "set": true,
+      "len": 40
+    },
+    "METALS_DEV_KEY": {
+      "set": true,
+      "len": 29
+    },
+    "CONGRESS_API_KEY": {
+      "set": true,
+      "len": 40
+    },
+    "UNUSUAL_WHALES_API_KEY": {
+      "set": true,
+      "len": 36
+    }
+  },
+  "agent_architecture": {
+    "URIEL": {
+      "model": "gpt-4.1",
+      "pattern": "Code node, this.helpers.httpRequest, $vars.Uriel_API_Key",
+      "status": "CONFIRMED WORKING"
+    },
+    "COLOSSUS": {
+      "model": "grok-4.20-0309-non-reasoning",
+      "pattern": "Code node, this.helpers.httpRequest, $vars.Grok4_API_Key_20250809",
+      "status": "FIX DEPLOYED \u2014 untested"
+    },
+    "HANIEL": {
+      "model": "gemini-2.5-flash",
+      "pattern": "Payload Format code node \u2192 HTTP Request node, $json.gemini_body, contents/parts/systemInstruction format",
+      "status": "FIX DEPLOYED \u2014 untested"
+    },
+    "RAZIEL": {
+      "model": "deepseek-chat",
+      "pattern": "Code node, this.helpers.httpRequest, getCredentials(httpHeaderAuth)",
+      "status": "FIX DEPLOYED \u2014 untested"
+    }
+  },
+  "rules": {
+    "STOP_BREAKING_THINGS": [
+      "Read this file BEFORE making any changes",
+      "One node at a time. Verify before moving to next.",
+      "Never expand TwelveData watchlists beyond 5 symbols",
+      "Never change agent architecture without documenting here first",
+      "Never deploy more than one fix at a time without testing",
+      "Always verify expression syntax: ={{ $vars.KEY }} not {{$vars.KEY}}",
+      "continueOnError: FALSE for debugging \u2014 switch back AFTER confirmation"
+    ],
+    "SESSION_START_PROTOCOL": [
+      "1. Read this file: COLLECTIVE/MICHA/MICHA_STATE.json",
+      "2. Read last 3 executions from n8n API",
+      "3. Confirm what is working vs broken from execution data \u2014 NOT from memory",
+      "4. State findings to Principal before touching anything",
+      "5. Get explicit approval before any deploy"
+    ],
+    "SESSION_END_PROTOCOL": [
+      "1. Update this file with what was fixed, what was tested, what remains",
+      "2. Mark fix_deployed vs fix_confirmed (confirmed = ran successfully)",
+      "3. Push to GitHub",
+      "4. Run PHOENIX close protocol"
+    ]
+  },
+  "open_items_do_not_forget": [
+    "COLOSSUS/HANIEL/RAZIEL fixes deployed 2026-04-04 \u2014 NOT YET CONFIRMED by successful run",
+    "Alpha Vantage query param fix \u2014 may need $credentials.httpHeaderAuth.value verification",
+    "HUNTER MICRO v1.0 \u2014 created but never run end-to-end",
+    "CCS Catalyst Convergence Scanner \u2014 spec pending, not built",
+    "H22 Earnings IV field \u2014 not added",
+    "continueOnError needs to be set to FALSE on all nodes before next debug session",
+    "Congress.gov nodes H21/H31a/H31b \u2014 expression fixed but key validity unconfirmed since fix",
+    "SENTINEL reads HUNTER synthesis from GitHub \u2014 not tested end-to-end"
+  ]
+}
