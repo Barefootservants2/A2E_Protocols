@@ -1,0 +1,2374 @@
+{
+  "updatedAt": "2026-04-07T22:40:29.829Z",
+  "createdAt": "2026-04-04T02:37:36.109Z",
+  "id": "rsS4DFbOgTRQvqTX",
+  "name": "HUNTER MICRO v1.0",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "trg",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        1280
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    },
+    {
+      "id": "hm1",
+      "name": "HM1 EPS Estimate NVDA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/stock/eps-estimate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "NVDA"
+            },
+            {
+              "name": "freq",
+              "value": "quarterly"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZsRtqMO5tofoPRmJ",
+          "name": "Finnhub API"
+        }
+      }
+    },
+    {
+      "id": "hm2",
+      "name": "HM2 Analyst Actions NVDA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        160
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/stock/upgrade-downgrade",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "NVDA"
+            },
+            {
+              "name": "from",
+              "value": "2026-01-01"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZsRtqMO5tofoPRmJ",
+          "name": "Finnhub API"
+        }
+      }
+    },
+    {
+      "id": "hm3",
+      "name": "HM3 Tech SPY",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        320
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/scan/technical-indicator",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "SPY"
+            },
+            {
+              "name": "resolution",
+              "value": "D"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZsRtqMO5tofoPRmJ",
+          "name": "Finnhub API"
+        }
+      }
+    },
+    {
+      "id": "hm3b",
+      "name": "HM3b Tech QQQ",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        480
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/scan/technical-indicator",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "QQQ"
+            },
+            {
+              "name": "resolution",
+              "value": "D"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZsRtqMO5tofoPRmJ",
+          "name": "Finnhub API"
+        }
+      }
+    },
+    {
+      "id": "hm3c",
+      "name": "HM3c Tech FCX",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        640
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/scan/technical-indicator",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "FCX"
+            },
+            {
+              "name": "resolution",
+              "value": "D"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZsRtqMO5tofoPRmJ",
+          "name": "Finnhub API"
+        }
+      }
+    },
+    {
+      "id": "hm12",
+      "name": "HM12 Insider NVDA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        800
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/stock/insider-sentiment",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "NVDA"
+            },
+            {
+              "name": "from",
+              "value": "2026-01-01"
+            },
+            {
+              "name": "to",
+              "value": "2026-04-03"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZsRtqMO5tofoPRmJ",
+          "name": "Finnhub API"
+        }
+      }
+    },
+    {
+      "id": "hm12b",
+      "name": "HM12b Insider FCX",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        960
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/stock/insider-sentiment",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "FCX"
+            },
+            {
+              "name": "from",
+              "value": "2026-01-01"
+            },
+            {
+              "name": "to",
+              "value": "2026-04-03"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZsRtqMO5tofoPRmJ",
+          "name": "Finnhub API"
+        }
+      }
+    },
+    {
+      "id": "hm13",
+      "name": "HM13 Gov LMT",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        1120
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/stock/usa-spending",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "LMT"
+            },
+            {
+              "name": "from",
+              "value": "2025-01-01"
+            },
+            {
+              "name": "to",
+              "value": "2026-04-03"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZsRtqMO5tofoPRmJ",
+          "name": "Finnhub API"
+        }
+      }
+    },
+    {
+      "id": "hm13b",
+      "name": "HM13b Gov PLTR",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        1280
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/stock/usa-spending",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "PLTR"
+            },
+            {
+              "name": "from",
+              "value": "2025-01-01"
+            },
+            {
+              "name": "to",
+              "value": "2026-04-03"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZsRtqMO5tofoPRmJ",
+          "name": "Finnhub API"
+        }
+      }
+    },
+    {
+      "id": "hm14",
+      "name": "HM14 Lobby NVDA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        1440
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/stock/lobbying",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "NVDA"
+            },
+            {
+              "name": "from",
+              "value": "2025-01-01"
+            },
+            {
+              "name": "to",
+              "value": "2026-04-03"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZsRtqMO5tofoPRmJ",
+          "name": "Finnhub API"
+        }
+      }
+    },
+    {
+      "id": "hm14b",
+      "name": "HM14b Lobby MSFT",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        1600
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/stock/lobbying",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "MSFT"
+            },
+            {
+              "name": "from",
+              "value": "2025-01-01"
+            },
+            {
+              "name": "to",
+              "value": "2026-04-03"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZsRtqMO5tofoPRmJ",
+          "name": "Finnhub API"
+        }
+      }
+    },
+    {
+      "id": "hm15",
+      "name": "HM15 Social NVDA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        1760
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/stock/social-sentiment",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "NVDA"
+            },
+            {
+              "name": "from",
+              "value": "2026-03-01"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZsRtqMO5tofoPRmJ",
+          "name": "Finnhub API"
+        }
+      }
+    },
+    {
+      "id": "hm15b",
+      "name": "HM15b Social META",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        1920
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/stock/social-sentiment",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "META"
+            },
+            {
+              "name": "from",
+              "value": "2026-03-01"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZsRtqMO5tofoPRmJ",
+          "name": "Finnhub API"
+        }
+      }
+    },
+    {
+      "id": "hm16",
+      "name": "HM16 SR FCX",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        2080
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/scan/support-resistance",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "FCX"
+            },
+            {
+              "name": "resolution",
+              "value": "D"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZsRtqMO5tofoPRmJ",
+          "name": "Finnhub API"
+        }
+      }
+    },
+    {
+      "id": "hm16b",
+      "name": "HM16b SR NVDA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        2240
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/scan/support-resistance",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "NVDA"
+            },
+            {
+              "name": "resolution",
+              "value": "D"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZsRtqMO5tofoPRmJ",
+          "name": "Finnhub API"
+        }
+      }
+    },
+    {
+      "id": "hm11",
+      "name": "HM11 ETF XLK",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        2400
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/etf/sector",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "XLK"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZsRtqMO5tofoPRmJ",
+          "name": "Finnhub API"
+        }
+      }
+    },
+    {
+      "id": "hm11b",
+      "name": "HM11b ETF XLI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        2560
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "GET",
+        "url": "https://finnhub.io/api/v1/etf/sector",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "symbol",
+              "value": "XLI"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ZsRtqMO5tofoPRmJ",
+          "name": "Finnhub API"
+        }
+      }
+    },
+    {
+      "id": "mergeA",
+      "name": "Merge A",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        700,
+        480
+      ],
+      "parameters": {
+        "mode": "append",
+        "numberInputs": 9
+      }
+    },
+    {
+      "id": "mergeB",
+      "name": "Merge B",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        700,
+        2080
+      ],
+      "parameters": {
+        "mode": "append",
+        "numberInputs": 8
+      }
+    },
+    {
+      "id": "mergeFinal",
+      "name": "Merge Final",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1000,
+        1280
+      ],
+      "parameters": {
+        "mode": "append",
+        "numberInputs": 2
+      }
+    },
+    {
+      "id": "norm",
+      "name": "HM Normalize Score",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1300,
+        1280
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const items = $input.all(); const signals = []; const now = new Date().toISOString();\nitems.forEach((item) => {\n  const d = item.json;\n  if (d.data && Array.isArray(d.data) && d.data.length && d.data[0] && d.data[0].epsAvg !== undefined) {\n    signals.push({ module:'HM1_ESTIMATE', ticker:d.symbol||'', epsAvg:d.data[0].epsAvg, period:d.data[0].period, signal_weight:'MEDIUM' });\n  }\n  if (Array.isArray(d) && d.length && d[0] && d[0].toGrade) {\n    const ups = d.slice(0,5).filter(x=>x.action==='up').length;\n    const dns = d.slice(0,5).filter(x=>x.action==='down').length;\n    signals.push({ module:'HM2_ANALYST', ticker:d[0].symbol||'', upgrades:ups, downgrades:dns, signal_weight:ups>dns?'HIGH':dns>ups?'LOW':'MEDIUM' });\n  }\n  if (d.technicalAnalysis && d.technicalAnalysis.signal) {\n    const sig = d.technicalAnalysis.signal;\n    signals.push({ module:'HM3_TECH', signal:sig, buy:d.technicalAnalysis.count&&d.technicalAnalysis.count.buy||0, sell:d.technicalAnalysis.count&&d.technicalAnalysis.count.sell||0, signal_weight:(sig==='buy'||sig==='strong_buy')?'HIGH':(sig==='sell'||sig==='strong_sell')?'LOW':'MEDIUM' });\n  }\n  if (d.data && Array.isArray(d.data) && d.data.length && d.data[0] && d.data[0].mspr !== undefined) {\n    const lat = d.data[d.data.length-1]; const mspr = lat?(lat.mspr||0):0;\n    signals.push({ module:'HM12_INSIDER', ticker:d.symbol||'', mspr, signal_weight:mspr>5?'HIGH':mspr<-5?'LOW':'MEDIUM', read:mspr>5?'INSIDERS_BUYING':mspr<-5?'INSIDERS_SELLING':'NEUTRAL' });\n  }\n  if (d.data && Array.isArray(d.data) && d.data.length && d.data[0] && d.data[0].awardDescription) {\n    const tot = d.data.reduce((s,x)=>s+(x.totalValue||0),0);\n    signals.push({ module:'HM13_GOV_CONTRACT', ticker:d.symbol||'', contracts:d.data.length, total_value:tot, signal_weight:tot>1000000?'HIGH':'MEDIUM' });\n  }\n  if (d.data && Array.isArray(d.data) && d.data.length && d.data[0] && d.data[0].income!==undefined) {\n    const tot = d.data.reduce((s,x)=>s+(x.expenses||x.income||0),0);\n    signals.push({ module:'HM14_LOBBYING', ticker:d.symbol||'', filings:d.data.length, total:tot, signal_weight:tot>500000?'HIGH':'MEDIUM' });\n  }\n  if (d.data && Array.isArray(d.data) && d.data.length && d.data[0] && d.data[0].score !== undefined) {\n    const rec = d.data.slice(-7); const avg = rec.reduce((s,x)=>s+(x.score||0),0)/(rec.length||1);\n    signals.push({ module:'HM15_SOCIAL', ticker:d.symbol||'', avg_score:Math.round(avg*100)/100, signal_weight:avg>0.3?'HIGH':avg<-0.3?'LOW':'MEDIUM', sentiment:avg>0.3?'BULLISH':avg<-0.3?'BEARISH':'NEUTRAL' });\n  }\n  if (d.levels && Array.isArray(d.levels)) { signals.push({ module:'HM16_SR', levels:d.levels, signal_weight:'MEDIUM' }); }\n  if (d.sectorExposure) { signals.push({ module:'HM11_ETF', ticker:d.symbol||'', top3:d.sectorExposure.slice(0,3), signal_weight:'MEDIUM' }); }\n});\nconst HIGH = signals.filter(s=>s.signal_weight==='HIGH');\nconst tkMap = {}; signals.forEach(s=>{if(s.ticker)tkMap[s.ticker]=(tkMap[s.ticker]||0)+1;});\nconst top10 = Object.entries(tkMap).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([t,c])=>({ticker:t,signal_count:c}));\nreturn [{json:{micro_scan_timestamp:now, total_signals:signals.length, high_priority_count:HIGH.length, top_tickers:top10, high_signals:HIGH, all_signals:signals, modules:[...new Set(signals.map(s=>s.module))], workflow:'HUNTER_MICRO_v1.0'}}];"
+      }
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "HM1 EPS Estimate NVDA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HM2 Analyst Actions NVDA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HM3 Tech SPY",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HM3b Tech QQQ",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HM3c Tech FCX",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HM12 Insider NVDA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HM12b Insider FCX",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HM13 Gov LMT",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HM13b Gov PLTR",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HM14 Lobby NVDA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HM14b Lobby MSFT",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HM15 Social NVDA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HM15b Social META",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HM16 SR FCX",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HM16b SR NVDA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HM11 ETF XLK",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HM11b ETF XLI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HM1 EPS Estimate NVDA": {
+      "main": [
+        [
+          {
+            "node": "Merge A",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HM2 Analyst Actions NVDA": {
+      "main": [
+        [
+          {
+            "node": "Merge A",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HM3 Tech SPY": {
+      "main": [
+        [
+          {
+            "node": "Merge A",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "HM3b Tech QQQ": {
+      "main": [
+        [
+          {
+            "node": "Merge A",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "HM3c Tech FCX": {
+      "main": [
+        [
+          {
+            "node": "Merge A",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "HM12 Insider NVDA": {
+      "main": [
+        [
+          {
+            "node": "Merge A",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "HM12b Insider FCX": {
+      "main": [
+        [
+          {
+            "node": "Merge A",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "HM13 Gov LMT": {
+      "main": [
+        [
+          {
+            "node": "Merge A",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "HM13b Gov PLTR": {
+      "main": [
+        [
+          {
+            "node": "Merge A",
+            "type": "main",
+            "index": 8
+          }
+        ]
+      ]
+    },
+    "HM14 Lobby NVDA": {
+      "main": [
+        [
+          {
+            "node": "Merge B",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HM14b Lobby MSFT": {
+      "main": [
+        [
+          {
+            "node": "Merge B",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HM15 Social NVDA": {
+      "main": [
+        [
+          {
+            "node": "Merge B",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "HM15b Social META": {
+      "main": [
+        [
+          {
+            "node": "Merge B",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "HM16 SR FCX": {
+      "main": [
+        [
+          {
+            "node": "Merge B",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "HM16b SR NVDA": {
+      "main": [
+        [
+          {
+            "node": "Merge B",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "HM11 ETF XLK": {
+      "main": [
+        [
+          {
+            "node": "Merge B",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "HM11b ETF XLI": {
+      "main": [
+        [
+          {
+            "node": "Merge B",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "Merge A": {
+      "main": [
+        [
+          {
+            "node": "Merge Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge B": {
+      "main": [
+        [
+          {
+            "node": "Merge Final",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Final": {
+      "main": [
+        [
+          {
+            "node": "HM Normalize Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "916f99b3-d15f-4ca7-999d-59b8ab2c3a45",
+  "activeVersionId": "916f99b3-d15f-4ca7-999d-59b8ab2c3a45",
+  "versionCounter": 6,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-04T02:37:36.112Z",
+      "createdAt": "2026-04-04T02:37:36.112Z",
+      "role": "workflow:owner",
+      "workflowId": "rsS4DFbOgTRQvqTX",
+      "projectId": "MA2cfOhJvZM9d2WN",
+      "project": {
+        "updatedAt": "2025-08-15T16:51:32.695Z",
+        "createdAt": "2025-07-21T14:04:06.598Z",
+        "id": "MA2cfOhJvZM9d2WN",
+        "name": "William Lemon <barefootservants.65@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-04-04T02:37:36.148Z",
+    "createdAt": "2026-04-04T02:37:36.148Z",
+    "versionId": "916f99b3-d15f-4ca7-999d-59b8ab2c3a45",
+    "workflowId": "rsS4DFbOgTRQvqTX",
+    "nodes": [
+      {
+        "id": "trg",
+        "name": "Execute Workflow Trigger",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          0,
+          1280
+        ],
+        "parameters": {
+          "inputSource": "passthrough"
+        }
+      },
+      {
+        "id": "hm1",
+        "name": "HM1 EPS Estimate NVDA",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          300,
+          0
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "GET",
+          "url": "https://finnhub.io/api/v1/stock/eps-estimate",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "symbol",
+                "value": "NVDA"
+              },
+              {
+                "name": "freq",
+                "value": "quarterly"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            },
+            "timeout": 15000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZsRtqMO5tofoPRmJ",
+            "name": "Finnhub API"
+          }
+        }
+      },
+      {
+        "id": "hm2",
+        "name": "HM2 Analyst Actions NVDA",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          300,
+          160
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "GET",
+          "url": "https://finnhub.io/api/v1/stock/upgrade-downgrade",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "symbol",
+                "value": "NVDA"
+              },
+              {
+                "name": "from",
+                "value": "2026-01-01"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            },
+            "timeout": 15000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZsRtqMO5tofoPRmJ",
+            "name": "Finnhub API"
+          }
+        }
+      },
+      {
+        "id": "hm3",
+        "name": "HM3 Tech SPY",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          300,
+          320
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "GET",
+          "url": "https://finnhub.io/api/v1/scan/technical-indicator",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "symbol",
+                "value": "SPY"
+              },
+              {
+                "name": "resolution",
+                "value": "D"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            },
+            "timeout": 15000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZsRtqMO5tofoPRmJ",
+            "name": "Finnhub API"
+          }
+        }
+      },
+      {
+        "id": "hm3b",
+        "name": "HM3b Tech QQQ",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          300,
+          480
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "GET",
+          "url": "https://finnhub.io/api/v1/scan/technical-indicator",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "symbol",
+                "value": "QQQ"
+              },
+              {
+                "name": "resolution",
+                "value": "D"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            },
+            "timeout": 15000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZsRtqMO5tofoPRmJ",
+            "name": "Finnhub API"
+          }
+        }
+      },
+      {
+        "id": "hm3c",
+        "name": "HM3c Tech FCX",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          300,
+          640
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "GET",
+          "url": "https://finnhub.io/api/v1/scan/technical-indicator",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "symbol",
+                "value": "FCX"
+              },
+              {
+                "name": "resolution",
+                "value": "D"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            },
+            "timeout": 15000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZsRtqMO5tofoPRmJ",
+            "name": "Finnhub API"
+          }
+        }
+      },
+      {
+        "id": "hm12",
+        "name": "HM12 Insider NVDA",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          300,
+          800
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "GET",
+          "url": "https://finnhub.io/api/v1/stock/insider-sentiment",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "symbol",
+                "value": "NVDA"
+              },
+              {
+                "name": "from",
+                "value": "2026-01-01"
+              },
+              {
+                "name": "to",
+                "value": "2026-04-03"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            },
+            "timeout": 15000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZsRtqMO5tofoPRmJ",
+            "name": "Finnhub API"
+          }
+        }
+      },
+      {
+        "id": "hm12b",
+        "name": "HM12b Insider FCX",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          300,
+          960
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "GET",
+          "url": "https://finnhub.io/api/v1/stock/insider-sentiment",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "symbol",
+                "value": "FCX"
+              },
+              {
+                "name": "from",
+                "value": "2026-01-01"
+              },
+              {
+                "name": "to",
+                "value": "2026-04-03"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            },
+            "timeout": 15000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZsRtqMO5tofoPRmJ",
+            "name": "Finnhub API"
+          }
+        }
+      },
+      {
+        "id": "hm13",
+        "name": "HM13 Gov LMT",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          300,
+          1120
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "GET",
+          "url": "https://finnhub.io/api/v1/stock/usa-spending",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "symbol",
+                "value": "LMT"
+              },
+              {
+                "name": "from",
+                "value": "2025-01-01"
+              },
+              {
+                "name": "to",
+                "value": "2026-04-03"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            },
+            "timeout": 15000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZsRtqMO5tofoPRmJ",
+            "name": "Finnhub API"
+          }
+        }
+      },
+      {
+        "id": "hm13b",
+        "name": "HM13b Gov PLTR",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          300,
+          1280
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "GET",
+          "url": "https://finnhub.io/api/v1/stock/usa-spending",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "symbol",
+                "value": "PLTR"
+              },
+              {
+                "name": "from",
+                "value": "2025-01-01"
+              },
+              {
+                "name": "to",
+                "value": "2026-04-03"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            },
+            "timeout": 15000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZsRtqMO5tofoPRmJ",
+            "name": "Finnhub API"
+          }
+        }
+      },
+      {
+        "id": "hm14",
+        "name": "HM14 Lobby NVDA",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          300,
+          1440
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "GET",
+          "url": "https://finnhub.io/api/v1/stock/lobbying",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "symbol",
+                "value": "NVDA"
+              },
+              {
+                "name": "from",
+                "value": "2025-01-01"
+              },
+              {
+                "name": "to",
+                "value": "2026-04-03"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            },
+            "timeout": 15000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZsRtqMO5tofoPRmJ",
+            "name": "Finnhub API"
+          }
+        }
+      },
+      {
+        "id": "hm14b",
+        "name": "HM14b Lobby MSFT",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          300,
+          1600
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "GET",
+          "url": "https://finnhub.io/api/v1/stock/lobbying",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "symbol",
+                "value": "MSFT"
+              },
+              {
+                "name": "from",
+                "value": "2025-01-01"
+              },
+              {
+                "name": "to",
+                "value": "2026-04-03"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            },
+            "timeout": 15000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZsRtqMO5tofoPRmJ",
+            "name": "Finnhub API"
+          }
+        }
+      },
+      {
+        "id": "hm15",
+        "name": "HM15 Social NVDA",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          300,
+          1760
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "GET",
+          "url": "https://finnhub.io/api/v1/stock/social-sentiment",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "symbol",
+                "value": "NVDA"
+              },
+              {
+                "name": "from",
+                "value": "2026-03-01"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            },
+            "timeout": 15000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZsRtqMO5tofoPRmJ",
+            "name": "Finnhub API"
+          }
+        }
+      },
+      {
+        "id": "hm15b",
+        "name": "HM15b Social META",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          300,
+          1920
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "GET",
+          "url": "https://finnhub.io/api/v1/stock/social-sentiment",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "symbol",
+                "value": "META"
+              },
+              {
+                "name": "from",
+                "value": "2026-03-01"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            },
+            "timeout": 15000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZsRtqMO5tofoPRmJ",
+            "name": "Finnhub API"
+          }
+        }
+      },
+      {
+        "id": "hm16",
+        "name": "HM16 SR FCX",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          300,
+          2080
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "GET",
+          "url": "https://finnhub.io/api/v1/scan/support-resistance",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "symbol",
+                "value": "FCX"
+              },
+              {
+                "name": "resolution",
+                "value": "D"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            },
+            "timeout": 15000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZsRtqMO5tofoPRmJ",
+            "name": "Finnhub API"
+          }
+        }
+      },
+      {
+        "id": "hm16b",
+        "name": "HM16b SR NVDA",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          300,
+          2240
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "GET",
+          "url": "https://finnhub.io/api/v1/scan/support-resistance",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "symbol",
+                "value": "NVDA"
+              },
+              {
+                "name": "resolution",
+                "value": "D"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            },
+            "timeout": 15000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZsRtqMO5tofoPRmJ",
+            "name": "Finnhub API"
+          }
+        }
+      },
+      {
+        "id": "hm11",
+        "name": "HM11 ETF XLK",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          300,
+          2400
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "GET",
+          "url": "https://finnhub.io/api/v1/etf/sector",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "symbol",
+                "value": "XLK"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            },
+            "timeout": 15000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZsRtqMO5tofoPRmJ",
+            "name": "Finnhub API"
+          }
+        }
+      },
+      {
+        "id": "hm11b",
+        "name": "HM11b ETF XLI",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          300,
+          2560
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "GET",
+          "url": "https://finnhub.io/api/v1/etf/sector",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "symbol",
+                "value": "XLI"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            },
+            "timeout": 15000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "ZsRtqMO5tofoPRmJ",
+            "name": "Finnhub API"
+          }
+        }
+      },
+      {
+        "id": "mergeA",
+        "name": "Merge A",
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          700,
+          480
+        ],
+        "parameters": {
+          "mode": "append",
+          "numberInputs": 9
+        }
+      },
+      {
+        "id": "mergeB",
+        "name": "Merge B",
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          700,
+          2080
+        ],
+        "parameters": {
+          "mode": "append",
+          "numberInputs": 8
+        }
+      },
+      {
+        "id": "mergeFinal",
+        "name": "Merge Final",
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          1000,
+          1280
+        ],
+        "parameters": {
+          "mode": "append",
+          "numberInputs": 2
+        }
+      },
+      {
+        "id": "norm",
+        "name": "HM Normalize Score",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1300,
+          1280
+        ],
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "const items = $input.all(); const signals = []; const now = new Date().toISOString();\nitems.forEach((item) => {\n  const d = item.json;\n  if (d.data && Array.isArray(d.data) && d.data.length && d.data[0] && d.data[0].epsAvg !== undefined) {\n    signals.push({ module:'HM1_ESTIMATE', ticker:d.symbol||'', epsAvg:d.data[0].epsAvg, period:d.data[0].period, signal_weight:'MEDIUM' });\n  }\n  if (Array.isArray(d) && d.length && d[0] && d[0].toGrade) {\n    const ups = d.slice(0,5).filter(x=>x.action==='up').length;\n    const dns = d.slice(0,5).filter(x=>x.action==='down').length;\n    signals.push({ module:'HM2_ANALYST', ticker:d[0].symbol||'', upgrades:ups, downgrades:dns, signal_weight:ups>dns?'HIGH':dns>ups?'LOW':'MEDIUM' });\n  }\n  if (d.technicalAnalysis && d.technicalAnalysis.signal) {\n    const sig = d.technicalAnalysis.signal;\n    signals.push({ module:'HM3_TECH', signal:sig, buy:d.technicalAnalysis.count&&d.technicalAnalysis.count.buy||0, sell:d.technicalAnalysis.count&&d.technicalAnalysis.count.sell||0, signal_weight:(sig==='buy'||sig==='strong_buy')?'HIGH':(sig==='sell'||sig==='strong_sell')?'LOW':'MEDIUM' });\n  }\n  if (d.data && Array.isArray(d.data) && d.data.length && d.data[0] && d.data[0].mspr !== undefined) {\n    const lat = d.data[d.data.length-1]; const mspr = lat?(lat.mspr||0):0;\n    signals.push({ module:'HM12_INSIDER', ticker:d.symbol||'', mspr, signal_weight:mspr>5?'HIGH':mspr<-5?'LOW':'MEDIUM', read:mspr>5?'INSIDERS_BUYING':mspr<-5?'INSIDERS_SELLING':'NEUTRAL' });\n  }\n  if (d.data && Array.isArray(d.data) && d.data.length && d.data[0] && d.data[0].awardDescription) {\n    const tot = d.data.reduce((s,x)=>s+(x.totalValue||0),0);\n    signals.push({ module:'HM13_GOV_CONTRACT', ticker:d.symbol||'', contracts:d.data.length, total_value:tot, signal_weight:tot>1000000?'HIGH':'MEDIUM' });\n  }\n  if (d.data && Array.isArray(d.data) && d.data.length && d.data[0] && d.data[0].income!==undefined) {\n    const tot = d.data.reduce((s,x)=>s+(x.expenses||x.income||0),0);\n    signals.push({ module:'HM14_LOBBYING', ticker:d.symbol||'', filings:d.data.length, total:tot, signal_weight:tot>500000?'HIGH':'MEDIUM' });\n  }\n  if (d.data && Array.isArray(d.data) && d.data.length && d.data[0] && d.data[0].score !== undefined) {\n    const rec = d.data.slice(-7); const avg = rec.reduce((s,x)=>s+(x.score||0),0)/(rec.length||1);\n    signals.push({ module:'HM15_SOCIAL', ticker:d.symbol||'', avg_score:Math.round(avg*100)/100, signal_weight:avg>0.3?'HIGH':avg<-0.3?'LOW':'MEDIUM', sentiment:avg>0.3?'BULLISH':avg<-0.3?'BEARISH':'NEUTRAL' });\n  }\n  if (d.levels && Array.isArray(d.levels)) { signals.push({ module:'HM16_SR', levels:d.levels, signal_weight:'MEDIUM' }); }\n  if (d.sectorExposure) { signals.push({ module:'HM11_ETF', ticker:d.symbol||'', top3:d.sectorExposure.slice(0,3), signal_weight:'MEDIUM' }); }\n});\nconst HIGH = signals.filter(s=>s.signal_weight==='HIGH');\nconst tkMap = {}; signals.forEach(s=>{if(s.ticker)tkMap[s.ticker]=(tkMap[s.ticker]||0)+1;});\nconst top10 = Object.entries(tkMap).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([t,c])=>({ticker:t,signal_count:c}));\nreturn [{json:{micro_scan_timestamp:now, total_signals:signals.length, high_priority_count:HIGH.length, top_tickers:top10, high_signals:HIGH, all_signals:signals, modules:[...new Set(signals.map(s=>s.module))], workflow:'HUNTER_MICRO_v1.0'}}];"
+        }
+      }
+    ],
+    "connections": {
+      "Execute Workflow Trigger": {
+        "main": [
+          [
+            {
+              "node": "HM1 EPS Estimate NVDA",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HM2 Analyst Actions NVDA",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HM3 Tech SPY",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HM3b Tech QQQ",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HM3c Tech FCX",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HM12 Insider NVDA",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HM12b Insider FCX",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HM13 Gov LMT",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HM13b Gov PLTR",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HM14 Lobby NVDA",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HM14b Lobby MSFT",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HM15 Social NVDA",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HM15b Social META",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HM16 SR FCX",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HM16b SR NVDA",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HM11 ETF XLK",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "HM11b ETF XLI",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HM1 EPS Estimate NVDA": {
+        "main": [
+          [
+            {
+              "node": "Merge A",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HM2 Analyst Actions NVDA": {
+        "main": [
+          [
+            {
+              "node": "Merge A",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "HM3 Tech SPY": {
+        "main": [
+          [
+            {
+              "node": "Merge A",
+              "type": "main",
+              "index": 2
+            }
+          ]
+        ]
+      },
+      "HM3b Tech QQQ": {
+        "main": [
+          [
+            {
+              "node": "Merge A",
+              "type": "main",
+              "index": 3
+            }
+          ]
+        ]
+      },
+      "HM3c Tech FCX": {
+        "main": [
+          [
+            {
+              "node": "Merge A",
+              "type": "main",
+              "index": 4
+            }
+          ]
+        ]
+      },
+      "HM12 Insider NVDA": {
+        "main": [
+          [
+            {
+              "node": "Merge A",
+              "type": "main",
+              "index": 5
+            }
+          ]
+        ]
+      },
+      "HM12b Insider FCX": {
+        "main": [
+          [
+            {
+              "node": "Merge A",
+              "type": "main",
+              "index": 6
+            }
+          ]
+        ]
+      },
+      "HM13 Gov LMT": {
+        "main": [
+          [
+            {
+              "node": "Merge A",
+              "type": "main",
+              "index": 7
+            }
+          ]
+        ]
+      },
+      "HM13b Gov PLTR": {
+        "main": [
+          [
+            {
+              "node": "Merge A",
+              "type": "main",
+              "index": 8
+            }
+          ]
+        ]
+      },
+      "HM14 Lobby NVDA": {
+        "main": [
+          [
+            {
+              "node": "Merge B",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HM14b Lobby MSFT": {
+        "main": [
+          [
+            {
+              "node": "Merge B",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "HM15 Social NVDA": {
+        "main": [
+          [
+            {
+              "node": "Merge B",
+              "type": "main",
+              "index": 2
+            }
+          ]
+        ]
+      },
+      "HM15b Social META": {
+        "main": [
+          [
+            {
+              "node": "Merge B",
+              "type": "main",
+              "index": 3
+            }
+          ]
+        ]
+      },
+      "HM16 SR FCX": {
+        "main": [
+          [
+            {
+              "node": "Merge B",
+              "type": "main",
+              "index": 4
+            }
+          ]
+        ]
+      },
+      "HM16b SR NVDA": {
+        "main": [
+          [
+            {
+              "node": "Merge B",
+              "type": "main",
+              "index": 5
+            }
+          ]
+        ]
+      },
+      "HM11 ETF XLK": {
+        "main": [
+          [
+            {
+              "node": "Merge B",
+              "type": "main",
+              "index": 6
+            }
+          ]
+        ]
+      },
+      "HM11b ETF XLI": {
+        "main": [
+          [
+            {
+              "node": "Merge B",
+              "type": "main",
+              "index": 7
+            }
+          ]
+        ]
+      },
+      "Merge A": {
+        "main": [
+          [
+            {
+              "node": "Merge Final",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge B": {
+        "main": [
+          [
+            {
+              "node": "Merge Final",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge Final": {
+        "main": [
+          [
+            {
+              "node": "HM Normalize Score",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "William Lemon",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-04-04T02:38:31.452Z",
+        "id": 398,
+        "workflowId": "rsS4DFbOgTRQvqTX",
+        "versionId": "916f99b3-d15f-4ca7-999d-59b8ab2c3a45",
+        "event": "activated",
+        "userId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      },
+      {
+        "createdAt": "2026-04-07T22:40:30.029Z",
+        "id": 438,
+        "workflowId": "rsS4DFbOgTRQvqTX",
+        "versionId": "916f99b3-d15f-4ca7-999d-59b8ab2c3a45",
+        "event": "activated",
+        "userId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      },
+      {
+        "createdAt": "2026-04-07T22:40:29.932Z",
+        "id": 437,
+        "workflowId": "rsS4DFbOgTRQvqTX",
+        "versionId": "916f99b3-d15f-4ca7-999d-59b8ab2c3a45",
+        "event": "deactivated",
+        "userId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      }
+    ]
+  }
+}
