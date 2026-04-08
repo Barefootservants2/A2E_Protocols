@@ -1,0 +1,484 @@
+{
+  "updatedAt": "2026-04-08T05:43:22.412Z",
+  "createdAt": "2026-04-04T07:07:51.702Z",
+  "id": "KhTkAxrCW1kZvgdV",
+  "name": "ETRADE TOKEN KEEPER v1.0",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "55 9 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "trg1",
+      "name": "Schedule 5:55 AM ET",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */2 * * *"
+            }
+          ]
+        }
+      },
+      "id": "trg2",
+      "name": "Schedule Every 90 Min",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const CONSUMER_KEY    = $vars['ETRADE_CONSUMER_KEY'];\nconst CONSUMER_SECRET = $vars['ETRADE_CONSUMER_SECRET'];\nconst ACCESS_TOKEN    = $vars['ETRADE_ACCESS_TOKEN'];\nconst ACCESS_TOKEN_SECRET = $vars['ETRADE_ACCESS_TOKEN_SECRET'];\nconst N8N_API_KEY     = $vars['N8N_API_KEY'];\nconst N8N_BASE        = 'https://ashes2echoes.app.n8n.cloud';\nconst crypto = require('crypto');\nfunction pct(s) { return encodeURIComponent(String(s)); }\nfunction buildOAuthHeader(method, baseUrl, extraParams, token, tokenSecret) {\n  const ts = String(Math.floor(Date.now()/1000));\n  const nonce = Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2);\n  const params = { oauth_consumer_key:CONSUMER_KEY, oauth_nonce:nonce, oauth_signature_method:'HMAC-SHA1', oauth_timestamp:ts, oauth_token:token, oauth_version:'1.0', ...(extraParams||{}) };\n  const sortedStr = Object.keys(params).sort().map(k=>pct(k)+'='+pct(params[k])).join('&');\n  const baseStr = method.toUpperCase()+'&'+pct(baseUrl)+'&'+pct(sortedStr);\n  const sigKey = pct(CONSUMER_SECRET)+'&'+pct(tokenSecret);\n  const sig = crypto.createHmac('sha1',sigKey).update(baseStr).digest('base64');\n  const allWithSig = {...params, oauth_signature:sig};\n  return 'OAuth realm=\"\",' + Object.keys(allWithSig).filter(k=>k.startsWith('oauth_')).sort().map(k=>k+'=\"'+pct(allWithSig[k])+'\"').join(',');\n}\nasync function updateVariable(key, value) {\n  const vars = await this.helpers.httpRequest({method:'GET',url:N8N_BASE+'/api/v1/variables',headers:{'X-N8N-API-KEY':N8N_API_KEY}});\n  const varObj = (vars.data||[]).find(v=>v.key===key);\n  if(!varObj) return false;\n  try { await this.helpers.httpRequest({method:'PATCH',url:N8N_BASE+'/api/v1/variables/'+varObj.id,headers:{'X-N8N-API-KEY':N8N_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({key,value})}); return true; } catch(e) { return false; }\n}\nconst RENEW_URL = 'https://api.etrade.com/oauth/renew_access_token';\nconst renewHeader = buildOAuthHeader('GET',RENEW_URL,{},ACCESS_TOKEN,ACCESS_TOKEN_SECRET);\nlet renewResult = 'UNKNOWN';\ntry {\n  const renewResp = await this.helpers.httpRequest({method:'GET',url:RENEW_URL,headers:{'Authorization':renewHeader},returnFullResponse:true,ignoreHttpStatusErrors:true});\n  renewResult = renewResp.statusCode===200 ? 'RENEWED' : 'FAILED_'+renewResp.statusCode;\n} catch(e) { renewResult = 'ERROR_'+e.message; }\nif (renewResult === 'RENEWED') return [{json:{status:'RENEWED',message:'Token renewed successfully',timestamp:new Date().toISOString()}}];\nconst REQ_URL = 'https://api.etrade.com/oauth/request_token';\nconst reqTs = String(Math.floor(Date.now()/1000));\nconst reqNonce = Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2);\nconst reqParams = {oauth_callback:'oob',oauth_consumer_key:CONSUMER_KEY,oauth_nonce:reqNonce,oauth_signature_method:'HMAC-SHA1',oauth_timestamp:reqTs,oauth_version:'1.0'};\nconst reqSorted = Object.keys(reqParams).sort().map(k=>pct(k)+'='+pct(reqParams[k])).join('&');\nconst reqBase = 'GET&'+pct(REQ_URL)+'&'+pct(reqSorted);\nconst reqSigKey = pct(CONSUMER_SECRET)+'&';\nconst reqSig = crypto.createHmac('sha1',reqSigKey).update(reqBase).digest('base64');\nreqParams['oauth_signature'] = reqSig;\nconst reqHeader = 'OAuth realm=\"\",' + Object.keys(reqParams).filter(k=>k.startsWith('oauth_')).sort().map(k=>k+'=\"'+pct(reqParams[k])+'\"').join(',');\ntry {\n  const rtResp = await this.helpers.httpRequest({method:'GET',url:REQ_URL,headers:{'Authorization':reqHeader}});\n  const parsed = {};\n  String(rtResp).split('&').forEach(p=>{const[k,v]=p.split('=');parsed[k]=decodeURIComponent(v||'');});\n  const requestToken = parsed['oauth_token']||'';\n  if(!requestToken) return [{json:{status:'ERROR',error:'Request token empty',renewResult,rawResponse:String(rtResp).substring(0,200),timestamp:new Date().toISOString()}}];\n  await updateVariable.call(this,'ETRADE_REQUEST_TOKEN',requestToken);\n  await updateVariable.call(this,'ETRADE_REQUEST_TOKEN_SECRET',parsed['oauth_token_secret']||'');\n  const authUrl = 'https://us.etrade.com/e/t/etws/authorize?key='+CONSUMER_KEY+'&token='+encodeURIComponent(requestToken);\n  return [{json:{status:'AUTH_REQUIRED',request_token:requestToken,request_token_secret:parsed['oauth_token_secret']||'',auth_url:authUrl,renewResult,timestamp:new Date().toISOString()}}];\n} catch(e) { return [{json:{status:'ERROR',error:e.message,renewResult}}]; }"
+      },
+      "id": "keeper",
+      "name": "Token Keeper",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        304
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "AUTH_REQUIRED",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "if1",
+      "name": "Auth Required?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "8203545338",
+        "text": "={{ '\\ud83d\\udd10 <b>E*TRADE TOKEN EXPIRED</b>\\n\\nAuthorize now:\\n' + $json.auth_url + '\\n\\n<b>Reply with JUST the 5-digit code.</b>\\nExample: <code>AB1C2</code>\\n\\n\\u23f0 5 min window' }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "tg1",
+      "name": "Send Auth Request",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        912,
+        208
+      ],
+      "webhookId": "79318052-cca1-4649-83d3-69ccd393841b",
+      "alwaysOutputData": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "1cUBFkMQENfAXP8x",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8203545338",
+        "text": "\u2705 E*TRADE token renewed \u2014 SENTINEL connected",
+        "additionalFields": {}
+      },
+      "id": "tg2",
+      "name": "Log Renewed",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        912,
+        400
+      ],
+      "webhookId": "43733041-769a-402c-8df7-2b839beb44c9",
+      "credentials": {
+        "telegramApi": {
+          "id": "1cUBFkMQENfAXP8x",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule 5:55 AM ET": {
+      "main": [
+        [
+          {
+            "node": "Token Keeper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Every 90 Min": {
+      "main": [
+        [
+          {
+            "node": "Token Keeper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Token Keeper": {
+      "main": [
+        [
+          {
+            "node": "Auth Required?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auth Required?": {
+      "main": [
+        [
+          {
+            "node": "Send Auth Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Renewed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true,
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Schedule 5:55 AM ET": {
+      "recurrenceRules": []
+    },
+    "node:Schedule Every 90 Min": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "versionId": "4628b921-eec2-4bbb-aa8b-294c082f0b92",
+  "activeVersionId": "4628b921-eec2-4bbb-aa8b-294c082f0b92",
+  "versionCounter": 35,
+  "triggerCount": 2,
+  "shared": [
+    {
+      "updatedAt": "2026-04-04T07:07:51.705Z",
+      "createdAt": "2026-04-04T07:07:51.705Z",
+      "role": "workflow:owner",
+      "workflowId": "KhTkAxrCW1kZvgdV",
+      "projectId": "MA2cfOhJvZM9d2WN",
+      "project": {
+        "updatedAt": "2025-08-15T16:51:32.695Z",
+        "createdAt": "2025-07-21T14:04:06.598Z",
+        "id": "MA2cfOhJvZM9d2WN",
+        "name": "William Lemon <barefootservants.65@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-04-08T05:21:08.784Z",
+    "createdAt": "2026-04-08T05:21:08.784Z",
+    "versionId": "4628b921-eec2-4bbb-aa8b-294c082f0b92",
+    "workflowId": "KhTkAxrCW1kZvgdV",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "55 9 * * 1-5"
+              }
+            ]
+          }
+        },
+        "id": "trg1",
+        "name": "Schedule 5:55 AM ET",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          0,
+          208
+        ]
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "0 */2 * * *"
+              }
+            ]
+          }
+        },
+        "id": "trg2",
+        "name": "Schedule Every 90 Min",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          0,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const CONSUMER_KEY    = $vars['ETRADE_CONSUMER_KEY'];\nconst CONSUMER_SECRET = $vars['ETRADE_CONSUMER_SECRET'];\nconst ACCESS_TOKEN    = $vars['ETRADE_ACCESS_TOKEN'];\nconst ACCESS_TOKEN_SECRET = $vars['ETRADE_ACCESS_TOKEN_SECRET'];\nconst N8N_API_KEY     = $vars['N8N_API_KEY'];\nconst N8N_BASE        = 'https://ashes2echoes.app.n8n.cloud';\nconst crypto = require('crypto');\nfunction pct(s) { return encodeURIComponent(String(s)); }\nfunction buildOAuthHeader(method, baseUrl, extraParams, token, tokenSecret) {\n  const ts = String(Math.floor(Date.now()/1000));\n  const nonce = Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2);\n  const params = { oauth_consumer_key:CONSUMER_KEY, oauth_nonce:nonce, oauth_signature_method:'HMAC-SHA1', oauth_timestamp:ts, oauth_token:token, oauth_version:'1.0', ...(extraParams||{}) };\n  const sortedStr = Object.keys(params).sort().map(k=>pct(k)+'='+pct(params[k])).join('&');\n  const baseStr = method.toUpperCase()+'&'+pct(baseUrl)+'&'+pct(sortedStr);\n  const sigKey = pct(CONSUMER_SECRET)+'&'+pct(tokenSecret);\n  const sig = crypto.createHmac('sha1',sigKey).update(baseStr).digest('base64');\n  const allWithSig = {...params, oauth_signature:sig};\n  return 'OAuth realm=\"\",' + Object.keys(allWithSig).filter(k=>k.startsWith('oauth_')).sort().map(k=>k+'=\"'+pct(allWithSig[k])+'\"').join(',');\n}\nasync function updateVariable(key, value) {\n  const vars = await this.helpers.httpRequest({method:'GET',url:N8N_BASE+'/api/v1/variables',headers:{'X-N8N-API-KEY':N8N_API_KEY}});\n  const varObj = (vars.data||[]).find(v=>v.key===key);\n  if(!varObj) return false;\n  try { await this.helpers.httpRequest({method:'PATCH',url:N8N_BASE+'/api/v1/variables/'+varObj.id,headers:{'X-N8N-API-KEY':N8N_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({key,value})}); return true; } catch(e) { return false; }\n}\nconst RENEW_URL = 'https://api.etrade.com/oauth/renew_access_token';\nconst renewHeader = buildOAuthHeader('GET',RENEW_URL,{},ACCESS_TOKEN,ACCESS_TOKEN_SECRET);\nlet renewResult = 'UNKNOWN';\ntry {\n  const renewResp = await this.helpers.httpRequest({method:'GET',url:RENEW_URL,headers:{'Authorization':renewHeader},returnFullResponse:true,ignoreHttpStatusErrors:true});\n  renewResult = renewResp.statusCode===200 ? 'RENEWED' : 'FAILED_'+renewResp.statusCode;\n} catch(e) { renewResult = 'ERROR_'+e.message; }\nif (renewResult === 'RENEWED') return [{json:{status:'RENEWED',message:'Token renewed successfully',timestamp:new Date().toISOString()}}];\nconst REQ_URL = 'https://api.etrade.com/oauth/request_token';\nconst reqTs = String(Math.floor(Date.now()/1000));\nconst reqNonce = Math.random().toString(36).substring(2)+Math.random().toString(36).substring(2);\nconst reqParams = {oauth_callback:'oob',oauth_consumer_key:CONSUMER_KEY,oauth_nonce:reqNonce,oauth_signature_method:'HMAC-SHA1',oauth_timestamp:reqTs,oauth_version:'1.0'};\nconst reqSorted = Object.keys(reqParams).sort().map(k=>pct(k)+'='+pct(reqParams[k])).join('&');\nconst reqBase = 'GET&'+pct(REQ_URL)+'&'+pct(reqSorted);\nconst reqSigKey = pct(CONSUMER_SECRET)+'&';\nconst reqSig = crypto.createHmac('sha1',reqSigKey).update(reqBase).digest('base64');\nreqParams['oauth_signature'] = reqSig;\nconst reqHeader = 'OAuth realm=\"\",' + Object.keys(reqParams).filter(k=>k.startsWith('oauth_')).sort().map(k=>k+'=\"'+pct(reqParams[k])+'\"').join(',');\ntry {\n  const rtResp = await this.helpers.httpRequest({method:'GET',url:REQ_URL,headers:{'Authorization':reqHeader}});\n  const parsed = {};\n  String(rtResp).split('&').forEach(p=>{const[k,v]=p.split('=');parsed[k]=decodeURIComponent(v||'');});\n  const requestToken = parsed['oauth_token']||'';\n  if(!requestToken) return [{json:{status:'ERROR',error:'Request token empty',renewResult,rawResponse:String(rtResp).substring(0,200),timestamp:new Date().toISOString()}}];\n  await updateVariable.call(this,'ETRADE_REQUEST_TOKEN',requestToken);\n  await updateVariable.call(this,'ETRADE_REQUEST_TOKEN_SECRET',parsed['oauth_token_secret']||'');\n  const authUrl = 'https://us.etrade.com/e/t/etws/authorize?key='+CONSUMER_KEY+'&token='+encodeURIComponent(requestToken);\n  return [{json:{status:'AUTH_REQUIRED',request_token:requestToken,request_token_secret:parsed['oauth_token_secret']||'',auth_url:authUrl,renewResult,timestamp:new Date().toISOString()}}];\n} catch(e) { return [{json:{status:'ERROR',error:e.message,renewResult}}]; }"
+        },
+        "id": "keeper",
+        "name": "Token Keeper",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          304,
+          304
+        ],
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict"
+            },
+            "conditions": [
+              {
+                "id": "c1",
+                "leftValue": "={{ $json.status }}",
+                "rightValue": "AUTH_REQUIRED",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "if1",
+        "name": "Auth Required?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          608,
+          304
+        ]
+      },
+      {
+        "parameters": {
+          "chatId": "8203545338",
+          "text": "={{ '\\ud83d\\udd10 <b>E*TRADE TOKEN EXPIRED</b>\\n\\nAuthorize now:\\n' + $json.auth_url + '\\n\\n<b>Reply with JUST the 5-digit code.</b>\\nExample: <code>AB1C2</code>\\n\\n\\u23f0 5 min window' }}",
+          "additionalFields": {
+            "parse_mode": "HTML"
+          }
+        },
+        "id": "tg1",
+        "name": "Send Auth Request",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          912,
+          208
+        ],
+        "webhookId": "79318052-cca1-4649-83d3-69ccd393841b",
+        "alwaysOutputData": true,
+        "credentials": {
+          "telegramApi": {
+            "id": "1cUBFkMQENfAXP8x",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "chatId": "8203545338",
+          "text": "\u2705 E*TRADE token renewed \u2014 SENTINEL connected",
+          "additionalFields": {}
+        },
+        "id": "tg2",
+        "name": "Log Renewed",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          912,
+          400
+        ],
+        "webhookId": "43733041-769a-402c-8df7-2b839beb44c9",
+        "credentials": {
+          "telegramApi": {
+            "id": "1cUBFkMQENfAXP8x",
+            "name": "Telegram account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Schedule 5:55 AM ET": {
+        "main": [
+          [
+            {
+              "node": "Token Keeper",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Every 90 Min": {
+        "main": [
+          [
+            {
+              "node": "Token Keeper",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Token Keeper": {
+        "main": [
+          [
+            {
+              "node": "Auth Required?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Auth Required?": {
+        "main": [
+          [
+            {
+              "node": "Send Auth Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Log Renewed",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "William Lemon",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-04-08T05:21:09.033Z",
+        "id": 442,
+        "workflowId": "KhTkAxrCW1kZvgdV",
+        "versionId": "4628b921-eec2-4bbb-aa8b-294c082f0b92",
+        "event": "activated",
+        "userId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      },
+      {
+        "createdAt": "2026-04-08T05:22:12.395Z",
+        "id": 446,
+        "workflowId": "KhTkAxrCW1kZvgdV",
+        "versionId": "4628b921-eec2-4bbb-aa8b-294c082f0b92",
+        "event": "activated",
+        "userId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      },
+      {
+        "createdAt": "2026-04-08T05:43:22.580Z",
+        "id": 448,
+        "workflowId": "KhTkAxrCW1kZvgdV",
+        "versionId": "4628b921-eec2-4bbb-aa8b-294c082f0b92",
+        "event": "activated",
+        "userId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      },
+      {
+        "createdAt": "2026-04-08T05:21:08.915Z",
+        "id": 441,
+        "workflowId": "KhTkAxrCW1kZvgdV",
+        "versionId": "4628b921-eec2-4bbb-aa8b-294c082f0b92",
+        "event": "deactivated",
+        "userId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      },
+      {
+        "createdAt": "2026-04-08T05:22:12.302Z",
+        "id": 445,
+        "workflowId": "KhTkAxrCW1kZvgdV",
+        "versionId": "4628b921-eec2-4bbb-aa8b-294c082f0b92",
+        "event": "deactivated",
+        "userId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      },
+      {
+        "createdAt": "2026-04-08T05:43:22.494Z",
+        "id": 447,
+        "workflowId": "KhTkAxrCW1kZvgdV",
+        "versionId": "4628b921-eec2-4bbb-aa8b-294c082f0b92",
+        "event": "deactivated",
+        "userId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      }
+    ]
+  }
+}
