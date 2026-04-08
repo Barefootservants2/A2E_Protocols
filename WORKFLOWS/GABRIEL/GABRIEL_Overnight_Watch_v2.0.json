@@ -1,0 +1,1232 @@
+{
+  "updatedAt": "2026-04-07T22:39:43.484Z",
+  "createdAt": "2026-03-26T19:26:56.584Z",
+  "id": "fwKiBHtedNQ1n34H",
+  "name": "GABRIEL \u2014 Overnight Watch v2.0",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */30 22-23,0-13 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "839143b7-91f0-48c0-bb65-e9bd62f2d5f9",
+      "name": "Overnight Watch Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1776,
+        -112
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput",
+      "notes": "Fires every 30 min, 6PM-9:25AM ET Mon-Fri. Set active hours in cron: 22:00-13:25 UTC."
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 */2 * * 0,6"
+            }
+          ]
+        }
+      },
+      "id": "a14e735c-34c2-4cc6-822e-298271a94eb6",
+      "name": "Weekend Watch Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1776,
+        128
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput",
+      "notes": "Fires every 2 hours on Saturday and Sunday for crypto + geopolitical coverage."
+    },
+    {
+      "parameters": {},
+      "id": "8b8bb974-f0aa-40f3-8060-ac7b678b0e70",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1776,
+        368
+      ],
+      "notes": "On-demand testing and emergency override."
+    },
+    {
+      "parameters": {
+        "jsCode": "// GABRIEL Overnight Market Data Collector v2.0\n// Fetches 15 symbols from Yahoo Finance v8\nconst symbols = [\n  'ES=F',    // S&P 500 futures\n  'NQ=F',    // Nasdaq futures\n  'YM=F',    // Dow futures\n  'RTY=F',   // Russell 2000 futures\n  'GC=F',    // Gold futures\n  'SI=F',    // Silver futures \u2014 primary thesis\n  'CL=F',    // Crude oil futures\n  '%5EVIX',  // VIX (encoded ^VIX)\n  'BTC-USD', // Bitcoin (IBIT proxy)\n  'ETH-USD', // Ethereum\n  'UUP',     // DXY proxy ETF\n  'TLT',     // Long bond proxy (inverse yield)\n  'DIA',     // Dow ETF (after-hours proxy)\n  'SPY',     // S&P ETF (after-hours proxy)\n  'QQQ'      // Nasdaq ETF (after-hours proxy)\n  'DX=F',    // ICE Dollar Index futures (24hr) \u2014 Kill Switch\n  'ZB=F',    // 30Y Treasury Bond futures (24hr) \u2014 Kill Switch\n];\n\nconst marketData = {};\n\nfor (const sym of symbols) {\n  try {\n    const resp = await this.helpers.httpRequest({\n      method: 'GET',\n      url: `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=2d`,\n      headers: { 'User-Agent': 'Mozilla/5.0 (GABRIEL/2.0)' },\n      json: true\n    });\n    const meta = resp?.chart?.result?.[0]?.meta;\n    if (!meta) continue;\n    const price = meta.regularMarketPrice || 0;\n    const prevClose = meta.chartPreviousClose || 0;\n    const changePct = prevClose > 0 ? Math.round(((price - prevClose) / prevClose) * 10000) / 100 : 0;\n    const cleanSym = (meta.symbol || sym).replace('%5E', '^').replace('^', '');\n    marketData[cleanSym] = {\n      lastPrice: price,\n      changePercent: changePct,\n      previousClose: prevClose,\n      symbol: cleanSym\n    };\n  } catch (e) {\n    // Symbol fetch failed \u2014 skip, do not halt workflow\n    marketData[sym.replace('%5E', '').replace('^', '')] = { lastPrice: 0, changePercent: 0, previousClose: 0, error: true };\n  }\n}\n\nreturn [{ json: {\n  market_data: marketData,\n  symbol_count: Object.keys(marketData).length,\n  fetch_time: new Date().toISOString(),\n  source: 'YAHOO_FINANCE_V8'\n}}];"
+      },
+      "id": "d5caaf1b-0476-4b22-a0e8-ffc7f89c364f",
+      "name": "Overnight Market Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1344,
+        112
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput",
+      "notes": "Fetches 15 symbols. Symbol failures skip, workflow continues."
+    },
+    {
+      "parameters": {
+        "jsCode": "// GABRIEL News Scanner v2.0\n// Scans Finnhub general news for geopolitical keywords\nconst FINNHUB_KEY = 'd5vc61pr01qjj9jj0nfgd5vc61pr01qjj9jj0ng0'; // ADD: Pull from HUNTER H30 credential in n8n\n\nconst keywords = [\n  'hormuz', 'strait', 'iran', 'nuclear', 'ceasefire',\n  'margin call', 'circuit breaker', 'force majeure', 'default',\n  'fed rate', 'emergency meeting', 'black swan', 'oil embargo',\n  'opec emergency', 'strategic reserve', 'bank run', 'sanctions'\n];\n\nconst criticalKeywords = ['nuclear', 'circuit breaker', 'force majeure', 'default', 'emergency meeting', 'bank run'];\n\nconst input = $input.first().json;\nconst alerts = [];\nlet newsFetchOk = false;\n\ntry {\n  const newsResp = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `https://finnhub.io/api/v1/news?category=general&token=${FINNHUB_KEY}`,\n    json: true\n  });\n  newsFetchOk = true;\n  const articles = Array.isArray(newsResp) ? newsResp.slice(0, 50) : [];\n  for (const article of articles) {\n    const text = ((article.headline || '') + ' ' + (article.summary || '')).toLowerCase();\n    for (const kw of keywords) {\n      if (text.includes(kw)) {\n        alerts.push({\n          type: criticalKeywords.includes(kw) ? 'NEWS_CRITICAL' : 'NEWS_KEYWORD',\n          keyword: kw,\n          headline: article.headline || '',\n          source: article.source || '',\n          url: article.url || '',\n          timestamp: article.datetime ? new Date(article.datetime * 1000).toISOString() : new Date().toISOString()\n        });\n        break;\n      }\n    }\n  }\n} catch (e) {\n  // Finnhub unavailable \u2014 continue with empty alerts, do not fail\n}\n\nreturn [{ json: {\n  market_data: input.market_data,\n  news_alerts: alerts,\n  news_count: alerts.length,\n  news_fetch_ok: newsFetchOk,\n  fetch_time: input.fetch_time\n}}];"
+      },
+      "id": "89d12c08-73fc-42a4-afb2-7994edd0ec89",
+      "name": "News Scanner",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1136,
+        112
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput",
+      "notes": "Finnhub key required. Add HUNTER H30 Finnhub API key. Failure safe \u2014 empty alerts if down."
+    },
+    {
+      "parameters": {
+        "jsCode": "// GABRIEL Threshold Engine v2.1\n// Evaluates GREEN / YELLOW / RED escalation\n// v2.1 fixes: DXY directional check, Kill Switch using 24hr futures (DX=F, ZB=F)\n\nconst input = $input.first().json;\nconst md = input.market_data || {};\nconst newsAlerts = input.news_alerts || [];\n\nconst yellowTriggers = [];\nconst redTriggers = [];\n\n// YELLOW \u2014 directional where thesis-relevant, absolute where direction doesnt matter\nfunction chkY(sym, threshold, label) {\n  if (md[sym] && Math.abs(md[sym].changePercent) > threshold) {\n    yellowTriggers.push({ symbol: sym, value: md[sym].changePercent, threshold, label });\n  }\n}\n\nfunction chkR(sym, threshold, label) {\n  if (md[sym] && Math.abs(md[sym].changePercent) > threshold) {\n    redTriggers.push({ symbol: sym, value: md[sym].changePercent, threshold, label });\n  }\n}\n\n// YELLOW checks\nchkY('ES=F',    1.0,  'S&P 500 futures > 1%');\nchkY('VIX',    15.0,  'VIX change > 15%');\nchkY('CL=F',    3.0,  'Crude oil > 3%');\nchkY('GC=F',    2.0,  'Gold > 2%');\nchkY('SI=F',    5.0,  'Silver > 5% \u2014 THESIS ALERT');\nchkY('BTC-USD', 5.0,  'Bitcoin > 5%');\n\n// DXY DIRECTIONAL \u2014 rising dollar only is a risk signal\n// Dollar weakness is bullish for metals \u2014 not a YELLOW\nif (md['UUP'] && md['UUP'].changePercent > 0.5) {\n  yellowTriggers.push({ symbol: 'UUP', value: md['UUP'].changePercent, threshold: 0.5, label: 'DXY proxy rising > 0.5% \u2014 correlation risk to metals' });\n}\n\n// VIX absolute level YELLOW\nif (md['VIX'] && md['VIX'].lastPrice > 25) {\n  yellowTriggers.push({ symbol: 'VIX', value: md['VIX'].lastPrice, threshold: 25, label: 'VIX level > 25' });\n}\n\n// RED checks\nchkR('ES=F',    3.0,  'S&P 500 futures > 3% \u2014 regime shift');\nchkR('CL=F',    8.0,  'Crude oil > 8% \u2014 Hormuz-class event');\nchkR('SI=F',   10.0,  'Silver > 10% \u2014 MARGIN CALL TERRITORY');\n\n// DXY RED \u2014 directional only\nif (md['UUP'] && md['UUP'].changePercent > 1.5) {\n  redTriggers.push({ symbol: 'UUP', value: md['UUP'].changePercent, threshold: 1.5, label: 'DXY > 1.5% rising \u2014 Kill Switch warning' });\n}\n\n// VIX absolute RED\nif (md['VIX'] && md['VIX'].lastPrice > 35) {\n  redTriggers.push({ symbol: 'VIX', value: md['VIX'].lastPrice, threshold: 35, label: 'VIX > 35 \u2014 CRISIS' });\n}\n\n// Multi-signal: 3+ market yellows = RED\n// NOTE: news is added AFTER this check intentionally \u2014 news cannot inflate market signal count\nif (yellowTriggers.length >= 3) {\n  redTriggers.push({ symbol: 'MULTI', value: yellowTriggers.length, threshold: 3, label: `${yellowTriggers.length} simultaneous market yellow triggers \u2014 coordinated selloff` });\n}\n\n// News escalation \u2014 added after multi-signal check\nif (newsAlerts.length > 0) {\n  yellowTriggers.push({ symbol: 'NEWS', value: newsAlerts.length, threshold: 1, label: `${newsAlerts.length} news keyword alert(s)` });\n  for (const alert of newsAlerts) {\n    if (alert.type === 'NEWS_CRITICAL') {\n      redTriggers.push({ symbol: 'NEWS_CRITICAL', value: alert.keyword, threshold: 0, label: `CRITICAL: ${alert.keyword} \u2014 ${alert.headline.substring(0, 60)}` });\n    }\n  }\n}\n\n// Kill Switch pre-alert v2.1\n// Uses 24hr futures: DX=F (ICE Dollar Index) and ZB=F (30Y Treasury Bond futures)\n// UUP and TLT have near-zero overnight volume \u2014 Kill Switch was effectively dead\nconst dxRising = md['DX=F'] && md['DX=F'].changePercent > 0.3;\nconst bondsDown = md['ZB=F'] && md['ZB=F'].changePercent < -0.3;\nconst vixHot = md['VIX'] && md['VIX'].lastPrice > 30;\n\nconst ksWarning = dxRising && bondsDown && vixHot;\n\nif (ksWarning) {\n  redTriggers.push({\n    symbol: 'KILLSWITCH',\n    value: 'DX=F+ZB=F+VIX',\n    threshold: 0,\n    label: `KILL SWITCH PRE-ALERT: Dollar rising (DX=F ${md['DX=F'].changePercent.toFixed(2)}%) + Bonds falling (ZB=F ${md['ZB=F'].changePercent.toFixed(2)}%) + VIX ${md['VIX'].lastPrice.toFixed(1)}`\n  });\n}\n\nconst escalation = redTriggers.length > 0 ? 'RED' : (yellowTriggers.length > 0 ? 'YELLOW' : 'GREEN');\n\nreturn [{ json: {\n  escalation,\n  yellow_triggers: yellowTriggers,\n  red_triggers: redTriggers,\n  yellow_count: yellowTriggers.length,\n  red_count: redTriggers.length,\n  kill_switch_warning: !!ksWarning,\n  market_data: md,\n  news_alerts: newsAlerts,\n  timestamp: new Date().toISOString()\n}}];"
+      },
+      "id": "5f62be55-3b3b-4e3f-8625-c83263e8b865",
+      "name": "Threshold Engine",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -912,
+        112
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput",
+      "notes": "GREEN/YELLOW/RED determination. All thresholds match IRONCLAD v2.0 + METATRON v10.7."
+    },
+    {
+      "parameters": {
+        "jsCode": "// GABRIEL Report Builder v2.0\n// Builds HTML-formatted Telegram message\nconst input = $input.first().json;\nconst md = input.market_data || {};\nconst esc = input.escalation;\n\nconst emojiMap = { RED: '\ud83d\udea8', YELLOW: '\u26a0\ufe0f', GREEN: '\u2705' };\nconst emoji = emojiMap[esc] || '\u2705';\nconst now = new Date();\nconst etTime = now.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit' });\nconst dateStr = now.toISOString().substring(0, 10);\n\nlet msg = `${emoji} <b>GABRIEL OVERNIGHT WATCH</b>\\n`;\nmsg += `<i>${dateStr} | ${etTime} ET | ${esc}</i>\\n\\n`;\n\n// Market snapshot\nconst displayOrder = [\n  ['ES=F','S&P Futs'], ['NQ=F','NQ Futs'], ['VIX','VIX'],\n  ['CL=F','Oil'], ['GC=F','Gold'], ['SI=F','Silver'],\n  ['UUP','DXY(UUP)'], ['TLT','Bonds(TLT)'], ['BTC-USD','BTC']\n];\nmsg += '<b>MARKET SNAPSHOT</b>\\n';\nfor (const [sym, label] of displayOrder) {\n  const d = md[sym];\n  if (d && d.lastPrice) {\n    const arrow = d.changePercent > 0 ? '\u25b2' : (d.changePercent < 0 ? '\u25bc' : '\u2501');\n    const chg = (d.changePercent >= 0 ? '+' : '') + d.changePercent.toFixed(2) + '%';\n    msg += `${label}: ${d.lastPrice.toFixed(2)} ${arrow} ${chg}\\n`;\n  }\n}\n\n// Red triggers\nif (input.red_triggers && input.red_triggers.length > 0) {\n  msg += '\\n\ud83d\udea8 <b>RED TRIGGERS</b>\\n';\n  for (const t of input.red_triggers) msg += `\u2022 ${t.label}\\n`;\n}\n\n// Yellow triggers\nif (input.yellow_triggers && input.yellow_triggers.length > 0) {\n  msg += `\\n\u26a0\ufe0f <b>YELLOW TRIGGERS (${input.yellow_count})</b>\\n`;\n  for (const t of input.yellow_triggers) msg += `\u2022 ${t.label}\\n`;\n}\n\n// News alerts\nif (input.news_alerts && input.news_alerts.length > 0) {\n  msg += `\\n\ud83d\udcf0 <b>NEWS ALERTS (${input.news_alerts.length})</b>\\n`;\n  for (const n of input.news_alerts.slice(0, 5)) {\n    msg += `\u2022 [${n.keyword.toUpperCase()}] ${n.headline.substring(0, 75)}\\n`;\n  }\n}\n\n// Kill Switch warning\nif (input.kill_switch_warning) {\n  msg += '\\n\ud83d\udd34 <b>KILL SWITCH PRE-ALERT</b>\\n';\n  msg += 'DXY \u25b2 + Yields \u25b2 + VIX &gt; 30\\n';\n  msg += 'Correlation Kill Switch conditions forming.\\n';\n  msg += 'Review metals positions BEFORE 9:30 AM open.\\n';\n}\n\n// Footer\nmsg += `\\n<i>GABRIEL v2.0 | Uriel Covenant</i>`;\n\nreturn [{ json: {\n  telegram_message: msg,\n  escalation: esc,\n  timestamp: input.timestamp,\n  market_data: md,\n  triggers: { yellow: input.yellow_triggers, red: input.red_triggers },\n  news_alerts: input.news_alerts,\n  kill_switch_warning: input.kill_switch_warning,\n  yellow_count: input.yellow_count,\n  red_count: input.red_count\n}}];"
+      },
+      "id": "cf4b92d8-b61f-4aca-a00f-01ee805c908f",
+      "name": "Overnight Report Builder",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -688,
+        112
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput",
+      "notes": "HTML Telegram message. Escape < > & in dynamic fields to prevent parse errors."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "0d2a3b52-8f0d-463c-babc-4718c98a0ea1",
+              "leftValue": "={{ $json.escalation }}",
+              "rightValue": "GREEN",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7deaa875-9d2b-4de5-980f-bb1570290f47",
+      "name": "Escalation Router",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        112
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput",
+      "notes": "GREEN \u2192 silent log only. YELLOW/RED \u2192 Telegram alert."
+    },
+    {
+      "parameters": {
+        "chatId": "8203545338",
+        "text": "={{ $('Overnight Report Builder').first().json.telegram_message }}",
+        "additionalFields": {
+          "disable_web_page_preview": true,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "b36e05cb-df14-4d8d-90ed-933cf2d72a23",
+      "name": "Gabriel Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -256,
+        -16
+      ],
+      "webhookId": "302280ab-efbf-4640-a558-4e065e94ef70",
+      "credentials": {
+        "telegramApi": {
+          "id": "1cUBFkMQENfAXP8x",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "hunter_a2e_bot. Same credential as SENTINEL."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "63de9594-8fef-4e00-bd26-74cac3acba2b",
+              "leftValue": "={{ $('Threshold Engine').first().json.escalation }}",
+              "rightValue": "RED",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "92b242be-df9a-499a-90b8-90c4362c95e2",
+      "name": "RED Escalation",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        -16
+      ],
+      "notes": "RED only: fire email + CIL webhook. YELLOW falls through to logger."
+    },
+    {
+      "parameters": {
+        "sendTo": "ashes2echoes.platform@gmail.com",
+        "subject": "={{ '\ud83d\udea8 GABRIEL RED ALERT \u2014 ' + new Date().toISOString().substring(0,16).replace('T',' ') + ' ET' }}",
+        "message": "={{ $('Overnight Report Builder').first().json.telegram_message }}",
+        "options": {}
+      },
+      "id": "d5cb96da-f21f-415b-b25a-110043ee7ea5",
+      "name": "RED Alert Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        304,
+        -416
+      ],
+      "webhookId": "15f0a994-6d1e-4395-b43c-2d536f425f33",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "TGqE0ZvYW90FsqLp",
+          "name": "Gmail \u2014 Platform (ashes2echoes)"
+        }
+      },
+      "notes": "ashes2echoes.platform@gmail.com. RED escalation only."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://ashes2echoes.app.n8n.cloud/webhook/9d360d66-4d0e-46e4-9f24-dea7170e1ebe ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ 'GABRIEL RED ALERT ' + new Date().toISOString().substring(0,16).replace('T',' ') + ' ET. Triggers: ' + JSON.stringify($('Overnight Report Builder').first().json.triggers.red) + '. Recommend market open posture.' }}"
+            },
+            {
+              "name": "domain",
+              "value": "MARKET"
+            },
+            {
+              "name": "urgency",
+              "value": "HIGH"
+            },
+            {
+              "name": "source",
+              "value": "GABRIEL_OVERNIGHT_v2"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "0b1b50b0-e7ca-426e-8ca8-a330d45c45e8",
+      "name": "CIL Analysis Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        288,
+        -128
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput",
+      "notes": "Set CIL_WEBHOOK_URL in n8n variables. Pull from CIL v5.2.1 webhook node URL. RED only."
+    },
+    {
+      "parameters": {
+        "jsCode": "// GABRIEL Logger v2.0 \u2014 Supabase\nconst SUPABASE_PROJECT = 'bwtguoaakkmsnzomswem';\nconst SUPABASE_ANON_KEY = 'sb_publishable_is2iGeR-YRuNrhdsvrr3-w_PVAFcm8z';\n\nconst input = $input.first().json;\n\nfunction uuid4() {\n  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {\n    const r = Math.random() * 16 | 0;\n    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);\n  });\n}\n\nconst entry = {\n  id: uuid4(),\n  escalation: input.escalation || 'GREEN',\n  yellow_count: input.yellow_count || 0,\n  red_count: input.red_count || 0,\n  news_count: (input.news_alerts || []).length,\n  kill_switch_warning: input.kill_switch_warning || false,\n  market_snapshot: input.market_data ? JSON.stringify(input.market_data) : '{}',\n  timestamp: input.timestamp || new Date().toISOString()\n};\n\ntry {\n  await this.helpers.httpRequest({\n    method: 'POST',\n    url: `https://${SUPABASE_PROJECT}.supabase.co/rest/v1/gabriel_overnight_log`,\n    headers: {\n      'apikey': SUPABASE_ANON_KEY,\n      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,\n      'Content-Type': 'application/json',\n      'Prefer': 'return=minimal'\n    },\n    body: entry,\n    json: true\n  });\n} catch (e) {\n  // Log write failed \u2014 do not fail workflow\n}\n\nreturn [{ json: { logged: true, escalation: entry.escalation, id: entry.id, timestamp: entry.timestamp } }];"
+      },
+      "id": "bf0130a2-e0ba-4296-9203-95e5bb9735a4",
+      "name": "Gabriel Logger",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        336
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput",
+      "notes": "Writes every run to Supabase gabriel_overnight_log. Table must exist before first run. See SQL in spec."
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 12 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "620867c2-0fd6-4900-ab5c-29999e8efeb1",
+      "name": "Morning Brief Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1616,
+        528
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput",
+      "notes": "8:00 AM ET = 12:00 UTC. Monday-Friday only. Independent chain."
+    },
+    {
+      "parameters": {
+        "jsCode": "// GABRIEL Morning Brief Builder v2.0\n// Queries Supabase for overnight logs, synthesizes into report\nconst SUPABASE_PROJECT = 'bwtguoaakkmsnzomswem';\nconst SUPABASE_ANON_KEY = 'sb_publishable_is2iGeR-YRuNrhdsvrr3-w_PVAFcm8z';\n\n// Get last 12 hours of logs\nconst since = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();\nlet logs = [];\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `https://${SUPABASE_PROJECT}.supabase.co/rest/v1/gabriel_overnight_log?timestamp=gte.${since}&order=timestamp.desc`,\n    headers: {\n      'apikey': SUPABASE_ANON_KEY,\n      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`\n    },\n    json: true\n  });\n  logs = Array.isArray(resp) ? resp : [];\n} catch (e) { /* continue with empty */ }\n\n// Stats\nconst total = logs.length;\nconst reds = logs.filter(l => l.escalation === 'RED').length;\nconst yellows = logs.filter(l => l.escalation === 'YELLOW').length;\nconst greens = logs.filter(l => l.escalation === 'GREEN').length;\nconst ksAlerts = logs.filter(l => l.kill_switch_warning).length;\nconst maxRed = logs.reduce((m, l) => Math.max(m, l.red_count || 0), 0);\nconst maxYellow = logs.reduce((m, l) => Math.max(m, l.yellow_count || 0), 0);\n\n// Market posture logic\nlet posture = 'RISK-ON';\nif (reds > 0 || ksAlerts > 0) posture = 'RISK-OFF';\nelse if (yellows > 2) posture = 'NEUTRAL';\n\n// Pull latest market data fresh\nlet freshData = {};\nconst quickSyms = ['ES=F', 'SI=F', 'GC=F', 'CL=F', '%5EVIX', 'UUP'];\nfor (const sym of quickSyms) {\n  try {\n    const r = await this.helpers.httpRequest({\n      method: 'GET',\n      url: `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=1d`,\n      headers: { 'User-Agent': 'Mozilla/5.0' },\n      json: true\n    });\n    const meta = r?.chart?.result?.[0]?.meta;\n    if (meta) {\n      const clean = (meta.symbol || sym).replace('%5E','').replace('^','');\n      freshData[clean] = {\n        lastPrice: meta.regularMarketPrice || 0,\n        changePercent: meta.chartPreviousClose > 0 ? Math.round(((meta.regularMarketPrice - meta.chartPreviousClose) / meta.chartPreviousClose) * 10000) / 100 : 0\n      };\n    }\n  } catch (e) {}\n}\n\n// Build message\nconst postureEmoji = { 'RISK-ON': '\ud83d\udfe2', 'NEUTRAL': '\ud83d\udfe1', 'RISK-OFF': '\ud83d\udd34' };\nconst etTime = new Date().toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit' });\nconst dateStr = new Date().toISOString().substring(0, 10);\n\nlet msg = `\ud83c\udf05 <b>GABRIEL MORNING BRIEF</b>\\n`;\nmsg += `<i>${dateStr} | ${etTime} ET</i>\\n\\n`;\nmsg += `${postureEmoji[posture]} <b>POSTURE: ${posture}</b>\\n\\n`;\nmsg += `<b>OVERNIGHT SUMMARY (last 12h)</b>\\n`;\nmsg += `Runs: ${total} | \ud83d\udea8 RED: ${reds} | \u26a0\ufe0f YELLOW: ${yellows} | \u2705 GREEN: ${greens}\\n`;\nif (ksAlerts > 0) msg += `\ud83d\udd34 Kill Switch pre-alerts: ${ksAlerts}\\n`;\nif (maxRed > 0) msg += `Peak red triggers in single run: ${maxRed}\\n`;\n\n// Fresh pre-market snapshot\nconst snapLabels = {'ES=F':'S&P Futs', 'SI=F':'Silver', 'GC=F':'Gold', 'CL=F':'Oil', 'VIX':'VIX', 'UUP':'DXY(UUP)'};\nmsg += '\\n<b>PRE-MARKET NOW</b>\\n';\nfor (const [sym, label] of Object.entries(snapLabels)) {\n  const d = freshData[sym.replace('=F','=F').replace('%5E','')];\n  if (d && d.lastPrice) {\n    const arrow = d.changePercent > 0 ? '\u25b2' : (d.changePercent < 0 ? '\u25bc' : '\u2501');\n    msg += `${label}: ${d.lastPrice.toFixed(2)} ${arrow} ${d.changePercent >= 0 ? '+' : ''}${d.changePercent.toFixed(2)}%\\n`;\n  }\n}\n\nif (reds > 0 || ksAlerts > 0) {\n  msg += '\\n\u26a1 <b>ACTION REQUIRED</b>\\n';\n  msg += 'RED events occurred overnight. Review SENTINEL stops before open.\\n';\n  msg += 'Check Telegram history for full RED alert details.\\n';\n}\n\nmsg += `\\n<i>SENTINEL activates 9:30 AM ET. GABRIEL signing off.</i>`;\n\nreturn [{ json: { morning_brief_message: msg, posture, overnight_stats: { total, reds, yellows, greens, ksAlerts }, timestamp: new Date().toISOString() } }];"
+      },
+      "id": "f948a2c6-5646-4048-ae3c-00caedde85c1",
+      "name": "Morning Brief",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1344,
+        528
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput",
+      "notes": "Reads last 12h from Supabase. Fresh pre-market fetch. Posture: RISK-ON/NEUTRAL/RISK-OFF."
+    },
+    {
+      "parameters": {
+        "chatId": "8203545338",
+        "text": "={{ $json.morning_brief_message }}",
+        "additionalFields": {
+          "disable_web_page_preview": true,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "85d10aa3-5c2a-4e85-995e-9af1acbc18e4",
+      "name": "Morning Brief Delivery",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1136,
+        528
+      ],
+      "webhookId": "4e8d45c6-c1a4-4c6c-b394-a83cfebebe1c",
+      "alwaysOutputData": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "1cUBFkMQENfAXP8x",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "notes": "8:00 AM ET delivery. hunter_a2e_bot. Sets Principal posture before market open."
+    }
+  ],
+  "connections": {
+    "Overnight Watch Trigger": {
+      "main": [
+        [
+          {
+            "node": "Overnight Market Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weekend Watch Trigger": {
+      "main": [
+        [
+          {
+            "node": "Overnight Market Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Overnight Market Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Overnight Market Data": {
+      "main": [
+        [
+          {
+            "node": "News Scanner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "News Scanner": {
+      "main": [
+        [
+          {
+            "node": "Threshold Engine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threshold Engine": {
+      "main": [
+        [
+          {
+            "node": "Overnight Report Builder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Overnight Report Builder": {
+      "main": [
+        [
+          {
+            "node": "Escalation Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escalation Router": {
+      "main": [
+        [
+          {
+            "node": "Gabriel Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gabriel Logger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gabriel Alert": {
+      "main": [
+        [
+          {
+            "node": "RED Escalation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RED Escalation": {
+      "main": [
+        [
+          {
+            "node": "RED Alert Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CIL Analysis Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gabriel Logger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RED Alert Email": {
+      "main": [
+        [
+          {
+            "node": "Gabriel Logger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CIL Analysis Request": {
+      "main": [
+        [
+          {
+            "node": "Gabriel Logger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Morning Brief Trigger": {
+      "main": [
+        [
+          {
+            "node": "Morning Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Morning Brief": {
+      "main": [
+        [
+          {
+            "node": "Morning Brief Delivery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true
+  },
+  "staticData": {
+    "node:Overnight Watch Trigger": {
+      "recurrenceRules": []
+    },
+    "node:Weekend Watch Trigger": {
+      "recurrenceRules": []
+    },
+    "node:Morning Brief Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "8c799dcd-d839-443e-9df1-2448d49e6f1b",
+  "activeVersionId": "8c799dcd-d839-443e-9df1-2448d49e6f1b",
+  "versionCounter": 91,
+  "triggerCount": 3,
+  "shared": [
+    {
+      "updatedAt": "2026-03-26T19:26:56.606Z",
+      "createdAt": "2026-03-26T19:26:56.606Z",
+      "role": "workflow:owner",
+      "workflowId": "fwKiBHtedNQ1n34H",
+      "projectId": "MA2cfOhJvZM9d2WN",
+      "project": {
+        "updatedAt": "2025-08-15T16:51:32.695Z",
+        "createdAt": "2025-07-21T14:04:06.598Z",
+        "id": "MA2cfOhJvZM9d2WN",
+        "name": "William Lemon <barefootservants.65@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "updatedAt": "2026-03-26T19:26:54.042Z",
+      "createdAt": "2026-03-26T19:26:54.042Z",
+      "id": "5Ki6mTVdmpy68e47",
+      "name": "OVERNIGHT"
+    },
+    {
+      "updatedAt": "2026-01-26T23:19:36.877Z",
+      "createdAt": "2026-01-26T23:19:36.877Z",
+      "id": "Dv3AHIzNeBtJQsNy",
+      "name": "GABRIEL"
+    },
+    {
+      "updatedAt": "2026-03-26T19:26:53.763Z",
+      "createdAt": "2026-03-26T19:26:53.763Z",
+      "id": "KicosAqG7q2G55Uc",
+      "name": "v2.0"
+    },
+    {
+      "updatedAt": "2026-03-26T19:26:53.801Z",
+      "createdAt": "2026-03-26T19:26:53.801Z",
+      "id": "QbWYjOAt379ce34z",
+      "name": "URIEL-COVENANT"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-29T05:47:19.000Z",
+    "createdAt": "2026-03-29T05:29:24.839Z",
+    "versionId": "8c799dcd-d839-443e-9df1-2448d49e6f1b",
+    "workflowId": "fwKiBHtedNQ1n34H",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "0 */30 22-23,0-13 * * 1-5"
+              }
+            ]
+          }
+        },
+        "id": "839143b7-91f0-48c0-bb65-e9bd62f2d5f9",
+        "name": "Overnight Watch Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -1776,
+          -112
+        ],
+        "alwaysOutputData": true,
+        "onError": "continueErrorOutput",
+        "notes": "Fires every 30 min, 6PM-9:25AM ET Mon-Fri. Set active hours in cron: 22:00-13:25 UTC."
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "0 0 */2 * * 0,6"
+              }
+            ]
+          }
+        },
+        "id": "a14e735c-34c2-4cc6-822e-298271a94eb6",
+        "name": "Weekend Watch Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -1776,
+          128
+        ],
+        "alwaysOutputData": true,
+        "onError": "continueErrorOutput",
+        "notes": "Fires every 2 hours on Saturday and Sunday for crypto + geopolitical coverage."
+      },
+      {
+        "parameters": {},
+        "id": "8b8bb974-f0aa-40f3-8060-ac7b678b0e70",
+        "name": "Manual Trigger",
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -1776,
+          368
+        ],
+        "notes": "On-demand testing and emergency override."
+      },
+      {
+        "parameters": {
+          "jsCode": "// GABRIEL Overnight Market Data Collector v2.0\n// Fetches 15 symbols from Yahoo Finance v8\nconst symbols = [\n  'ES=F',    // S&P 500 futures\n  'NQ=F',    // Nasdaq futures\n  'YM=F',    // Dow futures\n  'RTY=F',   // Russell 2000 futures\n  'GC=F',    // Gold futures\n  'SI=F',    // Silver futures \u2014 primary thesis\n  'CL=F',    // Crude oil futures\n  '%5EVIX',  // VIX (encoded ^VIX)\n  'BTC-USD', // Bitcoin (IBIT proxy)\n  'ETH-USD', // Ethereum\n  'UUP',     // DXY proxy ETF\n  'TLT',     // Long bond proxy (inverse yield)\n  'DIA',     // Dow ETF (after-hours proxy)\n  'SPY',     // S&P ETF (after-hours proxy)\n  'QQQ'      // Nasdaq ETF (after-hours proxy)\n  'DX=F',    // ICE Dollar Index futures (24hr) \u2014 Kill Switch\n  'ZB=F',    // 30Y Treasury Bond futures (24hr) \u2014 Kill Switch\n];\n\nconst marketData = {};\n\nfor (const sym of symbols) {\n  try {\n    const resp = await this.helpers.httpRequest({\n      method: 'GET',\n      url: `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=2d`,\n      headers: { 'User-Agent': 'Mozilla/5.0 (GABRIEL/2.0)' },\n      json: true\n    });\n    const meta = resp?.chart?.result?.[0]?.meta;\n    if (!meta) continue;\n    const price = meta.regularMarketPrice || 0;\n    const prevClose = meta.chartPreviousClose || 0;\n    const changePct = prevClose > 0 ? Math.round(((price - prevClose) / prevClose) * 10000) / 100 : 0;\n    const cleanSym = (meta.symbol || sym).replace('%5E', '^').replace('^', '');\n    marketData[cleanSym] = {\n      lastPrice: price,\n      changePercent: changePct,\n      previousClose: prevClose,\n      symbol: cleanSym\n    };\n  } catch (e) {\n    // Symbol fetch failed \u2014 skip, do not halt workflow\n    marketData[sym.replace('%5E', '').replace('^', '')] = { lastPrice: 0, changePercent: 0, previousClose: 0, error: true };\n  }\n}\n\nreturn [{ json: {\n  market_data: marketData,\n  symbol_count: Object.keys(marketData).length,\n  fetch_time: new Date().toISOString(),\n  source: 'YAHOO_FINANCE_V8'\n}}];"
+        },
+        "id": "d5caaf1b-0476-4b22-a0e8-ffc7f89c364f",
+        "name": "Overnight Market Data",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1344,
+          112
+        ],
+        "alwaysOutputData": true,
+        "onError": "continueErrorOutput",
+        "notes": "Fetches 15 symbols. Symbol failures skip, workflow continues."
+      },
+      {
+        "parameters": {
+          "jsCode": "// GABRIEL News Scanner v2.0\n// Scans Finnhub general news for geopolitical keywords\nconst FINNHUB_KEY = 'd5vc61pr01qjj9jj0nfgd5vc61pr01qjj9jj0ng0'; // ADD: Pull from HUNTER H30 credential in n8n\n\nconst keywords = [\n  'hormuz', 'strait', 'iran', 'nuclear', 'ceasefire',\n  'margin call', 'circuit breaker', 'force majeure', 'default',\n  'fed rate', 'emergency meeting', 'black swan', 'oil embargo',\n  'opec emergency', 'strategic reserve', 'bank run', 'sanctions'\n];\n\nconst criticalKeywords = ['nuclear', 'circuit breaker', 'force majeure', 'default', 'emergency meeting', 'bank run'];\n\nconst input = $input.first().json;\nconst alerts = [];\nlet newsFetchOk = false;\n\ntry {\n  const newsResp = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `https://finnhub.io/api/v1/news?category=general&token=${FINNHUB_KEY}`,\n    json: true\n  });\n  newsFetchOk = true;\n  const articles = Array.isArray(newsResp) ? newsResp.slice(0, 50) : [];\n  for (const article of articles) {\n    const text = ((article.headline || '') + ' ' + (article.summary || '')).toLowerCase();\n    for (const kw of keywords) {\n      if (text.includes(kw)) {\n        alerts.push({\n          type: criticalKeywords.includes(kw) ? 'NEWS_CRITICAL' : 'NEWS_KEYWORD',\n          keyword: kw,\n          headline: article.headline || '',\n          source: article.source || '',\n          url: article.url || '',\n          timestamp: article.datetime ? new Date(article.datetime * 1000).toISOString() : new Date().toISOString()\n        });\n        break;\n      }\n    }\n  }\n} catch (e) {\n  // Finnhub unavailable \u2014 continue with empty alerts, do not fail\n}\n\nreturn [{ json: {\n  market_data: input.market_data,\n  news_alerts: alerts,\n  news_count: alerts.length,\n  news_fetch_ok: newsFetchOk,\n  fetch_time: input.fetch_time\n}}];"
+        },
+        "id": "89d12c08-73fc-42a4-afb2-7994edd0ec89",
+        "name": "News Scanner",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1136,
+          112
+        ],
+        "alwaysOutputData": true,
+        "onError": "continueErrorOutput",
+        "notes": "Finnhub key required. Add HUNTER H30 Finnhub API key. Failure safe \u2014 empty alerts if down."
+      },
+      {
+        "parameters": {
+          "jsCode": "// GABRIEL Threshold Engine v2.1\n// Evaluates GREEN / YELLOW / RED escalation\n// v2.1 fixes: DXY directional check, Kill Switch using 24hr futures (DX=F, ZB=F)\n\nconst input = $input.first().json;\nconst md = input.market_data || {};\nconst newsAlerts = input.news_alerts || [];\n\nconst yellowTriggers = [];\nconst redTriggers = [];\n\n// YELLOW \u2014 directional where thesis-relevant, absolute where direction doesnt matter\nfunction chkY(sym, threshold, label) {\n  if (md[sym] && Math.abs(md[sym].changePercent) > threshold) {\n    yellowTriggers.push({ symbol: sym, value: md[sym].changePercent, threshold, label });\n  }\n}\n\nfunction chkR(sym, threshold, label) {\n  if (md[sym] && Math.abs(md[sym].changePercent) > threshold) {\n    redTriggers.push({ symbol: sym, value: md[sym].changePercent, threshold, label });\n  }\n}\n\n// YELLOW checks\nchkY('ES=F',    1.0,  'S&P 500 futures > 1%');\nchkY('VIX',    15.0,  'VIX change > 15%');\nchkY('CL=F',    3.0,  'Crude oil > 3%');\nchkY('GC=F',    2.0,  'Gold > 2%');\nchkY('SI=F',    5.0,  'Silver > 5% \u2014 THESIS ALERT');\nchkY('BTC-USD', 5.0,  'Bitcoin > 5%');\n\n// DXY DIRECTIONAL \u2014 rising dollar only is a risk signal\n// Dollar weakness is bullish for metals \u2014 not a YELLOW\nif (md['UUP'] && md['UUP'].changePercent > 0.5) {\n  yellowTriggers.push({ symbol: 'UUP', value: md['UUP'].changePercent, threshold: 0.5, label: 'DXY proxy rising > 0.5% \u2014 correlation risk to metals' });\n}\n\n// VIX absolute level YELLOW\nif (md['VIX'] && md['VIX'].lastPrice > 25) {\n  yellowTriggers.push({ symbol: 'VIX', value: md['VIX'].lastPrice, threshold: 25, label: 'VIX level > 25' });\n}\n\n// RED checks\nchkR('ES=F',    3.0,  'S&P 500 futures > 3% \u2014 regime shift');\nchkR('CL=F',    8.0,  'Crude oil > 8% \u2014 Hormuz-class event');\nchkR('SI=F',   10.0,  'Silver > 10% \u2014 MARGIN CALL TERRITORY');\n\n// DXY RED \u2014 directional only\nif (md['UUP'] && md['UUP'].changePercent > 1.5) {\n  redTriggers.push({ symbol: 'UUP', value: md['UUP'].changePercent, threshold: 1.5, label: 'DXY > 1.5% rising \u2014 Kill Switch warning' });\n}\n\n// VIX absolute RED\nif (md['VIX'] && md['VIX'].lastPrice > 35) {\n  redTriggers.push({ symbol: 'VIX', value: md['VIX'].lastPrice, threshold: 35, label: 'VIX > 35 \u2014 CRISIS' });\n}\n\n// Multi-signal: 3+ market yellows = RED\n// NOTE: news is added AFTER this check intentionally \u2014 news cannot inflate market signal count\nif (yellowTriggers.length >= 3) {\n  redTriggers.push({ symbol: 'MULTI', value: yellowTriggers.length, threshold: 3, label: `${yellowTriggers.length} simultaneous market yellow triggers \u2014 coordinated selloff` });\n}\n\n// News escalation \u2014 added after multi-signal check\nif (newsAlerts.length > 0) {\n  yellowTriggers.push({ symbol: 'NEWS', value: newsAlerts.length, threshold: 1, label: `${newsAlerts.length} news keyword alert(s)` });\n  for (const alert of newsAlerts) {\n    if (alert.type === 'NEWS_CRITICAL') {\n      redTriggers.push({ symbol: 'NEWS_CRITICAL', value: alert.keyword, threshold: 0, label: `CRITICAL: ${alert.keyword} \u2014 ${alert.headline.substring(0, 60)}` });\n    }\n  }\n}\n\n// Kill Switch pre-alert v2.1\n// Uses 24hr futures: DX=F (ICE Dollar Index) and ZB=F (30Y Treasury Bond futures)\n// UUP and TLT have near-zero overnight volume \u2014 Kill Switch was effectively dead\nconst dxRising = md['DX=F'] && md['DX=F'].changePercent > 0.3;\nconst bondsDown = md['ZB=F'] && md['ZB=F'].changePercent < -0.3;\nconst vixHot = md['VIX'] && md['VIX'].lastPrice > 30;\n\nconst ksWarning = dxRising && bondsDown && vixHot;\n\nif (ksWarning) {\n  redTriggers.push({\n    symbol: 'KILLSWITCH',\n    value: 'DX=F+ZB=F+VIX',\n    threshold: 0,\n    label: `KILL SWITCH PRE-ALERT: Dollar rising (DX=F ${md['DX=F'].changePercent.toFixed(2)}%) + Bonds falling (ZB=F ${md['ZB=F'].changePercent.toFixed(2)}%) + VIX ${md['VIX'].lastPrice.toFixed(1)}`\n  });\n}\n\nconst escalation = redTriggers.length > 0 ? 'RED' : (yellowTriggers.length > 0 ? 'YELLOW' : 'GREEN');\n\nreturn [{ json: {\n  escalation,\n  yellow_triggers: yellowTriggers,\n  red_triggers: redTriggers,\n  yellow_count: yellowTriggers.length,\n  red_count: redTriggers.length,\n  kill_switch_warning: !!ksWarning,\n  market_data: md,\n  news_alerts: newsAlerts,\n  timestamp: new Date().toISOString()\n}}];"
+        },
+        "id": "5f62be55-3b3b-4e3f-8625-c83263e8b865",
+        "name": "Threshold Engine",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -912,
+          112
+        ],
+        "alwaysOutputData": true,
+        "onError": "continueErrorOutput",
+        "notes": "GREEN/YELLOW/RED determination. All thresholds match IRONCLAD v2.0 + METATRON v10.7."
+      },
+      {
+        "parameters": {
+          "jsCode": "// GABRIEL Report Builder v2.0\n// Builds HTML-formatted Telegram message\nconst input = $input.first().json;\nconst md = input.market_data || {};\nconst esc = input.escalation;\n\nconst emojiMap = { RED: '\ud83d\udea8', YELLOW: '\u26a0\ufe0f', GREEN: '\u2705' };\nconst emoji = emojiMap[esc] || '\u2705';\nconst now = new Date();\nconst etTime = now.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit' });\nconst dateStr = now.toISOString().substring(0, 10);\n\nlet msg = `${emoji} <b>GABRIEL OVERNIGHT WATCH</b>\\n`;\nmsg += `<i>${dateStr} | ${etTime} ET | ${esc}</i>\\n\\n`;\n\n// Market snapshot\nconst displayOrder = [\n  ['ES=F','S&P Futs'], ['NQ=F','NQ Futs'], ['VIX','VIX'],\n  ['CL=F','Oil'], ['GC=F','Gold'], ['SI=F','Silver'],\n  ['UUP','DXY(UUP)'], ['TLT','Bonds(TLT)'], ['BTC-USD','BTC']\n];\nmsg += '<b>MARKET SNAPSHOT</b>\\n';\nfor (const [sym, label] of displayOrder) {\n  const d = md[sym];\n  if (d && d.lastPrice) {\n    const arrow = d.changePercent > 0 ? '\u25b2' : (d.changePercent < 0 ? '\u25bc' : '\u2501');\n    const chg = (d.changePercent >= 0 ? '+' : '') + d.changePercent.toFixed(2) + '%';\n    msg += `${label}: ${d.lastPrice.toFixed(2)} ${arrow} ${chg}\\n`;\n  }\n}\n\n// Red triggers\nif (input.red_triggers && input.red_triggers.length > 0) {\n  msg += '\\n\ud83d\udea8 <b>RED TRIGGERS</b>\\n';\n  for (const t of input.red_triggers) msg += `\u2022 ${t.label}\\n`;\n}\n\n// Yellow triggers\nif (input.yellow_triggers && input.yellow_triggers.length > 0) {\n  msg += `\\n\u26a0\ufe0f <b>YELLOW TRIGGERS (${input.yellow_count})</b>\\n`;\n  for (const t of input.yellow_triggers) msg += `\u2022 ${t.label}\\n`;\n}\n\n// News alerts\nif (input.news_alerts && input.news_alerts.length > 0) {\n  msg += `\\n\ud83d\udcf0 <b>NEWS ALERTS (${input.news_alerts.length})</b>\\n`;\n  for (const n of input.news_alerts.slice(0, 5)) {\n    msg += `\u2022 [${n.keyword.toUpperCase()}] ${n.headline.substring(0, 75)}\\n`;\n  }\n}\n\n// Kill Switch warning\nif (input.kill_switch_warning) {\n  msg += '\\n\ud83d\udd34 <b>KILL SWITCH PRE-ALERT</b>\\n';\n  msg += 'DXY \u25b2 + Yields \u25b2 + VIX &gt; 30\\n';\n  msg += 'Correlation Kill Switch conditions forming.\\n';\n  msg += 'Review metals positions BEFORE 9:30 AM open.\\n';\n}\n\n// Footer\nmsg += `\\n<i>GABRIEL v2.0 | Uriel Covenant</i>`;\n\nreturn [{ json: {\n  telegram_message: msg,\n  escalation: esc,\n  timestamp: input.timestamp,\n  market_data: md,\n  triggers: { yellow: input.yellow_triggers, red: input.red_triggers },\n  news_alerts: input.news_alerts,\n  kill_switch_warning: input.kill_switch_warning,\n  yellow_count: input.yellow_count,\n  red_count: input.red_count\n}}];"
+        },
+        "id": "cf4b92d8-b61f-4aca-a00f-01ee805c908f",
+        "name": "Overnight Report Builder",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -688,
+          112
+        ],
+        "alwaysOutputData": true,
+        "onError": "continueErrorOutput",
+        "notes": "HTML Telegram message. Escape < > & in dynamic fields to prevent parse errors."
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "0d2a3b52-8f0d-463c-babc-4718c98a0ea1",
+                "leftValue": "={{ $json.escalation }}",
+                "rightValue": "GREEN",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "7deaa875-9d2b-4de5-980f-bb1570290f47",
+        "name": "Escalation Router",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -464,
+          112
+        ],
+        "alwaysOutputData": true,
+        "onError": "continueErrorOutput",
+        "notes": "GREEN \u2192 silent log only. YELLOW/RED \u2192 Telegram alert."
+      },
+      {
+        "parameters": {
+          "chatId": "8203545338",
+          "text": "={{ $('Overnight Report Builder').first().json.telegram_message }}",
+          "additionalFields": {
+            "disable_web_page_preview": true,
+            "parse_mode": "HTML"
+          }
+        },
+        "id": "b36e05cb-df14-4d8d-90ed-933cf2d72a23",
+        "name": "Gabriel Alert",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          -256,
+          -16
+        ],
+        "webhookId": "302280ab-efbf-4640-a558-4e065e94ef70",
+        "credentials": {
+          "telegramApi": {
+            "id": "1cUBFkMQENfAXP8x",
+            "name": "Telegram account"
+          }
+        },
+        "notes": "hunter_a2e_bot. Same credential as SENTINEL."
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "63de9594-8fef-4e00-bd26-74cac3acba2b",
+                "leftValue": "={{ $('Threshold Engine').first().json.escalation }}",
+                "rightValue": "RED",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "92b242be-df9a-499a-90b8-90c4362c95e2",
+        "name": "RED Escalation",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -32,
+          -16
+        ],
+        "notes": "RED only: fire email + CIL webhook. YELLOW falls through to logger."
+      },
+      {
+        "parameters": {
+          "sendTo": "ashes2echoes.platform@gmail.com",
+          "subject": "={{ '\ud83d\udea8 GABRIEL RED ALERT \u2014 ' + new Date().toISOString().substring(0,16).replace('T',' ') + ' ET' }}",
+          "message": "={{ $('Overnight Report Builder').first().json.telegram_message }}",
+          "options": {}
+        },
+        "id": "d5cb96da-f21f-415b-b25a-110043ee7ea5",
+        "name": "RED Alert Email",
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          304,
+          -416
+        ],
+        "webhookId": "15f0a994-6d1e-4395-b43c-2d536f425f33",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "TGqE0ZvYW90FsqLp",
+            "name": "Gmail \u2014 Platform (ashes2echoes)"
+          }
+        },
+        "notes": "ashes2echoes.platform@gmail.com. RED escalation only."
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://ashes2echoes.app.n8n.cloud/webhook/9d360d66-4d0e-46e4-9f24-dea7170e1ebe ",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "query",
+                "value": "={{ 'GABRIEL RED ALERT ' + new Date().toISOString().substring(0,16).replace('T',' ') + ' ET. Triggers: ' + JSON.stringify($('Overnight Report Builder').first().json.triggers.red) + '. Recommend market open posture.' }}"
+              },
+              {
+                "name": "domain",
+                "value": "MARKET"
+              },
+              {
+                "name": "urgency",
+                "value": "HIGH"
+              },
+              {
+                "name": "source",
+                "value": "GABRIEL_OVERNIGHT_v2"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "text"
+              }
+            }
+          }
+        },
+        "id": "0b1b50b0-e7ca-426e-8ca8-a330d45c45e8",
+        "name": "CIL Analysis Request",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          288,
+          -128
+        ],
+        "alwaysOutputData": true,
+        "onError": "continueErrorOutput",
+        "notes": "Set CIL_WEBHOOK_URL in n8n variables. Pull from CIL v5.2.1 webhook node URL. RED only."
+      },
+      {
+        "parameters": {
+          "jsCode": "// GABRIEL Logger v2.0 \u2014 Supabase\nconst SUPABASE_PROJECT = 'bwtguoaakkmsnzomswem';\nconst SUPABASE_ANON_KEY = 'sb_publishable_is2iGeR-YRuNrhdsvrr3-w_PVAFcm8z';\n\nconst input = $input.first().json;\n\nfunction uuid4() {\n  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {\n    const r = Math.random() * 16 | 0;\n    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);\n  });\n}\n\nconst entry = {\n  id: uuid4(),\n  escalation: input.escalation || 'GREEN',\n  yellow_count: input.yellow_count || 0,\n  red_count: input.red_count || 0,\n  news_count: (input.news_alerts || []).length,\n  kill_switch_warning: input.kill_switch_warning || false,\n  market_snapshot: input.market_data ? JSON.stringify(input.market_data) : '{}',\n  timestamp: input.timestamp || new Date().toISOString()\n};\n\ntry {\n  await this.helpers.httpRequest({\n    method: 'POST',\n    url: `https://${SUPABASE_PROJECT}.supabase.co/rest/v1/gabriel_overnight_log`,\n    headers: {\n      'apikey': SUPABASE_ANON_KEY,\n      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,\n      'Content-Type': 'application/json',\n      'Prefer': 'return=minimal'\n    },\n    body: entry,\n    json: true\n  });\n} catch (e) {\n  // Log write failed \u2014 do not fail workflow\n}\n\nreturn [{ json: { logged: true, escalation: entry.escalation, id: entry.id, timestamp: entry.timestamp } }];"
+        },
+        "id": "bf0130a2-e0ba-4296-9203-95e5bb9735a4",
+        "name": "Gabriel Logger",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          688,
+          336
+        ],
+        "alwaysOutputData": true,
+        "onError": "continueErrorOutput",
+        "notes": "Writes every run to Supabase gabriel_overnight_log. Table must exist before first run. See SQL in spec."
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "0 12 * * 1-5"
+              }
+            ]
+          }
+        },
+        "id": "620867c2-0fd6-4900-ab5c-29999e8efeb1",
+        "name": "Morning Brief Trigger",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -1616,
+          528
+        ],
+        "alwaysOutputData": true,
+        "onError": "continueErrorOutput",
+        "notes": "8:00 AM ET = 12:00 UTC. Monday-Friday only. Independent chain."
+      },
+      {
+        "parameters": {
+          "jsCode": "// GABRIEL Morning Brief Builder v2.0\n// Queries Supabase for overnight logs, synthesizes into report\nconst SUPABASE_PROJECT = 'bwtguoaakkmsnzomswem';\nconst SUPABASE_ANON_KEY = 'sb_publishable_is2iGeR-YRuNrhdsvrr3-w_PVAFcm8z';\n\n// Get last 12 hours of logs\nconst since = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();\nlet logs = [];\ntry {\n  const resp = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `https://${SUPABASE_PROJECT}.supabase.co/rest/v1/gabriel_overnight_log?timestamp=gte.${since}&order=timestamp.desc`,\n    headers: {\n      'apikey': SUPABASE_ANON_KEY,\n      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`\n    },\n    json: true\n  });\n  logs = Array.isArray(resp) ? resp : [];\n} catch (e) { /* continue with empty */ }\n\n// Stats\nconst total = logs.length;\nconst reds = logs.filter(l => l.escalation === 'RED').length;\nconst yellows = logs.filter(l => l.escalation === 'YELLOW').length;\nconst greens = logs.filter(l => l.escalation === 'GREEN').length;\nconst ksAlerts = logs.filter(l => l.kill_switch_warning).length;\nconst maxRed = logs.reduce((m, l) => Math.max(m, l.red_count || 0), 0);\nconst maxYellow = logs.reduce((m, l) => Math.max(m, l.yellow_count || 0), 0);\n\n// Market posture logic\nlet posture = 'RISK-ON';\nif (reds > 0 || ksAlerts > 0) posture = 'RISK-OFF';\nelse if (yellows > 2) posture = 'NEUTRAL';\n\n// Pull latest market data fresh\nlet freshData = {};\nconst quickSyms = ['ES=F', 'SI=F', 'GC=F', 'CL=F', '%5EVIX', 'UUP'];\nfor (const sym of quickSyms) {\n  try {\n    const r = await this.helpers.httpRequest({\n      method: 'GET',\n      url: `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=1d`,\n      headers: { 'User-Agent': 'Mozilla/5.0' },\n      json: true\n    });\n    const meta = r?.chart?.result?.[0]?.meta;\n    if (meta) {\n      const clean = (meta.symbol || sym).replace('%5E','').replace('^','');\n      freshData[clean] = {\n        lastPrice: meta.regularMarketPrice || 0,\n        changePercent: meta.chartPreviousClose > 0 ? Math.round(((meta.regularMarketPrice - meta.chartPreviousClose) / meta.chartPreviousClose) * 10000) / 100 : 0\n      };\n    }\n  } catch (e) {}\n}\n\n// Build message\nconst postureEmoji = { 'RISK-ON': '\ud83d\udfe2', 'NEUTRAL': '\ud83d\udfe1', 'RISK-OFF': '\ud83d\udd34' };\nconst etTime = new Date().toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit' });\nconst dateStr = new Date().toISOString().substring(0, 10);\n\nlet msg = `\ud83c\udf05 <b>GABRIEL MORNING BRIEF</b>\\n`;\nmsg += `<i>${dateStr} | ${etTime} ET</i>\\n\\n`;\nmsg += `${postureEmoji[posture]} <b>POSTURE: ${posture}</b>\\n\\n`;\nmsg += `<b>OVERNIGHT SUMMARY (last 12h)</b>\\n`;\nmsg += `Runs: ${total} | \ud83d\udea8 RED: ${reds} | \u26a0\ufe0f YELLOW: ${yellows} | \u2705 GREEN: ${greens}\\n`;\nif (ksAlerts > 0) msg += `\ud83d\udd34 Kill Switch pre-alerts: ${ksAlerts}\\n`;\nif (maxRed > 0) msg += `Peak red triggers in single run: ${maxRed}\\n`;\n\n// Fresh pre-market snapshot\nconst snapLabels = {'ES=F':'S&P Futs', 'SI=F':'Silver', 'GC=F':'Gold', 'CL=F':'Oil', 'VIX':'VIX', 'UUP':'DXY(UUP)'};\nmsg += '\\n<b>PRE-MARKET NOW</b>\\n';\nfor (const [sym, label] of Object.entries(snapLabels)) {\n  const d = freshData[sym.replace('=F','=F').replace('%5E','')];\n  if (d && d.lastPrice) {\n    const arrow = d.changePercent > 0 ? '\u25b2' : (d.changePercent < 0 ? '\u25bc' : '\u2501');\n    msg += `${label}: ${d.lastPrice.toFixed(2)} ${arrow} ${d.changePercent >= 0 ? '+' : ''}${d.changePercent.toFixed(2)}%\\n`;\n  }\n}\n\nif (reds > 0 || ksAlerts > 0) {\n  msg += '\\n\u26a1 <b>ACTION REQUIRED</b>\\n';\n  msg += 'RED events occurred overnight. Review SENTINEL stops before open.\\n';\n  msg += 'Check Telegram history for full RED alert details.\\n';\n}\n\nmsg += `\\n<i>SENTINEL activates 9:30 AM ET. GABRIEL signing off.</i>`;\n\nreturn [{ json: { morning_brief_message: msg, posture, overnight_stats: { total, reds, yellows, greens, ksAlerts }, timestamp: new Date().toISOString() } }];"
+        },
+        "id": "f948a2c6-5646-4048-ae3c-00caedde85c1",
+        "name": "Morning Brief",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1344,
+          528
+        ],
+        "alwaysOutputData": true,
+        "onError": "continueErrorOutput",
+        "notes": "Reads last 12h from Supabase. Fresh pre-market fetch. Posture: RISK-ON/NEUTRAL/RISK-OFF."
+      },
+      {
+        "parameters": {
+          "chatId": "8203545338",
+          "text": "={{ $json.morning_brief_message }}",
+          "additionalFields": {
+            "disable_web_page_preview": true,
+            "parse_mode": "HTML"
+          }
+        },
+        "id": "85d10aa3-5c2a-4e85-995e-9af1acbc18e4",
+        "name": "Morning Brief Delivery",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          -1136,
+          528
+        ],
+        "webhookId": "4e8d45c6-c1a4-4c6c-b394-a83cfebebe1c",
+        "alwaysOutputData": true,
+        "credentials": {
+          "telegramApi": {
+            "id": "1cUBFkMQENfAXP8x",
+            "name": "Telegram account"
+          }
+        },
+        "onError": "continueErrorOutput",
+        "notes": "8:00 AM ET delivery. hunter_a2e_bot. Sets Principal posture before market open."
+      }
+    ],
+    "connections": {
+      "Overnight Watch Trigger": {
+        "main": [
+          [
+            {
+              "node": "Overnight Market Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Weekend Watch Trigger": {
+        "main": [
+          [
+            {
+              "node": "Overnight Market Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Manual Trigger": {
+        "main": [
+          [
+            {
+              "node": "Overnight Market Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Overnight Market Data": {
+        "main": [
+          [
+            {
+              "node": "News Scanner",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "News Scanner": {
+        "main": [
+          [
+            {
+              "node": "Threshold Engine",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Threshold Engine": {
+        "main": [
+          [
+            {
+              "node": "Overnight Report Builder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Overnight Report Builder": {
+        "main": [
+          [
+            {
+              "node": "Escalation Router",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Escalation Router": {
+        "main": [
+          [
+            {
+              "node": "Gabriel Alert",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Gabriel Logger",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Gabriel Alert": {
+        "main": [
+          [
+            {
+              "node": "RED Escalation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RED Escalation": {
+        "main": [
+          [
+            {
+              "node": "RED Alert Email",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "CIL Analysis Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Gabriel Logger",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "RED Alert Email": {
+        "main": [
+          [
+            {
+              "node": "Gabriel Logger",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "CIL Analysis Request": {
+        "main": [
+          [
+            {
+              "node": "Gabriel Logger",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Morning Brief Trigger": {
+        "main": [
+          [
+            {
+              "node": "Morning Brief",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Morning Brief": {
+        "main": [
+          [
+            {
+              "node": "Morning Brief Delivery",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "William Lemon",
+    "name": "Version 8c799dcd",
+    "description": "",
+    "autosaved": true,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-03-29T05:41:31.664Z",
+        "id": 302,
+        "workflowId": "fwKiBHtedNQ1n34H",
+        "versionId": "8c799dcd-d839-443e-9df1-2448d49e6f1b",
+        "event": "activated",
+        "userId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      },
+      {
+        "createdAt": "2026-04-07T22:39:43.664Z",
+        "id": 430,
+        "workflowId": "fwKiBHtedNQ1n34H",
+        "versionId": "8c799dcd-d839-443e-9df1-2448d49e6f1b",
+        "event": "activated",
+        "userId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      },
+      {
+        "createdAt": "2026-04-07T22:39:43.564Z",
+        "id": 429,
+        "workflowId": "fwKiBHtedNQ1n34H",
+        "versionId": "8c799dcd-d839-443e-9df1-2448d49e6f1b",
+        "event": "deactivated",
+        "userId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      }
+    ]
+  }
+}
