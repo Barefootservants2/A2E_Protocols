@@ -1,0 +1,398 @@
+{
+  "updatedAt": "2026-04-08T06:13:43.166Z",
+  "createdAt": "2026-04-04T07:08:34.194Z",
+  "id": "kcngMMPBm5h0ZfTZ",
+  "name": "ETRADE TOKEN EXCHANGE v1.0",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "tg-trg",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        300
+      ],
+      "webhookId": "etrade-token-exchange",
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1cUBFkMQENfAXP8x",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "exchange",
+      "name": "Exchange Token",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        300
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const input = $input.first().json;\nconst msgText = (input.message && input.message.text) ? input.message.text : (input.text || '');\n\nconst CONSUMER_KEY    = $vars['ETRADE_CONSUMER_KEY'];\nconst CONSUMER_SECRET = $vars['ETRADE_CONSUMER_SECRET'];\nconst N8N_API_KEY     = $vars['N8N_API_KEY'];\nconst N8N_BASE        = 'https://ashes2echoes.app.n8n.cloud';\nconst crypto = require('crypto');\nfunction pct(s) { return encodeURIComponent(String(s)); }\n\nconst verifier = msgText.trim().split(/\\s+/)[0];\nif (!verifier || verifier.length < 4 || verifier.length > 10) {\n  return [{ json: { status: 'IGNORED', msg: msgText, reason: 'Not a verifier code' } }];\n}\n\n// Read request tokens FRESH via API (not $vars which are cached)\nasync function getVar(key) {\n  const vars = await this.helpers.httpRequest({method:'GET',url:N8N_BASE+'/api/v1/variables',headers:{'X-N8N-API-KEY':N8N_API_KEY}});\n  const v = (vars.data||[]).find(x=>x.key===key);\n  return v ? v.value : '';\n}\n\nconst requestToken       = await getVar.call(this, 'ETRADE_REQUEST_TOKEN');\nconst requestTokenSecret = await getVar.call(this, 'ETRADE_REQUEST_TOKEN_SECRET');\n\nif (!requestToken || requestToken === 'pending' || requestToken === 'used') {\n  return [{ json: { status: 'ERROR', error: 'No valid request token. Run TOKEN KEEPER first.', verifier, storedToken: requestToken } }];\n}\n\nconst ts    = String(Math.floor(Date.now()/1000));\nconst nonce = Math.random().toString(36).substring(2,14);\nconst ACC_URL = 'https://api.etrade.com/oauth/access_token';\nconst params = {\n  oauth_consumer_key:CONSUMER_KEY, oauth_nonce:nonce,\n  oauth_signature_method:'HMAC-SHA1', oauth_timestamp:ts,\n  oauth_token:requestToken, oauth_verifier:verifier, oauth_version:'1.0'\n};\nconst sortedStr = Object.keys(params).sort().map(k=>pct(k)+'='+pct(params[k])).join('&');\nconst baseStr = 'GET&'+pct(ACC_URL)+'&'+pct(sortedStr);\nconst sigKey = pct(CONSUMER_SECRET)+'&'+pct(requestTokenSecret);\nconst sig = crypto.createHmac('sha1',sigKey).update(baseStr).digest('base64');\nparams['oauth_signature'] = sig;\nconst authHeader = 'OAuth realm=\"\",' + Object.keys(params).filter(k=>k.startsWith('oauth_')).sort().map(k=>k+'=\"'+pct(params[k])+'\"').join(',');\n\nlet newToken, newSecret;\ntry {\n  const resp = await this.helpers.httpRequest({method:'GET',url:ACC_URL,headers:{'Authorization':authHeader}});\n  const body = typeof resp==='string' ? resp : JSON.stringify(resp);\n  const parsed = {};\n  body.split('&').forEach(p=>{const[k,v]=p.split('=');if(k)parsed[k]=decodeURIComponent(v||'');});\n  newToken  = parsed['oauth_token']||'';\n  newSecret = parsed['oauth_token_secret']||'';\n} catch(e) {\n  return [{json:{status:'EXCHANGE_ERROR',error:e.message,verifier}}];\n}\n\nif (!newToken) return [{json:{status:'NO_TOKEN',raw:'exchange returned empty'}}];\n\nasync function updateVar(key, value) {\n  const vars = await this.helpers.httpRequest({method:'GET',url:N8N_BASE+'/api/v1/variables',headers:{'X-N8N-API-KEY':N8N_API_KEY}});\n  const varObj = (vars.data||[]).find(v=>v.key===key);\n  if(!varObj) return;\n  try { await this.helpers.httpRequest({method:'PATCH',url:N8N_BASE+'/api/v1/variables/'+varObj.id,headers:{'X-N8N-API-KEY':N8N_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({key,value})}); } catch(e) {}\n}\n\nawait updateVar.call(this,'ETRADE_ACCESS_TOKEN',newToken);\nawait updateVar.call(this,'ETRADE_ACCESS_TOKEN_SECRET',newSecret);\nawait updateVar.call(this,'ETRADE_REQUEST_TOKEN','used');\nawait updateVar.call(this,'ETRADE_REQUEST_TOKEN_SECRET','used');\n\nreturn [{json:{status:'SUCCESS',new_token_preview:newToken.substring(0,15)+'...',timestamp:new Date().toISOString()}}];"
+      }
+    },
+    {
+      "id": "if-ok",
+      "name": "Exchange OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        600,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "SUCCESS",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tg-ok",
+      "name": "Confirm Success",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        900,
+        200
+      ],
+      "parameters": {
+        "chatId": "8203545338",
+        "text": "\u2705 <b>E*TRADE RECONNECTED</b>\n\nNew tokens active. SENTINEL, HUNTER, and all workflows now have live portfolio access.\n\n{{ $json.timestamp }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1cUBFkMQENfAXP8x",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "tg-err",
+      "name": "Alert Error",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        900,
+        400
+      ],
+      "parameters": {
+        "chatId": "8203545338",
+        "text": "\u274c Token exchange failed: {{ $json.status }} \u2014 {{ $json.error || $json.reason || 'unknown' }}",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1cUBFkMQENfAXP8x",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Exchange Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exchange Token": {
+      "main": [
+        [
+          {
+            "node": "Exchange OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exchange OK?": {
+      "main": [
+        [
+          {
+            "node": "Confirm Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alert Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "bb589336-da00-4292-94f0-50ecf5c2a29d",
+  "activeVersionId": "bb589336-da00-4292-94f0-50ecf5c2a29d",
+  "versionCounter": 20,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-04-04T07:08:34.196Z",
+      "createdAt": "2026-04-04T07:08:34.196Z",
+      "role": "workflow:owner",
+      "workflowId": "kcngMMPBm5h0ZfTZ",
+      "projectId": "MA2cfOhJvZM9d2WN",
+      "project": {
+        "updatedAt": "2025-08-15T16:51:32.695Z",
+        "createdAt": "2025-07-21T14:04:06.598Z",
+        "id": "MA2cfOhJvZM9d2WN",
+        "name": "William Lemon <barefootservants.65@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-04-08T05:49:15.810Z",
+    "createdAt": "2026-04-08T05:49:15.810Z",
+    "versionId": "bb589336-da00-4292-94f0-50ecf5c2a29d",
+    "workflowId": "kcngMMPBm5h0ZfTZ",
+    "nodes": [
+      {
+        "id": "tg-trg",
+        "name": "Telegram Trigger",
+        "type": "n8n-nodes-base.telegramTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          0,
+          300
+        ],
+        "webhookId": "etrade-token-exchange",
+        "parameters": {
+          "updates": [
+            "message"
+          ],
+          "additionalFields": {}
+        },
+        "credentials": {
+          "telegramApi": {
+            "id": "1cUBFkMQENfAXP8x",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "id": "exchange",
+        "name": "Exchange Token",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          300,
+          300
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "jsCode": "const input = $input.first().json;\nconst msgText = (input.message && input.message.text) ? input.message.text : (input.text || '');\n\nconst CONSUMER_KEY    = $vars['ETRADE_CONSUMER_KEY'];\nconst CONSUMER_SECRET = $vars['ETRADE_CONSUMER_SECRET'];\nconst N8N_API_KEY     = $vars['N8N_API_KEY'];\nconst N8N_BASE        = 'https://ashes2echoes.app.n8n.cloud';\nconst crypto = require('crypto');\nfunction pct(s) { return encodeURIComponent(String(s)); }\n\nconst verifier = msgText.trim().split(/\\s+/)[0];\nif (!verifier || verifier.length < 4 || verifier.length > 10) {\n  return [{ json: { status: 'IGNORED', msg: msgText, reason: 'Not a verifier code' } }];\n}\n\n// Read request tokens FRESH via API (not $vars which are cached)\nasync function getVar(key) {\n  const vars = await this.helpers.httpRequest({method:'GET',url:N8N_BASE+'/api/v1/variables',headers:{'X-N8N-API-KEY':N8N_API_KEY}});\n  const v = (vars.data||[]).find(x=>x.key===key);\n  return v ? v.value : '';\n}\n\nconst requestToken       = await getVar.call(this, 'ETRADE_REQUEST_TOKEN');\nconst requestTokenSecret = await getVar.call(this, 'ETRADE_REQUEST_TOKEN_SECRET');\n\nif (!requestToken || requestToken === 'pending' || requestToken === 'used') {\n  return [{ json: { status: 'ERROR', error: 'No valid request token. Run TOKEN KEEPER first.', verifier, storedToken: requestToken } }];\n}\n\nconst ts    = String(Math.floor(Date.now()/1000));\nconst nonce = Math.random().toString(36).substring(2,14);\nconst ACC_URL = 'https://api.etrade.com/oauth/access_token';\nconst params = {\n  oauth_consumer_key:CONSUMER_KEY, oauth_nonce:nonce,\n  oauth_signature_method:'HMAC-SHA1', oauth_timestamp:ts,\n  oauth_token:requestToken, oauth_verifier:verifier, oauth_version:'1.0'\n};\nconst sortedStr = Object.keys(params).sort().map(k=>pct(k)+'='+pct(params[k])).join('&');\nconst baseStr = 'GET&'+pct(ACC_URL)+'&'+pct(sortedStr);\nconst sigKey = pct(CONSUMER_SECRET)+'&'+pct(requestTokenSecret);\nconst sig = crypto.createHmac('sha1',sigKey).update(baseStr).digest('base64');\nparams['oauth_signature'] = sig;\nconst authHeader = 'OAuth realm=\"\",' + Object.keys(params).filter(k=>k.startsWith('oauth_')).sort().map(k=>k+'=\"'+pct(params[k])+'\"').join(',');\n\nlet newToken, newSecret;\ntry {\n  const resp = await this.helpers.httpRequest({method:'GET',url:ACC_URL,headers:{'Authorization':authHeader}});\n  const body = typeof resp==='string' ? resp : JSON.stringify(resp);\n  const parsed = {};\n  body.split('&').forEach(p=>{const[k,v]=p.split('=');if(k)parsed[k]=decodeURIComponent(v||'');});\n  newToken  = parsed['oauth_token']||'';\n  newSecret = parsed['oauth_token_secret']||'';\n} catch(e) {\n  return [{json:{status:'EXCHANGE_ERROR',error:e.message,verifier}}];\n}\n\nif (!newToken) return [{json:{status:'NO_TOKEN',raw:'exchange returned empty'}}];\n\nasync function updateVar(key, value) {\n  const vars = await this.helpers.httpRequest({method:'GET',url:N8N_BASE+'/api/v1/variables',headers:{'X-N8N-API-KEY':N8N_API_KEY}});\n  const varObj = (vars.data||[]).find(v=>v.key===key);\n  if(!varObj) return;\n  try { await this.helpers.httpRequest({method:'PATCH',url:N8N_BASE+'/api/v1/variables/'+varObj.id,headers:{'X-N8N-API-KEY':N8N_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({key,value})}); } catch(e) {}\n}\n\nawait updateVar.call(this,'ETRADE_ACCESS_TOKEN',newToken);\nawait updateVar.call(this,'ETRADE_ACCESS_TOKEN_SECRET',newSecret);\nawait updateVar.call(this,'ETRADE_REQUEST_TOKEN','used');\nawait updateVar.call(this,'ETRADE_REQUEST_TOKEN_SECRET','used');\n\nreturn [{json:{status:'SUCCESS',new_token_preview:newToken.substring(0,15)+'...',timestamp:new Date().toISOString()}}];"
+        }
+      },
+      {
+        "id": "if-ok",
+        "name": "Exchange OK?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          600,
+          300
+        ],
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict"
+            },
+            "conditions": [
+              {
+                "id": "c1",
+                "leftValue": "={{ $json.status }}",
+                "rightValue": "SUCCESS",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "tg-ok",
+        "name": "Confirm Success",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          900,
+          200
+        ],
+        "parameters": {
+          "chatId": "8203545338",
+          "text": "\u2705 <b>E*TRADE RECONNECTED</b>\n\nNew tokens active. SENTINEL, HUNTER, and all workflows now have live portfolio access.\n\n{{ $json.timestamp }}",
+          "additionalFields": {
+            "parse_mode": "HTML"
+          }
+        },
+        "credentials": {
+          "telegramApi": {
+            "id": "1cUBFkMQENfAXP8x",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "id": "tg-err",
+        "name": "Alert Error",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          900,
+          400
+        ],
+        "parameters": {
+          "chatId": "8203545338",
+          "text": "\u274c Token exchange failed: {{ $json.status }} \u2014 {{ $json.error || $json.reason || 'unknown' }}",
+          "additionalFields": {}
+        },
+        "credentials": {
+          "telegramApi": {
+            "id": "1cUBFkMQENfAXP8x",
+            "name": "Telegram account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Telegram Trigger": {
+        "main": [
+          [
+            {
+              "node": "Exchange Token",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Exchange Token": {
+        "main": [
+          [
+            {
+              "node": "Exchange OK?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Exchange OK?": {
+        "main": [
+          [
+            {
+              "node": "Confirm Success",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Alert Error",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "William Lemon",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-04-08T05:49:16.140Z",
+        "id": 454,
+        "workflowId": "kcngMMPBm5h0ZfTZ",
+        "versionId": "bb589336-da00-4292-94f0-50ecf5c2a29d",
+        "event": "activated",
+        "userId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      },
+      {
+        "createdAt": "2026-04-08T06:13:43.493Z",
+        "id": 460,
+        "workflowId": "kcngMMPBm5h0ZfTZ",
+        "versionId": "bb589336-da00-4292-94f0-50ecf5c2a29d",
+        "event": "activated",
+        "userId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      },
+      {
+        "createdAt": "2026-04-08T05:49:15.952Z",
+        "id": 453,
+        "workflowId": "kcngMMPBm5h0ZfTZ",
+        "versionId": "bb589336-da00-4292-94f0-50ecf5c2a29d",
+        "event": "deactivated",
+        "userId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      },
+      {
+        "createdAt": "2026-04-08T06:13:43.291Z",
+        "id": 459,
+        "workflowId": "kcngMMPBm5h0ZfTZ",
+        "versionId": "bb589336-da00-4292-94f0-50ecf5c2a29d",
+        "event": "deactivated",
+        "userId": "52e1e3d1-1938-43a5-87ed-2c0b02655e09"
+      }
+    ]
+  }
+}
