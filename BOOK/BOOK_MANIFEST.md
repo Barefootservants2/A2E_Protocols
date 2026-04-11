@@ -5,7 +5,7 @@
 
 ---
 
-## Book Structure
+## Book Structure (Revised April 11, 2026)
 
 ### Preface: My Story
 - The Career (40 years defense engineering)
@@ -24,23 +24,37 @@
 
 ### Chapter 1: The Protocols
 - METATRON: The Master Protocol
-- The Gate System (19 + 8 = 27 gates)
+- The Gate System (30 gates at v10.8)
 - The Fidelity Locks (9 locks)
 - The Bullseye Diagram
-- Version History v1 through v10.6
+- Version History v1 through v10.8
 
 ### Chapter 2: The Collective
 - What We Had (5 browser tabs, manual synthesis)
 - The Night Everything Changed (Feb 19-20, 2026)
-- CIL v1.0 (22 nodes, 5 agents, 8 gates)
+- CIL v5.2.1 Production (56 nodes, 5 agents, 9-gate cascade)
+- CIL v6.0 Universal Pivot (domain-agnostic architecture)
 - Before and After comparison table
 - The enforcement gap as product thesis
 
-### Chapter 3: FORGE
-- What FORGE Was (prompt engineering tool)
-- What FORGE Became (research intelligence platform)
-- The Interface (cascade dashboard, concurrence signals)
-- The Architecture (React on Vercel, rendering CIL output)
+### Chapter 3: FORGE — The Prompt Intelligence Engine
+- The Problem with Prompts (social media landscape)
+- What Existed Before: The Acronym Era (CREATE, CO-STAR, RISEN, RACE, CLEAR, etc.)
+- The Book That Started Our Journey (Dave Birss CREATE as foundation, why it stops short)
+- FORGE: Three Modes, One Engine
+  - Mode 1: ANVIL — The Prompt Constructor (reverse building, diagnostic questions, scoring)
+  - Mode 2: ASSAY — The Pre-Flight Inspector (vagueness, missing constraints, hallucination risk, output ambiguity)
+  - Mode 3: AUTOPSY — The Post-Mortem Examiner (hedge detection, confabulation check, question compliance, actionability, completeness)
+- The Closed Loop (AUTOPSY findings feed back into ANVIL)
+- Competitive Gap Analysis (FORGE vs CREATE vs CO-STAR vs Prompt Libraries vs DSPy)
+- The Evidence Wall (real social media exhibits with ASSAY/AUTOPSY scores)
+  - Exhibit A: Fake Claude slash commands
+  - Exhibit B: Survivorship bias backtests
+  - Exhibit C: No-methodology AI portfolios
+  - Exhibit D: Static prompt libraries
+  - Exhibit E: Insider trading engagement bait
+- From Ashes to FORGE (personal story, why verification matters)
+- FORGE Pitch: "This is what's out there. This is what it produces. Now watch what happens when you stop guessing."
 
 ### Chapter 4: The Routines and the Business
 - The Daily Grind (Track 1/Track 2)
@@ -58,9 +72,11 @@
 - HUNTER integration with CIL
 - Bullseye Website
 - MCP Server Layer
-- Grants and PhD program
+- Naples relocation
+- Grant funding and certification
 
 ---
 
-**Status:** First draft complete. DOCX generated Feb 20, 2026.
-**METATRON v10.6 | CIL v1.0 | Book Mandate Active**
+**Status:** Chapter 3 FORGE rewritten April 11, 2026. Full ANVIL/ASSAY/AUTOPSY pedagogy with real social media evidence.
+**METATRON v10.8 | CIL v5.2.1 | FORGE PRIME | Book Mandate Active**
+
