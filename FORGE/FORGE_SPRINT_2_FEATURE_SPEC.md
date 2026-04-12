@@ -284,6 +284,139 @@ TOTAL      62   TOTAL      81   +19
 
 ---
 
+## Feature 5: Drift Interceptor
+
+### Problem
+
+FORGE watches AI output for quality issues. Nobody watches the USER for drift. A user starts a prompt engineering session for "US Economic Risk Analysis," then asks "what's the wash sale rule?" or "check silver price." That tangent burns context, contaminates the session, and can cause the AI to blend topics in subsequent responses — the exact hallucination vector METATRON's 62 drift indicators are designed to catch on the agent side.
+
+The same discipline we enforce on HUNTER (stay on thesis, park tangents, come back with fresh context) should apply to every FORGE user.
+
+### Solution
+
+Every FORGE session has a declared intent (Feature 1). The Drift Interceptor monitors user input against that intent. When input diverges from the session's purpose, FORGE intercepts before processing:
+
+### Interaction Flow
+
+```
+SESSION INTENT: Analysis — US Economic Risks 2026
+ITERATION: v2 (score 78/100, remediation in progress)
+
+USER TYPES: "what are wash sale rules for silver ETFs?"
+
+┌─────────────────────────────────────────────────┐
+│  ⚡ DRIFT DETECTED                              │
+│                                                 │
+│  Your current session is focused on:            │
+│  "Analysis — US Economic Risks 2026"            │
+│                                                 │
+│  This question appears unrelated. What do       │
+│  you want to do?                                │
+│                                                 │
+│  ○ A) Park it — save to Inquiry Queue for later │
+│  ○ B) Quick answer — respond and return here    │
+│  ○ C) Switch focus — abandon current session    │
+│  ○ D) It's related — continue (I know what      │
+│       I'm doing)                                │
+│                                                 │
+│  [Your prompt session is preserved either way]  │
+└─────────────────────────────────────────────────┘
+```
+
+**Option A (Park it):** Question saved to Inquiry Queue sidebar. Session continues undisturbed. User reviews parked questions at session end.
+
+**Option B (Quick answer):** FORGE sends the tangent question to a separate, isolated AI call (not the session context). Returns a brief answer in a dismissible card. Session prompt and scores are untouched.
+
+**Option C (Switch focus):** Current session state saved to Session History. New session starts with the tangent as the prompt. User can return to saved session later.
+
+**Option D (Override):** FORGE accepts the input into the current session. No interception. User maintains control. But FORGE logs it as a user-override drift event for the session report.
+
+### Drift Detection Logic
+
+The interceptor does NOT use keyword matching (too brittle). It uses semantic similarity between the declared intent and the new input:
+
+1. Session intent stored as embedding vector at session start
+2. Each user input embedded and compared via cosine similarity
+3. Threshold: similarity < 0.4 = DRIFT DETECTED, 0.4-0.6 = BORDERLINE (no intercept, but flag in sidebar), > 0.6 = ON TOPIC
+
+**Lightweight alternative (if embeddings are too expensive):** Use the ASSAY scorer with a single-dimension prompt: "Does this input relate to {intent_type}: {original_prompt}? YES/NO/PARTIAL." One fast API call per input.
+
+### Inquiry Queue
+
+The Inquiry Queue is a persistent sidebar element that accumulates parked questions during a session:
+
+```
+INQUIRY QUEUE (3 parked)
+─────────────────────────
+1. "wash sale rules for silver ETFs"     [→ New Session] [✕]
+2. "check PSLV price today"             [→ New Session] [✕]
+3. "Naples FL cost of living vs VA"      [→ New Session] [✕]
+─────────────────────────
+[Export All] [Clear All]
+```
+
+Each parked item can be:
+- Launched as a new FORGE session (pre-populated in prompt field)
+- Dismissed individually
+- Exported as a list (markdown or text)
+- Cleared in bulk at session end
+
+### Session Report
+
+At session close (or when user exports), FORGE generates a session summary:
+
+```
+SESSION REPORT
+──────────────
+Intent: Analysis — US Economic Risks 2026
+Duration: 14 minutes
+Iterations: 3 (v1: 62 → v2: 78 → v3: 84)
+CIL Consensus: 81
+Drift Events: 2 (1 parked, 1 quick-answered)
+Parked Inquiries: 1 remaining
+Final Prompt: [copy button]
+```
+
+### Why This Matters for the Product
+
+This is METATRON for humans. The 62 drift indicators catch AI wandering off thesis. The Drift Interceptor catches the user wandering off thesis. Together, they create a closed loop: user stays focused, AI stays focused, output quality stays high.
+
+No competitor has this. Prompt engineering tools assume the user knows what they're doing. FORGE assumes they're human and will get distracted. That's honest. That's the product.
+
+### Backend Changes
+
+- New n8n node: DRIFT DETECTOR
+  - Input: Current session intent + new user input
+  - Process: Semantic similarity check (embedding or lightweight classifier)
+  - Output: `{drift_detected: boolean, similarity_score: float, classification: "on_topic|borderline|drift"}`
+- New n8n node: QUICK ANSWER (isolated)
+  - Input: Tangent question only (no session context)
+  - Process: Standard AI completion in isolated context
+  - Output: Brief answer (max 200 words)
+- Inquiry Queue stored client-side (localStorage or React state) — no backend persistence needed for MVP
+- Session Report generated client-side from accumulated session data
+
+### Frontend Changes
+
+- Drift Interceptor modal: appears between user input and Execute when drift detected
+- Inquiry Queue sidebar: collapsible panel on right side, badge count visible
+- Quick Answer card: dismissible overlay, visually distinct from session content
+- Session Report: generated on session close or export, downloadable as markdown
+- Drift indicator in header: green dot (on topic), yellow dot (borderline detected this session), red dot (multiple drift events)
+
+### Acceptance Criteria
+
+1. Drift detection fires when user input similarity to intent drops below 0.4
+2. All four options (Park, Quick Answer, Switch, Override) function correctly
+3. Parked items appear in Inquiry Queue sidebar
+4. Quick Answer returns response without contaminating session context
+5. Session state preserved across all drift interception options
+6. Session Report accurately reflects iterations, scores, and drift events
+7. Override option logs drift event but does not block the user
+8. Drift detection does NOT fire on remediation selections or system interactions
+
+---
+
 ## CIL Integration Enhancement
 
 ### Current State (Verified April 10, 2026)
@@ -313,6 +446,8 @@ The CIL toggle is fully wired across 8 hops. When enabled, the prompt is sent to
 | REMEDIATION GENERATOR | ANVIL scores + prompt + intent | Remediation options array | After ASSAY scorer, if any dimension < 50% |
 | PROMPT REBUILDER | Original prompt + selected options | Enhanced prompt | User selection via webhook callback |
 | AUTOPSY ANALYZER | Prompt + response pair | Diagnosis array | AUTOPSY mode Execute |
+| DRIFT DETECTOR | Session intent + new user input | Drift classification + similarity score | Every user input before Execute |
+| QUICK ANSWER | Tangent question (isolated) | Brief answer (max 200 words) | User selects "Quick answer" on drift intercept |
 
 ### Frontend Components (Sprint 2)
 
@@ -325,6 +460,11 @@ The CIL toggle is fully wired across 8 hops. When enabled, the prompt is sent to
 | Diff Panel | Below prompt area | Inline/side-by-side prompt comparison |
 | Score History Rail | Left sidebar | Iteration tracking (v1, v2, v3...) |
 | Agent Feedback | Coaching panel (CIL on) | Per-agent assessment cards |
+| Drift Interceptor Modal | Center overlay | Intercept off-topic input with 4 options |
+| Inquiry Queue | Right sidebar (collapsible) | Parked questions list with actions |
+| Quick Answer Card | Dismissible overlay | Isolated tangent response |
+| Session Report | Export/close modal | Summary of session iterations, scores, drift events |
+| Drift Indicator | Header bar | Green/yellow/red dot showing session focus status |
 
 ### API Contract Changes
 
@@ -339,7 +479,29 @@ The CIL toggle is fully wired across 8 hops. When enabled, the prompt is sent to
   "remediation_selections": [
     {"dimension": "audience", "option_index": 2}
   ],
-  "iteration": 1
+  "iteration": 1,
+  "session_intent_text": "string (original prompt that established intent)",
+  "drift_check": true
+}
+```
+
+**Drift Check Response (pre-Execute):**
+```json
+{
+  "drift_detected": true,
+  "similarity_score": 0.23,
+  "classification": "drift",
+  "session_intent": "Analysis — US Economic Risks 2026",
+  "input_summary": "wash sale rules for silver ETFs"
+}
+```
+
+**Quick Answer Response (isolated):**
+```json
+{
+  "quick_answer": "string (max 200 words)",
+  "source_isolated": true,
+  "session_contamination": false
 }
 ```
 
@@ -360,7 +522,13 @@ The CIL toggle is fully wired across 8 hops. When enabled, the prompt is sent to
   "enhanced_prompt": "string (after remediation)",
   "original_prompt": "string",
   "original_scores": {...},
-  "diagnosis": [...] // AUTOPSY only
+  "diagnosis": [...],
+  "session_meta": {
+    "iteration": 2,
+    "drift_events": 1,
+    "parked_inquiries": 3,
+    "focus_status": "on_topic"
+  }
 }
 ```
 
@@ -376,19 +544,26 @@ The CIL toggle is fully wired across 8 hops. When enabled, the prompt is sent to
 | CIL toggle usage | Unknown | 30% of sessions |
 | Average iterations per session | 1 | 2.5 |
 | Prompt reuse (copy/export) | 0 | 40% of sessions |
+| Drift interceptions per session | N/A | 0.5 avg (not every session drifts) |
+| Park rate (vs dismiss/override) | N/A | 40% of drift events parked |
+| Quick Answer usage | N/A | 30% of drift events |
+| Session Report exports | N/A | 25% of sessions |
 
 ---
 
 ## Implementation Priority
 
 **Week 1:**
-1. Intent Capture (frontend + backend) — smallest scope, highest impact on scoring accuracy
+1. Intent Capture (frontend + backend) — smallest scope, highest impact on scoring accuracy. Also the prerequisite for Drift Interceptor.
 2. Visual Diff (frontend only) — no backend changes, immediate UX improvement
 3. CIL enhancement — surface agent feedback in existing coaching panel
+4. Drift Interceptor MVP (frontend + backend) — drift detection + Inquiry Queue. Build alongside Intent Capture since they share the intent declaration.
 
 **Week 2:**
-4. Guided Remediation (full stack) — the big build, requires REMEDIATION GENERATOR + PROMPT REBUILDER + frontend cards + rescore loop
-5. AUTOPSY Mode (full stack) — new mode, new analyzer node, new frontend layout
+5. Guided Remediation (full stack) — the big build, requires REMEDIATION GENERATOR + PROMPT REBUILDER + frontend cards + rescore loop
+6. AUTOPSY Mode (full stack) — new mode, new analyzer node, new frontend layout
+7. Session Report — client-side generation, export functionality
+8. Quick Answer isolation — separate AI call path for tangent responses
 
 ---
 
@@ -410,8 +585,9 @@ FORGE moves from "prompt grader" to "prompt engineering platform." The competiti
 2. **No competitor does guided remediation with rescore.** Everyone else gives advice. FORGE gives tools.
 3. **No competitor does AUTOPSY.** Post-mortem prompt diagnosis is an unserved market.
 4. **No competitor teaches.** FORGE makes users better at prompting. Every other tool makes users dependent on the tool.
+5. **No competitor guards the user against their own drift.** The Drift Interceptor is METATRON for humans. AI drift detection exists (we built it). Human drift detection does not. FORGE is the first tool that keeps BOTH sides focused.
 
-The teaching loop (score → diagnose → fix → rescore → learn) is the product. Everything else is infrastructure.
+The teaching loop (score → diagnose → fix → rescore → learn) is the product. The Drift Interceptor protects that loop from the most common failure mode: the user's own wandering attention. Everything else is infrastructure.
 
 ---
 
