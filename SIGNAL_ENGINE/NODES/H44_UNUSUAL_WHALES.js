@@ -78,28 +78,40 @@ const results = {
   errors: []
 };
 
-// 1. Pull recent flow for watchlist tickers
-//    UW endpoint: /stock/{ticker}/options-flow
-for (const ticker of WATCHLIST_TICKERS) {
-  const { error, data } = await fetchFlowData(`/stock/${ticker}/options-flow`, {
-    limit: 20,
-    order: 'desc'
-  });
+// 1. Pull flow alerts — correct endpoint: /option-trades/flow-alerts
+//    Returns top 50 unusual activity alerts across all tickers
+//    Then filter to our watchlist
+const { error: alertError, data: alertData } = await fetchFlowData('/option-trades/flow-alerts');
 
-  if (error) {
-    results.errors.push({ ticker, error });
-    continue;
+if (alertError) {
+  results.errors.push({ source: 'flow-alerts', error: alertError });
+}
+
+const allAlerts = alertData?.data || [];
+
+// Also pull ticker-specific lit flow for our highest priority symbols
+const PRIORITY_TICKERS = ['UCO', 'XLE', 'SLV', 'PSLV', 'SMH', 'AG', 'GDX', 'UVXY'];
+for (const ticker of PRIORITY_TICKERS) {
+  const { error, data } = await fetchFlowData(`/lit-flow/${ticker}`);
+  if (!error && data?.data) {
+    for (const flow of data.data.slice(0, 10)) {
+      allAlerts.push({ ...flow, ticker, source: 'lit-flow' });
+    }
   }
+}
 
-  if (!data || !data.data || data.data.length === 0) continue;
+// Filter to watchlist and score
+for (const flow of allAlerts) {
+  const ticker = flow.ticker || '';
+  if (!WATCHLIST_TICKERS.includes(ticker)) continue;
 
-  for (const flow of data.data) {
-    const premium = parseFloat(flow.premium || 0);
+  {
+    const premium = parseFloat(flow.total_premium || flow.premium || 0);
     const volume = parseInt(flow.volume || 0);
     const openInterest = parseInt(flow.open_interest || 1);
     const volOiRatio = volume / Math.max(openInterest, 1);
     const dte = parseInt(flow.dte || 999);
-    const isSweep = (flow.option_activity_type || '').toLowerCase() === 'sweep';
+    const isSweep = (flow.alert_rule || flow.option_activity_type || '').toLowerCase().includes('sweep');
     const side = (flow.sentiment || flow.put_call || '').toUpperCase();
 
     // SCORE THIS FLOW
