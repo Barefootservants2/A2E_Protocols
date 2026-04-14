@@ -1,0 +1,57 @@
+---
+# FORGE FIELD MANUAL SERIES — Shared Metadata
+# Used by Pandoc + Eisvogel template for PDF generation
+
+# Series Identity
+series: "FORGE Field Manual Series"
+publisher: "Ashes2Echoes LLC"
+publisher-location: "Newport News, Virginia"
+rights: "© 2026 Ashes2Echoes LLC. All rights reserved."
+
+# Author
+author:
+  - name: "William Earl Lemon"
+    title: "Principal, Ashes2Echoes LLC"
+    affiliation: "Uriel Covenant AI Collective"
+
+# Design
+documentclass: report
+classoption:
+  - oneside
+papersize: letter
+fontsize: 11pt
+mainfont: "DejaVu Serif"
+sansfont: "DejaVu Sans"
+monofont: "DejaVu Sans Mono"
+linestretch: 1.25
+
+# Eisvogel Configuration
+titlepage: true
+titlepage-color: "2C3E50"
+titlepage-text-color: "FFFFFF"
+titlepage-rule-color: "00CED1"
+titlepage-rule-height: 4
+toc: true
+toc-own-page: true
+toc-depth: 3
+numbersections: true
+colorlinks: true
+linkcolor: "teal"
+urlcolor: "teal"
+citecolor: "teal"
+
+# Headers and Footers
+header-left: "FORGE Field Manual"
+header-right: "Ashes2Echoes LLC"
+footer-center: "\\thepage"
+footer-left: "CONFIDENTIAL — Licensed Material"
+
+# Legal
+disclaimer: |
+  This publication is provided for educational and professional development
+  purposes. It does not constitute financial, legal, or investment advice.
+  All frameworks, prompts, and methodologies are proprietary to Ashes2Echoes LLC.
+  AI-assisted content has been verified, scored, and validated through the
+  FORGE analytical framework. All sources are cited. All original work is
+  clearly distinguished from adapted or referenced material.
+---
