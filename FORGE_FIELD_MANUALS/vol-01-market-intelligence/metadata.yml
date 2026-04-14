@@ -1,0 +1,29 @@
+---
+# Volume 1 — Market Intelligence
+# Extends shared/metadata.yml
+
+title: "FORGE Field Manual: Market Intelligence"
+subtitle: "Multi-Agent Analytical Frameworks for Thesis-Driven Investing"
+volume: 1
+date: "April 2026"
+subject: "Market Analysis, Investment Research, AI-Assisted Due Diligence"
+keywords:
+  - market intelligence
+  - thesis investing
+  - multi-agent AI
+  - FORGE framework
+  - ANVIL scoring
+  - counter-thesis analysis
+
+abstract: |
+  Volume 1 of the FORGE Field Manual series. A practitioner's guide to
+  using multi-agent AI systems for market intelligence, thesis construction,
+  supply chain analysis, and risk management. Includes 120+ battle-tested
+  prompts with scored outputs, the complete ANVIL scoring rubric for
+  market analysis, ASSAY methodology evaluation criteria, and the AUTOPSY
+  red-flag catalog for detecting unreliable financial analysis. Built on
+  the Uriel Covenant AI Collective architecture and validated against
+  live portfolio decisions.
+
+book: true
+---
