@@ -1,0 +1,87 @@
+# ============================================================
+# A2E PLATFORM — Python Requirements
+# pip install -r requirements.txt
+# ============================================================
+
+# --- CORE ---
+python-dotenv==1.1.0          # .env file loading for API keys
+pydantic==2.11.1              # Data validation and settings
+pyyaml==6.0.2                 # Config file parsing (ironclad.yml)
+
+# --- ASYNC / HTTP ---
+aiohttp==3.11.14              # Async HTTP for parallel agent calls
+requests==2.32.3              # Sync HTTP for simple API calls
+httpx==0.28.1                 # Modern HTTP client (sync + async)
+websockets==14.2              # Real-time WebSocket feeds
+
+# --- AI AGENTS ---
+openai==1.66.3                # URIEL (GPT-4.1) + fallback models
+anthropic==0.49.0             # Claude API (PASS2 synthesis)
+google-generativeai==0.8.5    # HANIEL (Gemini)
+# DeepSeek (RAZIEL) — uses openai SDK with custom base_url
+# Grok (COLOSSUS) — uses openai SDK with custom base_url
+# Perplexity (SARIEL) — uses requests with Bearer token
+
+# --- MARKET DATA ---
+yfinance==0.2.54              # Yahoo Finance (prices, fundamentals, options chains)
+fredapi==0.5.2                # FRED economic data (DXY, yields, macro)
+finnhub-python==2.4.20        # Finnhub (insider, earnings, IPO, news, candles)
+alpha-vantage==3.0.0          # AlphaVantage (sector rotation, top movers)
+sec-edgar-downloader==5.0.2   # SEC filings (13F, 4, 8-K, proxy)
+wallstreet==0.4.1             # Options data and pricing
+py-vollib==1.0.1              # Black-Scholes options pricing
+mibian==0.1.3                 # Options Greeks calculator
+
+# --- DATA / ANALYSIS ---
+pandas==2.2.3                 # DataFrames, time series, everything
+numpy==2.2.3                  # Numerical computing
+scipy==1.15.2                 # Optimization, statistics
+scikit-learn==1.6.1           # ML models (future: signal classification)
+matplotlib==3.10.1            # Charting and visualization
+plotly==6.0.1                 # Interactive charts
+ta==0.11.0                    # Technical analysis (RSI, MACD, Bollinger, etc.)
+
+# --- DATABASE ---
+supabase==2.13.0              # Supabase (existing tables)
+sqlalchemy==2.0.38            # Database ORM (future: PostgreSQL)
+aiosqlite==0.21.0             # Async SQLite for local dev
+
+# --- BROKERAGE ---
+pyetrade==2.1.0               # E*TRADE API (portfolio, orders, execution)
+
+# --- REPORTING / DELIVERY ---
+python-telegram-bot==21.10    # Telegram messaging
+gspread==6.2.0                # Google Sheets read/write
+google-auth==2.38.0           # Google API auth
+google-api-python-client==2.163.0  # Google Drive, Gmail
+reportlab==4.3.1              # PDF report generation
+weasyprint==63.1              # HTML to PDF (alternative)
+openpyxl==3.1.5               # Excel file generation
+
+# --- WEB FRAMEWORK (FORGE) ---
+fastapi==0.115.11             # API backend
+uvicorn==0.34.0               # ASGI server
+jinja2==3.1.6                 # HTML templating
+
+# --- SCRAPING / PARSING ---
+beautifulsoup4==4.13.3        # Web scraping
+lxml==5.3.1                   # HTML/XML parser
+feedparser==6.0.11            # RSS feed parsing
+
+# --- SCHEDULING ---
+apscheduler==3.11.0           # In-process task scheduling
+
+# --- TESTING ---
+pytest==8.3.5                 # Test framework
+pytest-asyncio==0.25.3        # Async test support
+pytest-cov==6.1.0             # Coverage reporting
+
+# --- GITHUB ---
+PyGithub==2.6.0               # GitHub API (commits, files, repos)
+
+# --- UTILITIES ---
+tenacity==9.1.2               # Retry logic with backoff
+structlog==24.4.0             # Structured logging
+rich==13.9.4                  # Pretty console output
+click==8.1.8                  # CLI interface
+tqdm==4.67.1                  # Progress bars
