@@ -1,141 +1,215 @@
-# PHOENIX CARRY-FORWARD
-## Session: April 14, 2026 (Evening)
-## Principal: William Earl Lemon
-## CIO: MICHA v10.7
+# PHOENIX CARRY-FORWARD — April 14, 2026
+## SESSION: Platform Pivot to Python + Book Scaffold + Market Operations
 
-═══════════════════════════════════════
+---
 
-## SESSION DELIVERABLES
+## DIRECTION CHANGE: FULL PYTHON MIGRATION (Path C → Full Python)
 
-1. **LIVE DATA RULE ESTABLISHED** — Yahoo Finance API via bash (urllib.request to query1.finance.yahoo.com). NEVER web_search for stock prices again. Memory updated.
-2. **Full portfolio audit at LIVE prices** — All 3 accounts mapped with real-time data
-3. **Position Strategy Engine built** — Min $5K, Max 20%, ANCHOR/THESIS/TACTICAL/DUST tiers, dump rules codified
-4. **SENTINEL FIX 06 deployed** — Paper Trade Logger → Extract Sheets Rows → Sheets - Trade Log wired and published
-5. **HUNTER audit complete** — 97 nodes mapped, 9 Finnhub nodes identified with EMPTY credentials, all API sources cataloged
-6. **AEVEX (AVEX) IPO researched** — Defense drone maker, $18-21 range, April 17 listing. Verdict: Skip, watch post-IPO
-7. **Trailing stop % strategy defined** — VOO 7%, PSLV/WPM/NUE/FCX/PHYS 5%, AG/COPX 7%, UCO 8%
-8. **UCO fresh entry confirmed** — CIL consensus buy today, NOT the old position. Let it breathe.
-9. **FCX trimmed per IRONCLAD** — 25% at +5.2%
-10. **PSLV added per plan** — New shares acquired
+### Decision Made This Session:
+n8n is retired as the production platform. ALL workflows migrate to Python. n8n retained ONLY as a prototyping whiteboard for new ideas. The 18 months of logic, rules, and battle-tested protocols transfer. The nodes do not.
 
-## ORDERS EXECUTED TODAY
-- JEPI sold (6685 + 4898)
-- SCHD sold (6685 + 4898)
-- XLV sold (6685)
-- CEF sold (4898)
-- VOO bought 25 shares (6685 + 4898)
-- FCX bought 36 shares (4898), then trimmed 15
-- PSLV added (both accounts)
-- WPM new position (6685)
-- NUE new position (6685)
-- COPX new position (6685)
-- UCO re-entered (CIL consensus)
-- SGOV 350 sold for buying power (6685)
+### Why:
+- TradingAgents (open source competitor) does what CIL does in 2,000 lines of Python
+- Public.com has native brokerage execution via agentic AI
+- Jenova has multi-model aggregation with polished UI
+- A2E has better ideas (scoring, counter-thesis, IRONCLAD) and worse execution
+- n8n's single-node-failure architecture is structurally fragile
+- Python enables: backtesting, automated testing, options pricing, real-time WebSocket, E*TRADE execution via pyetrade, multi-user FORGE web app, ML training on scored outputs
+- Claude Code writes Python. Billy now has a developer on staff.
 
-## PENDING — STAGE TOMORROW AM
-- Trailing stop % orders on all new positions (need fills to confirm)
-- Update PSLV stop to cover all shares (old + new)
+### Platform Readiness Assessment (Honest):
+- Overall: ~45-50% production ready
+- No end-to-end automated pipeline has EVER completed without human intervention
+- ANVIL/ASSAY/AUTOPSY exist on paper only, not in code
+- Zero backtesting capability
+- Zero trade execution capability
+- No proof the system produces better outcomes than a single ChatGPT conversation
 
-═══════════════════════════════════════
+---
 
-## WORKFLOW STATUS
+## EXTRACTION COMPLETED THIS SESSION
 
-### SENTINEL (82 nodes, CsTbRtchtCzxjKLX)
-- ✅ Telegram credential FIXED (switched to "Telegram account")
-- ✅ FIX 06 deployed — Paper Trade Logger → Sheets wired
-- ⬜ Compliance Engine line 275 fix — not pasted
-- ⬜ Flooding fix — ADM3_v2 spec not deployed
-- ⬜ Transaction history wash sale — specced, not built
+### On GitHub at A2E_Protocols/PYTHON_MIGRATION/:
 
-### HUNTER (97 nodes, orZPNtvvCB8RAlwF)
-- ⬜ FIX 01 — Confidence parser (ready, not pasted)
-- ⬜ FIX 02 — top3_for_cil population (ready, not pasted)
-- ⬜ FIX 05 — Format Telegram Brief rewrite (ready, not pasted)
-- ⬜ 9 Finnhub nodes have EMPTY credentials {}
-  - H5, H7, H9, H19, H25, H26: Attach "Finnhub API" Header Auth
-  - H39a (SLV), H39b (GLD), H39c (SIL): Swap to Yahoo Finance (Finnhub ETF candle = premium only)
-- ⬜ H26 Economic Cal still deactivated
-- ⬜ TwelveData nodes (9) — untested, may have same credential issue
+| File | Contents |
+|------|----------|
+| A2E_PYTHON_MIGRATION_SPEC.json | Full platform inventory: 292 nodes, 91 code nodes, 177K chars JS, 77 API endpoints |
+| HUNTER_CODE_NODES.json | 21 Code nodes extracted, 26,567 chars JS |
+| SENTINEL_CODE_NODES.json | 36 Code nodes, 105,220 chars JS (push failed — too large, retry next session) |
 
-### CIL (56 nodes)
-- ⬜ FIX 03 — COLOSSUS verification (ready, not pasted)
-- ⬜ FIX 04 — HANIEL hardcoded body replacement (ready, not pasted)
-- ⬜ NO_CONSENSUS bug — needs full audit after FIX 03+04
+### GABRIEL v2.0 — Complete source code retrieved inline:
+- 15 nodes, 6 Code nodes
+- Overnight Market Data (17 symbols, Yahoo Finance)
+- News Scanner (Finnhub, 17 keywords, 6 critical)
+- Threshold Engine v2.1 (GREEN/YELLOW/RED, Kill Switch using DX=F + ZB=F)
+- Report Builder (HTML Telegram)
+- Gabriel Logger (Supabase)
+- Morning Brief (12h Supabase query, fresh pre-market, posture calc)
 
-### SIGNAL ENGINE v1.1 (R9GPabeNm26GgxKa)
-- ✅ Live, 12 nodes, published
-- ✅ 6:30 AM ET Mon-Fri schedule
+### Still needs extraction next session:
+- CIL v6.1 (workflow ID: V61BMUNNQDBpCOsp)
+- SIGNAL ENGINE v1.1 (workflow ID: R9GPabeNm26GgxKa)
+- FORGE ANVIL v3.0 (workflow ID: 3dfHb1fAg5ZkNmwV)
+- SENTINEL code nodes (retry push — file too large for single GitHub API call)
 
-### FORGE
-- ✅ Sprint 1 live at forge-landing-theta.vercel.app/tool.html
-- ⬜ Sprint 2: Intent Router, Visual Diff, Guided Remediation, Drift Interceptor
+---
 
-═══════════════════════════════════════
+## PYTHON TARGET ARCHITECTURE
 
-## HUNTER FULL API SOURCE MAP (97 nodes)
+```
+a2e-platform/
+├── agents/           # 5 LLM agents (uriel, colossus, haniel, raziel, sariel)
+├── cil/              # Consensus engine (9-gate cascade)
+├── hunter/           # Market scanner + thesis chain
+├── sentinel/         # Portfolio monitor + IRONCLAD enforcement
+├── scoring/          # ANVIL, ASSAY, AUTOPSY (NEW — never existed in code)
+├── gabriel/          # Overnight watch
+├── reporting/        # Telegram, Sheets, PDF
+├── backtest/         # Historical simulation (NEW)
+├── api/              # FastAPI web backend for FORGE
+├── config/           # .env, ironclad.yml
+├── tests/            # pytest for every module
+└── main.py           # Entry point
+```
 
-| Source | Count | Status |
-|--------|-------|--------|
-| Finnhub | 9 | ⚠️ Empty credentials on ALL |
-| TwelveData | 9 | ON — untested |
-| FRED | 4 | ON |
-| SEC EDGAR | 4 | ON (no key needed) |
-| Yahoo Finance | 3 | ON (no key needed) |
-| NewsAPI | 2 | ON |
-| Unusual Whales | 2 | ON |
-| USASpending | 1 | ON |
-| AI Agents | 3 | ON (Gemini, DeepSeek, Perplexity) |
-| Other (political, metals) | 12 | ON |
+### Build Order (dependency-driven):
+1. CIL (brain — everything depends on it)
+2. HUNTER (scanner — calls CIL)
+3. SENTINEL (enforcer — validates HUNTER/CIL output)
+4. ANVIL/ASSAY/AUTOPSY scoring modules (NEW)
+5. GABRIEL (overnight — standalone)
+6. Backtesting engine (NEW)
+7. FastAPI web layer (FORGE frontend)
 
-## NEXT SESSION PRIORITIES
+### Build Method:
+- Chat orchestrates requirements and reviews
+- Claude Code writes Python, runs tests, commits to GitHub
+- Claude Cowork assists with file management, non-code tasks
+- Each module: extract JS logic → translate to Python → add error handling → write tests → commit
 
-1. **Fix Finnhub credential** — Attach "Finnhub API" to H5/H7/H9/H19/H25/H26
-2. **Swap H39a/b/c to Yahoo Finance** — ETF candle data not on Finnhub free tier
-3. **Paste FIX 01+02 into HUNTER SYNTHESIS** — Confidence parser + top3_for_cil
-4. **Paste FIX 05 into Format Telegram Brief** — Real formatted output
-5. **Paste FIX 03+04 into CIL** — COLOSSUS + HANIEL fixes
-6. **Test full HUNTER → CIL pipeline** — Manual trigger, verify consensus
-7. **Stage trailing stop % orders** — After fills confirm
+---
 
-## PORTFOLIO SNAPSHOT (Live 7:50 PM ET April 14)
+## BOOK SCAFFOLD — ON GITHUB
 
-| Ticker | Price | Day% |
-|--------|-------|------|
-| PSLV | $25.79 | +5.48% |
-| AG | $21.53 | +3.61% |
-| VOO | $638.35 | +1.21% |
-| FCX | $68.27 | +0.35% |
-| WPM | $147.69 | +1.97% |
-| NUE | $190.04 | +0.20% |
-| COPX | $86.43 | +1.84% |
-| UCO | $40.63 | -3.54% |
-| PHYS | $36.73 | +2.18% |
-| ITA | $235.43 | +1.13% |
-| IBIT | $42.13 | +1.30% |
-| Silver Spot | ~$77.89 | +2.8% |
+### Pushed to A2E_Protocols/FORGE_FIELD_MANUALS/:
 
-## LIVE TICKER COMMAND
-python3 -c "
-import json, urllib.request
-for t in ['PSLV','AG','VOO','FCX','WPM','NUE','COPX','UCO','PHYS','ITA','IBIT']:
-    try:
-        r=urllib.request.urlopen(urllib.request.Request(f'https://query1.finance.yahoo.com/v8/finance/chart/{t}?interval=1d&range=1d',headers={'User-Agent':'Mozilla/5.0'}),timeout=5)
-        m=json.loads(r.read())['chart']['result'][0]['meta']
-        p=m['regularMarketPrice'];c=m.get('previousClose',0)
-        print(f'{t:<8} \${p:>9.2f} {((p-c)/c*100):>+7.2f}%')
-    except: print(f'{t:<8} ERROR')
-"
+| File | Status |
+|------|--------|
+| README.md | Complete |
+| Makefile | Complete (Pandoc + Eisvogel build) |
+| shared/metadata.yml | Complete (series branding) |
+| shared/00-about-us.md | Complete (A2E story — the voice) |
+| vol-01/01-introduction.md | Complete (domain context + 9 source citations) |
+| vol-01/02-foundation-prompts.md | 3 of 10 prompts fully developed, 7 placeholders |
+| vol-01/03-advanced-chains.md | 3 of 7 chains outlined, all placeholders |
+| vol-01/04-anvil-scoring.md | Complete rubric, worked examples placeholder |
+| vol-01/05-assay-evaluation.md | Complete framework, examples placeholder |
+| vol-01/06-autopsy-red-flags.md | 4 of 12 red flags fully developed, 8 placeholders |
+| vol-01/07-real-examples.md | 5 examples outlined, all need production data |
+| vol-01/08-appendix.md | Complete (quick ref card, citations, source table) |
 
-═══════════════════════════════════════
+### Template: Eisvogel + Pandoc
+- Write Markdown → `make vol1-pdf` → Professional PDF
+- All 10 volumes follow identical structure
+- Build system: Wandmalfarbe/pandoc-latex-template (MIT license)
 
-## CODE FIXES ON GITHUB (ready to paste)
-Location: A2E_Protocols/PHOENIX/CODE_FIXES_2026-04-14.js
-- FIX 01: Confidence parser
-- FIX 02: top3_for_cil + Fire CIL Webhook
-- FIX 03: COLOSSUS verification
-- FIX 04: HANIEL dynamic body
-- FIX 05: Format Telegram Brief rewrite
-- FIX 06: Sheets extractor (DEPLOYED)
+---
 
-═══════════════════════════════════════
-PHOENIX CLOSE COMPLETE.
+## COMPETITIVE LANDSCAPE (assessed this session)
+
+| Competitor | Threat Level | What they have that we don't |
+|---|---|---|
+| TradingAgents (Tauric) | HIGH | Open source, backtesting, Python-native, multi-model debate |
+| Public.com Agents | HIGH | Native brokerage execution, $310M+ funding |
+| Jenova | MEDIUM | Polished multi-model UI, enterprise pricing, production |
+| Magai (Dustin Stout) | LOW | Multi-model chat aggregator, no analysis/scoring |
+| Darius Lukas Black Book | LOW | Static prompt library, no methodology |
+
+### What we have that NONE of them have:
+- ANVIL/ASSAY/AUTOPSY output scoring (genuinely novel)
+- Counter-thesis as structural requirement (Gate 7.5)
+- IRONCLAD codified risk protocol
+- Overnight watch with kill switch correlation detection
+- Multi-domain design (10 domains, not finance-only)
+
+### Net: Better ideas, worse execution. Gap is completion, not architecture.
+
+---
+
+## MARKET OPERATIONS — April 14, 2026
+
+### Executed today:
+- FCX trimmed per IRONCLAD (was +26.6%, overdue 5 trim levels)
+- WPM added (new thesis position)
+- VOO pumped in both accounts
+- PPI came in +0.5% MoM (feared +1.2%) → relief rally
+- Crude dropped 7% on Iran de-escalation signals → metals caught bid
+- Silver bounced to $77.89, gold $4,767
+
+### Current portfolio state:
+- 6685 IRA: $85K cash, $3,535 unrealized gains, $1,600 day's gain
+- 4898 Taxable: $8,700 cash, $685 unrealized
+- 5267 Brokerage: $587 cash (+$15K transfer pending), $231 unrealized
+- All positions green, 2nd day in a row
+
+### Deployment approved (not yet executed):
+- 6685: $17K thesis (PSLV/AG/WPM/NUE), $20K core (VOO/SGOV), $43K reserve
+- Per IRONCLAD 2x50% tranche discipline
+
+### Stops: NO mechanical stops. Price ALERTS at -5% from cost, human decision.
+
+---
+
+## NEXT SESSION INSTRUCTIONS
+
+### OPTION A: Python Build Sprint
+1. Attach this carry-forward
+2. Say: "Build CIL in Python"
+3. Open Claude Code in parallel
+4. Chat defines the spec → Claude Code writes consensus.py, confidence.py, synthesis.py
+5. Chat reviews → Claude Code writes tests → Claude Code commits
+
+### OPTION B: Continue Extraction
+1. Pull CIL v6.1, SIGNAL ENGINE, FORGE ANVIL workflow details
+2. Extract remaining Code nodes
+3. Push SENTINEL code (retry — split into chunks)
+4. Complete the migration spec
+
+### OPTION C: Market Operations
+1. Execute the $17K thesis deployment in 6685
+2. Check $15K transfer status in 5267
+3. Morning data review
+
+### RECOMMENDED: Option A. CIL is the brain. Build it first. Everything else depends on it. Extraction for remaining workflows can happen in parallel via Cowork.
+
+---
+
+## MEMORY UPDATES NEEDED
+
+- Platform direction: Python migration, n8n retired to prototyping only
+- Book status: FORGE Field Manual Vol 1 scaffold on GitHub, Pandoc+Eisvogel build chain
+- Competitive: TradingAgents is closest architectural competitor (open source, Python)
+- SENTINEL code: 36 nodes, 105K chars extracted but not yet pushed to GitHub
+
+---
+
+## WORKFLOW IDS (for extraction)
+
+| Workflow | ID | Status |
+|---|---|---|
+| HUNTER v3.3 | orZPNtvvCB8RAlwF | Extracted |
+| SENTINEL | CsTbRtchtCzxjKLX | Extracted (push pending) |
+| CIL v6.1 | V61BMUNNQDBpCOsp | Needs extraction |
+| GABRIEL v2.0 | fwKiBHtedNQ1n34H | Complete source captured |
+| SIGNAL ENGINE v1.1 | R9GPabeNm26GgxKa | Needs extraction |
+| FORGE ANVIL v3.0 | 3dfHb1fAg5ZkNmwV | Needs extraction |
+| HUNTER MICRO v1.0 | rsS4DFbOgTRQvqTX | Needs extraction |
+| TOKEN KEEPER v1.0 | KhTkAxrCW1kZvgdV | Needs extraction |
+| TOKEN EXCHANGE v1.0 | kcngMMPBm5h0ZfTZ | Needs extraction |
+
+---
+
+*PHOENIX CLOSE — April 14, 2026, ~11:30 PM ET*
+*Principal: William Earl Lemon*
+*CIO: MICHA v10.7*
+*Status: DIRECTION CHANGE COMMITTED — Python migration greenlit*
