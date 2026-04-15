@@ -213,3 +213,44 @@ a2e-platform/
 *Principal: William Earl Lemon*
 *CIO: MICHA v10.7*
 *Status: DIRECTION CHANGE COMMITTED — Python migration greenlit*
+
+---
+
+## ADDENDUM — APPROVED LATE SESSION
+
+### Execution Approval Architecture: OPTION C (Dual Channel)
+- **Telegram exec bot** (`sentinel_exec_bot`) — all execution requests
+- **SMS via Twilio** — escalation if no Telegram response in 5 minutes
+- **Expiry** — 15 minutes no response = trade window expires, logged as EXPIRED
+- **Principle:** Alerts inform. Execution requests require consent. Nothing moves real money without YES from Principal's phone.
+- Create bot via @BotFather: name "A2E Sentinel Executor", username sentinel_exec_bot
+- Store token in .env as EXEC_BOT_TOKEN
+
+### Paper Trading: TWO ACCOUNTS
+- **STARTER ($5,000):** 3-5 positions, prove consensus scanner finds winners, target 10%/month
+- **OPERATOR ($50,000):** 8-12 positions, prove system scales, target 5%/month ($250/day avg)
+- Same signals, same CIL, same IRONCLAD. Different sizing. Both log to same database with account tag.
+- Validation = 20-30 completed trades per account, not calendar days
+
+### Options Path (Q3-Q4 2026):
+- Equity consensus scanner validates first (Q2)
+- XSP paper trading (credit spreads, 50% profit, 2x stop) starts Q3
+- Level 3 E*TRADE application after 30+ successful XSP paper trades
+- Python options module: py_vollib + mibian for Greeks, UW for GEX, chain scanning via yfinance
+- Live XSP → scale to SPX when consistent
+
+### Data Sources: 35 sources, 200+ signals
+- Full inventory at PYTHON_MIGRATION/A2E_DATA_SOURCES_AND_CONSENSUS_SCANNER.md
+- Consensus scanner: 10 parallel source scans → overlap detection (3+ sources) → top 5 → CIL → top 2-3
+
+### Requirements: 60+ Python packages
+- Full list at PYTHON_MIGRATION/requirements.txt
+- One command: pip install -r requirements.txt
+
+### n8n Retirement Confirmed:
+- ALL workflows to Python, including GABRIEL and Signal Engine
+- n8n retained as whiteboard for prototyping new ideas only
+
+### No Mental Notes Rule:
+- All stops, trims, alerts are CODE or they don't exist
+- No mental stops. No "I'll trim tomorrow." Code sees the trigger, fires the request, waits for YES.
