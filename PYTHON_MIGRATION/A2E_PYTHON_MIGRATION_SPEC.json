@@ -1,0 +1,85 @@
+{
+  "platform": "A2E Uriel Covenant \u2014 Python Migration Spec",
+  "version": "1.0",
+  "date": "2026-04-14",
+  "total_n8n_nodes": 292,
+  "total_code_nodes": 91,
+  "total_js_chars": 177000,
+  "estimated_python_lines": 4700,
+  "api_endpoints": 77,
+  "workflows": {
+    "HUNTER": {
+      "total_nodes": 97,
+      "code_nodes": 21,
+      "code_chars": 26567,
+      "http_endpoints": 49,
+      "key_logic": {
+        "HUNTER SYNTHESIS": "3797 chars \u2014 main scoring, opportunity ranking, confidence extraction",
+        "DATA AGGREGATOR": "2747 chars \u2014 merges all H-module outputs into unified data structure",
+        "H35 Influence Correlator": "2795 chars \u2014 cross-references political/lobbying data with market signals",
+        "URIEL prompt": "2508 chars \u2014 GPT-4.1 strategic opportunity analysis system prompt",
+        "COLOSSUS prompt": "2030 chars \u2014 Grok technical setup analysis system prompt",
+        "Format Telegram Brief": "1548 chars \u2014 output formatting (currently broken/empty)",
+        "Fire CIL Webhook": "1033 chars \u2014 gates CIL dispatch based on confidence threshold",
+        "GATE 9 Correlation Check": "846 chars \u2014 correlation kill switch logic"
+      },
+      "api_sources": [
+        "Yahoo Finance (volume, options, trending)",
+        "AlphaVantage (top movers, sector rotation)",
+        "NewsAPI (news velocity, geopolitical)",
+        "Finnhub (insider transactions, earnings calendar, IPO calendar, recommendations, candles)",
+        "SEC EDGAR (13F, Form 4, 8-K, whale filings)",
+        "TwelveData (RSI, MACD, Bollinger, ADX, ATR, EMA, Stochastic, volume, indices)",
+        "Congress.gov (bills, amendments)",
+        "Unusual Whales (congress trades, GEX/market tide)",
+        "FRED (DXY, 10Y yield, gold series)",
+        "LDA Senate (lobbying filings, contributions)",
+        "USASpending (federal contracts)",
+        "FEC (campaign finance)",
+        "Metals.dev (spot metals)",
+        "MetalCharts (COMEX inventory)",
+        "Google Gemini (HANIEL agent)",
+        "DeepSeek (RAZIEL counter-thesis)",
+        "GitHub API (archive writes)"
+      ]
+    },
+    "SENTINEL": {
+      "total_nodes": 82,
+      "code_nodes": 36,
+      "code_chars": 105220,
+      "http_endpoints": 11,
+      "key_logic": {
+        "Compliance Engine": "8986 chars \u2014 IRONCLAD rule enforcement",
+        "Position Analyzer": "7800 chars \u2014 portfolio position evaluation",
+        "Exit Rules Engine": "7201 chars \u2014 stop/trim/dump logic",
+        "Exit Watchlist Monitor": "6844 chars \u2014 30-day re-entry window tracking",
+        "Report Builder": "5507 chars \u2014 formatted output generation",
+        "Transaction History Pull": "5299 chars \u2014 E*TRADE transaction API",
+        "Token Check": "5261 chars \u2014 OAuth token validation/renewal",
+        "Performance Tracker": "5143 chars \u2014 P&L tracking",
+        "Correlation Monitor": "4553 chars \u2014 cross-position correlation risk",
+        "Alert Escalation Engine": "3475 chars \u2014 tiered alert routing",
+        "Signal Router": "3310 chars \u2014 run type routing",
+        "Paper Trade Logger": "2752 chars \u2014 paper trade recording",
+        "Kill Switch Executor": "2424 chars \u2014 forced position reduction"
+      }
+    },
+    "GABRIEL": {
+      "Overnight Market Data": "Fetches 17 symbols from Yahoo Finance v8. Sequential loop, try/except per symbol. Returns market_data dict keyed by clean symbol name.",
+      "News Scanner": "Fetches Finnhub general news, scans for 17 keywords (hormuz, nuclear, ceasefire, etc). 6 critical keywords escalate to NEWS_CRITICAL. Returns news_alerts array.",
+      "Threshold Engine": "Evaluates GREEN/YELLOW/RED. Yellow checks: ES>1%, VIX>15%, Oil>3%, Gold>2%, Silver>5%, BTC>5%, DXY rising>0.5%, VIX level>25. Red checks: ES>3%, Oil>8%, Silver>10%, DXY>1.5%, VIX>35, 3+ yellows=RED. Kill Switch: DX=F rising + ZB=F falling + VIX>30.",
+      "Report Builder": "Builds HTML Telegram message with market snapshot, red/yellow triggers, news alerts, kill switch warning.",
+      "Gabriel Logger": "Writes to Supabase gabriel_overnight_log table. UUID generation, escalation level, trigger counts, market snapshot JSON.",
+      "Morning Brief": "Reads last 12h from Supabase, calculates posture (RISK-ON/NEUTRAL/RISK-OFF), fetches fresh pre-market data, builds summary message."
+    },
+    "CIL": {
+      "status": "extraction pending \u2014 next session"
+    },
+    "SIGNAL_ENGINE": {
+      "status": "extraction pending \u2014 12 nodes, simple"
+    },
+    "FORGE_ANVIL": {
+      "status": "extraction pending \u2014 ~20 nodes"
+    }
+  }
+}
