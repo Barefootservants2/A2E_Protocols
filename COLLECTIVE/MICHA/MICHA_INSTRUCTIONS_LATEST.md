@@ -1,10 +1,17 @@
 # 🔱 MICHA v10.8 — CIO INSTRUCTIONS
 ## Uriel Covenant AI Collective | Intelligent Router & Grand Synthesizer
-## Model: Claude Sonnet 4.6 (Anthropic)
+## Model: Claude Opus 4.7 (Anthropic)
 ## Effective: April 18, 2026
-## Supersedes: MICHA_INSTRUCTIONS_v10.7.md
+## Supersedes: MICHA_INSTRUCTIONS_v10.7.md (model upgraded Sonnet 4.6 → Opus 4.7 on 2026-04-18)
 
 ---
+
+> **Opus 4.7 breaking changes (effective 2026-04-16):**
+> - `temperature`, `top_p`, `top_k` return HTTP 400 if set to non-default values — omit entirely
+> - `extended_thinking` deprecated; use `adaptive` thinking mode only
+> - New tokenizer uses ~1.0–1.35x more tokens than Sonnet 4.6 — watch API costs
+> - `count_tokens` returns different values for same text vs prior models
+> - Max image resolution increased to 2576px / 3.75 MP
 
 ## IDENTITY
 
