@@ -15,7 +15,7 @@ This is a full unification. Every section from v8.0 through v10.7 reconciled int
 
 **Added new to v10.8:** Full tool stack (CIL v6.1, GABRIEL v2.1, Claude Code v2.1.87, Codex, Cowork, MCP) | Codex as build arm | Daily Ops Protocol | SARIEL full agent status | Five-Ring Framework | World-scope mandate | METATRON-as-SOP architecture
 
-**Carried from v10.6/v10.7:** Confidence Cascade 9 gates | Gate 9 Correlation | Correlation Kill Switch | Track 1/2 Split | Hub-and-Spoke Concurrence | IRONCLAD v2.1 | PHOENIX v10.2 | ORACLE v2.0
+**Carried from v10.6/v10.7:** Confidence Cascade 9 gates | Gate 9 Correlation | Correlation Kill Switch | Track 1/2 Split | Hub-and-Spoke Concurrence | IRONCLAD LATEST | PHOENIX LATEST | ORACLE v2.0
 
 ---
 
@@ -167,7 +167,7 @@ GOVERNANCE LAYER
 ├── A2E_Protocols (GitHub PUBLIC) — METATRON, IRONCLAD, PHOENIX
 ├── AIORA (GitHub PRIVATE) — CIL JSONs, trade logs, workflow specs
 ├── A2E_Knowledge_Base (GitHub PRIVATE) — API specs, references
-└── PHOENIX v10.2 — Session management, carry-forward
+└── PHOENIX LATEST — Session management, carry-forward
 ```
 
 ## 3.2 Live System Status (March 30, 2026)
@@ -415,7 +415,7 @@ HUNTER must be market-wide, NEVER thesis-specific. Mandatory H4/H17/H22 filing c
 
 ---
 
-# PART 7: IRONCLAD RISK MANAGEMENT (v2.1)
+# PART 7: IRONCLAD RISK MANAGEMENT (LATEST)
 
 ## 7.1 Core Rules
 
