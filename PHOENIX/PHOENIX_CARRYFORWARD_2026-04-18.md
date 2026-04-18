@@ -107,3 +107,32 @@ Principal's priority was top-down through: HUNTER→CIL (done), FastAPI (next).
 ---
 
 🔱 **PHOENIX CLOSED.**
+
+
+---
+
+# COLLECTIVE DRIFT REPORT — 2026-04-18 02:20
+
+**Collective max version:** v10.8
+**Bootstrap limit:** 700 chars
+
+## Per-agent state
+
+| Agent | Latest | Bootstrap chars | Bootstrap refs | STATE |
+|-------|--------|-----------------|----------------|-------|
+| MICHA | v10.7 | 1983 | v10.7 | yes |
+| URIEL | v10.8 | 670 | v10.8 | — |
+| COLOSSUS | v10.8 | 685 | v10.8 | — |
+| HANIEL | v10.8 | 675 | v10.8 | — |
+| RAZIEL | v10.8 | 675 | v10.8 | — |
+| SARIEL | v10.8 | 690 | v10.8 | — |
+| GABRIEL | v10.8 | missing | — | — |
+
+## Drift findings (3)
+
+### HIGH severity
+- **MICHA** · VERSION_BEHIND: MICHA at v10.7; Collective max is v10.8
+- **GABRIEL** · BOOTSTRAP_MISSING: No bootstrap file at COLLECTIVE/BOOTSTRAP/GABRIEL_BOOTSTRAP.md
+
+### MEDIUM severity
+- **MICHA** · BOOTSTRAP_OVERSIZED: Bootstrap 1983 chars exceeds limit 700
