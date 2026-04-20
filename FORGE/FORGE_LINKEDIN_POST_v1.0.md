@@ -52,4 +52,4 @@ If you're building AI for high-stakes work, I'd like to hear what you're enforci
 
 Full piece here: [URL after publish]
 
-If you're hiring for applied AI and you care more about evidence than credentials, my contact is william.e.lemon@ashes2echoes.com
+If you're hiring for applied AI and you care more about evidence than credentials, my contact is ashes2echoes.platform@gmail.com
