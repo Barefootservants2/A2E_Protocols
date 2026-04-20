@@ -1,104 +1,231 @@
-# PHOENIX CLOSE — 2026-04-19
+# PHOENIX CLOSE — 2026-04-20
 
-**Session ID:** 2026-04-19-market-watch-silver-crude-hhhl
+**Session ID:** 2026-04-20-market-watch-and-sariel-wiring
 **Principal:** William Earl Lemon
-**MICHA:** Claude Opus 4.7 (LATEST)
+**MICHA:** Claude Opus 4.7
 **METATRON:** LATEST (resolves to v10.8)
-**Trigger:** MARKET WATCH (silver/crude HH/HL structure read)
-**Clock:** Sun Apr 19 18:30 ET → Mon Apr 20 00:58 ET
-**Duration:** ~6.5 hours wall-clock
+**IRONCLAD:** LATEST (resolves to v3.0)
+**PHOENIX:** LATEST (resolves to v10.2)
+**Context usage:** approaching ceiling, close initiated cleanly
+**Duration:** ~22 hours (Sun 9:30 PM ET → Mon 5:00 PM ET, market session straddled)
 
 ---
 
 ## ACTIONS COMPLETED
 
-### Live market tape pulled
-- ✅ Yahoo Finance API sweep: 16 tickers (silver complex, crude complex, macro frame)
-- ✅ 6-month daily OHLC persisted to local JSON for swing analysis
-- ✅ HH/HL structure analyzer built (3-bar confirmation window) and run on 8 key vehicles
-- ✅ Last-10-bar tape dump for silver/crude/miners
-- ✅ Sunday overnight live tick captured: SI=F $78.85 (-3.66%), GC=F $4,767 (-2.31%), HG=F $6.02 (-1.48%). CL=F/BZ=F feed not posting Sunday bars on Yahoo — open question.
+### Market session (Sun Apr 19 evening → Mon Apr 20 close)
 
-### Geopolitical frame refreshed
-- ✅ Web search confirmed Strait of Hormuz closed again Sat Apr 18 (IRGC warning, Indian tankers fired on, Khamenei statement)
-- ✅ Ceasefire expires Wed Apr 22 — hard catalyst locked on watchlist
-- ✅ Trump maintaining blockade "IN FULL FORCE" per Truth Social
-- ✅ Pakistan mediating new round of proposals through weekend
+- ✅ MARKET WATCH executed — full 19-gate Four-Run Protocol on silver + crude complex
+- ✅ Silver structure read: SI=F broke back under $80 (Sun $78.85 overnight), HL $72.79 Apr 13 intact (+8.3% cushion at time of call)
+- ✅ Crude structure read: WTI HL $91.05 VIOLATED on Fri Apr 17 (print $78.97), downtrend confirmed
+- ✅ Full book review across 3 accounts ($369,819.38 NAV): 4898 ($63,889), 5267 ($10,864), 6685 ($295,066)
+- ✅ Weekly P&L verified: **+$11,214.77 (+3.03%)** Apr 13-17 — "best week" claim corroborated by data
+- ✅ Mar 30 → Apr 17 recovery P&L: **+$31,337 (+8.47%)** — V-pattern mechanics confirmed across entire book
+- ✅ HUNTER 9-gate scoring executed on 10 energy-thesis names (GEV/GLW/VRT/AVGO/ETN/PWR/NRG/TLN/VST/CEG)
+- ✅ Top 2 selected: **GEV (19/18)** and **GLW (18/18)** — decisive differentiator was Gate 2 (no LL violation on Mar 30)
+- ✅ Purchase sheet delivered with IRONCLAD-compliant sizing
+- ✅ **GEV + GLW purchases MADE by Principal** at market (confirmation: "Purchased made, We are set for opening")
+- ✅ News verification: SpaceX confidential S-1 filed Apr 1 2026, June listing target, $75B raise, $1.75T valuation
+- ✅ Alberta annexation status: signatures claimed Mar 30, First Nations court stay Apr 10, Oct referendum pending
+- ✅ Thesis expansion analysis: UI, DXYZ, ASTS, ARKX, IRDM, NVDA, AMZN, Alberta oil/pipeline/rail/uranium basket
+- ✅ MICHA alert grid v1.0 delivered (JSON + MD) with HL/HH levels for 12 holdings + 12 thesis plays + 4 global triggers
+- ✅ VOO/QQQ sector and overlap analysis delivered — look-through exposure calculated (MSFT actual exposure $22K combining direct + passive)
+- ✅ Individual-stock-vs-ETF strategic framework delivered (3 valid reasons: conviction overweight, trading control, thesis asymmetry)
+- ✅ Kris Millegan / Sutton-school framework explainer (1st tier mining/metal/money, 2nd tier drugs/guns/oil)
 
-### Structure read delivered (Four-Run Protocol, full 19-gate)
-- ✅ SILVER: HH→HH→HL structure intact. HL line = $72.79 (Apr 13). Current $78.85. Failed breakout retest at $82.83 confirmed in weekend trade.
-- ✅ CRUDE: HL line $91.05 (Apr 8) BROKEN on Friday close $82.59. Structure broken. Friday printed 2nd-largest single-day oil drop of the war.
-- ✅ SILVER MINERS (HL, PAAS): cleanest HH/HL uptrend structure on the board. Hecla HL $16.88 Mar 30 intact, +15.7% cushion.
-- ✅ UCO: HL $36.40 (Apr 8) tagged intraday $35.22 but closed above at $37.46. Knife's edge, not a clean long.
-- ✅ Macro frame noted: DXY 98.29 soft / ^TNX 4.25% rising / VIX 17.48 complacent = no tailwind for metals.
+### userPreferences (Issue #1)
 
-### RAZIEL counter-thesis scoring
-- ✅ SILVER: Thesis 60 / Counter 40. Uptrend intact but fragile. Not pound-the-table long.
-- ✅ CRUDE: Thesis 45 / Counter 55. Counter-trend news speculation, not structural long.
-- ✅ Signal called out: metals SOLD during weekend Iran escalation. If safe-haven bid doesn't fire at Hormuz closure + tanker strikes + Khamenei threats, what catalyst DOES fire it?
+- ✅ **FULLY CLOSED.** Principal pasted updated block with all 5 LATEST pointers
+- ✅ Verified live:
+  - `MICHA_INSTRUCTIONS_LATEST.md` — 200 OK, 15,698 bytes
+  - `METATRON_LATEST_PRIME_DIRECTIVE.md` — 200 OK, 35,687 bytes
+  - `IRONCLAD_LATEST.md` — 200 OK, 9,897 bytes
+  - `PHOENIX_PROTOCOL_LATEST.md` — 200 OK, 10,188 bytes
+  - `PHOENIX_CARRYFORWARD_LATEST.md` — 200 OK, 7,836 bytes
+- ✅ Rule 12 (no hardcoded version numbers) now true in practice, not just aspirational
+- ✅ KILLSWITCH keyword, PHOENIX RESUME keyword, AIORA triggers all live in userPreferences
 
-### IRONCLAD v3.0 governance applied
-- ✅ Silver stop $78.85 → $72.79 = -7.7% EXCEEDS 5% hard stop rule. Flagged: wait for tighter re-entry near $76-77, or half-size.
-- ✅ Crude rated "do not initiate" — structure broken, news trade not technical
-- ✅ "Do nothing" validated as fourth valid Monday option (VIX 17.48 = no urgency)
+### SARIEL Wiring (Issue #5)
 
-### Principal corrections honored
-- ✅ Stopped asking Principal to paste position state after Principal reminded MICHA has direct access to all stored context. Switched to stating limitation as fact (E*TRADE OAuth required, no position snapshot in any repo — searched MARKET_INTEL, VAULT, AIORA/trades, a2e-platform) rather than repeating the ask.
+- ✅ Reconnaissance: `hunter/filings.py` already implements H4/H17/H22 per METATRON v10.8 drift fix
+- ✅ Reconnaissance: `cil/agents.py` already wires SARIEL into CIL cascade via aiohttp/async
+- ✅ Gap identified: no STANDALONE SARIEL client for use outside CIL (filings enrichment, staleness checks, ad-hoc research)
+- ✅ Scope confirmed: **Scope B** — build client + wire into HUNTER filings enrichment
+- ✅ Cloned a2e-platform to `/home/claude/build/sariel/a2e-platform/` on branch `sariel-wiring-issue-5`
 
-### Repo state verified in-session
-- ✅ A2E_Protocols most recent commit: 2026-04-19 05:47 (FORGE Conversations with Claude v1.2)
-- ✅ a2e-platform most recent commit: 2026-04-18 19:22 (gabriel/email_archiver module)
-- ✅ A2E_Intelligence most recent commit: 2026-04-12 (ADM-3 email archive push)
-- ✅ AIORA/trades/ contains only ETRADE_RECONFIG_031226.docx — no live position log in git
+**Code shipped (local branch, not yet pushed):**
+
+- ✅ `collective/sariel.py` — 239 lines, sync Perplexity client with citation capture, API key scrubbing, fails-soft design
+  - `SarielClient` class with `.ask()` method
+  - `SarielResponse` dataclass (status/text/citations/elapsed_ms/error)
+  - Module-level `ask()` convenience function
+  - `DEFAULT_SYSTEM_PROMPT` for ad-hoc research queries
+- ✅ `hunter/filings_enrichment.py` — 166 lines, SARIEL wiring into filings pipeline
+  - `enrich_filing_report()` — takes `TickerFilingReport`, returns `EnrichedFilingReport`
+  - `batch_enrich()` — sequential batch helper
+  - `FILINGS_SYSTEM_PROMPT` — specialized prompt for SEC filing analysis
+  - Non-destructive: on SARIEL failure, original report preserved
+  - Skip-when-empty optimization (no SARIEL call if 0 filings)
+- ✅ `collective/__init__.py` — SARIEL exports added, version bumped 1.0.0 → 1.1.0
+- ✅ `hunter/__init__.py` — enrichment exports added, version bumped 1.2.0 → 1.3.0
+
+**Tests shipped (local branch, not yet pushed):**
+
+- ✅ `tests/test_sariel.py` — 27 unit tests (all mocked)
+  - `TestSarielResponse` (3) — dataclass behavior
+  - `TestScrub` (3) — API key redaction
+  - `TestSarielClient` (20) — auth, payload, HTTP errors, timeouts, malformed JSON, parameter passthrough
+  - `TestModuleLevelAsk` (1) — convenience function
+- ✅ `tests/test_filings_enrichment.py` — 19 unit tests (all mocked)
+  - `TestBuildQuery` (4) — query construction, elite-filer sorting
+  - `TestEnrichedFilingReport` (5) — dataclass and property delegation
+  - `TestEnrichFilingReport` (7) — enrichment logic, non-destructive error handling
+  - `TestBatchEnrich` (3) — batch operations, skip-when-empty
+
+**Test status:** `pytest tests/test_sariel.py tests/test_filings_enrichment.py -v` → **46/46 PASSED in 0.72s**
 
 ---
 
 ## ACTIONS PENDING (carry into next session)
 
-### Market protocol pending
-- ❌ **Monday Apr 20 RTH open read** — need 9:30 AM ET tick to confirm:
-  - Silver $77.45 hold (prior HH now support)
-  - Hecla $19.00 hold
-  - Crude gap direction (up on Iran escalation re-pricing, or down on peace-deal grind)
-- ❌ **Sized execution sheet** — blocked on position state input (E*TRADE OAuth)
-- ❌ **6685 NAV refresh** — last verified $291,840.38 on Apr 17 01:43 ET, 72+ hours stale at session close
-- ❌ **Shanghai silver premium data pull** — data fetcher does not currently have this source
-- ❌ **COT data on silver futures** — not pulled, another HUNTER gap
-- ❌ **Form 4 insider feed for silver miners (H4/H17/H22)** — mandatory per memory drift fix, still not wired (Issue #3 in DB queue: SARIEL wiring)
+### P0 — SARIEL live integration test + push (30 min)
 
-### Hard catalyst on the clock
-- ⏰ **Wed Apr 22 ceasefire expiration** — binary event. Extension = crude retraces further. Collapse = war restarts with Strait already closed.
+```bash
+cd /home/claude/build/sariel/a2e-platform  # or re-clone fresh
+export PERPLEXITY_API_KEY="$PERPLEXITY_API_KEY"  # from userMemories or ~/.env — DO NOT inline
 
-### Carry items from prior session (still open)
-- ❌ P0 #1 — userPreferences already updated (confirmed in this session's system prompt — MICHA_INSTRUCTIONS_LATEST pointer now live). Closable retroactively.
-- ❌ DEV → TST promotion gate decision (Strict vs Tiered) — Principal deferred
-- ❌ 18-item ranked work plan — zero items executed this session (market work took priority)
+# 1. Live smoke test
+python3 -c "
+from collective.sariel import ask
+r = ask('Latest SEC Form 4 insider transactions for NVDA in last 7 days')
+print(f'Status: {r.status}  Elapsed: {r.elapsed_ms}ms')
+print(f'Citations: {len(r.citations)}')
+print(f'Text preview: {r.text[:300]}')
+"
+
+# 2. Live filings enrichment test (requires SEC EDGAR access)
+python3 -c "
+from hunter import full_filing_check, enrich_filing_report
+report = full_filing_check('NVDA')
+enriched = enrich_filing_report(report)
+print(f'Original signals: {enriched.total_signals}')
+print(f'SARIEL status: {enriched.sariel_status}')
+print(f'Enriched narrative: {enriched.sariel_narrative[:500]}')
+"
+
+# 3. If both pass, commit + push
+git add -A
+git commit -m "feat(collective,hunter): SARIEL standalone client + filings enrichment (closes #5)
+
+- collective/sariel.py: sync Perplexity client with citation capture
+- hunter/filings_enrichment.py: wires SARIEL into SEC filings pipeline
+- 46 unit tests (all passing), 2 live integration smoke tests
+- Non-destructive: SARIEL failure preserves original filings report
+- Skip-when-empty: no API burn on zero-filing scans
+
+Closes #5"
+git push origin sariel-wiring-issue-5
+
+# 4. Open PR, merge, tag
+gh pr create --fill --base main
+# (after merge)
+git checkout main && git pull
+git tag sariel-wiring-v1.0
+git push --tags
+```
+
+**Acceptance for #5 close:** Live smoke test returns `status=SUCCESS` with at least 1 citation captured. Principal verifies narrative quality. Then close #5 via GitHub UI or `gh issue close 5`.
+
+### P1 — Monday market-session cleanup (before tonight)
+
+- ❌ Confirm GEV + GLW fill prices and stops placed at $952.61 and $156.16
+- ❌ Tranche 2 limit orders placed (GEV $952, GLW $151)
+- ❌ Update alert grid with actual fill prices as new HL cushion baselines
+- ❌ Missing stops on naked positions from pre-open governance audit:
+  - VOO 105 sh uncovered (4898)
+  - QQQ 26 sh uncovered (both accounts)
+  - MSFT 35 sh uncovered — broken structure per HUNTER scoring
+  - WPM 125 sh uncovered
+- ❌ MSFT DUMP decision — cycling -3/+1 meets IRONCLAD criteria
+- ❌ RKLB $594 grow-or-kill decision (DUST tier)
+- ❌ ITA $3,247 grow-or-kill decision (below $5K minimum)
+- ❌ PSLV stop tightening to $26.00 if silver breaks $77.45
+
+### P2 — Remaining 18-item build queue
+
+From Apr 18 carry-forward, minus Issue #1 (closed) and #5 (staged):
+
+| # | Item | Effort | Notes |
+|---:|---|---:|---|
+| — | #5 SARIEL live test + push | 0.5 | P0 above — just pushing what's built |
+| 2 | CI/CD + env separation (#4+#5 paired) | 2 | Test-gates every future commit |
+| 3 | FastAPI `api/` layer | 2 | BULLSEYE UI foundation |
+| 4 | GABRIEL → Python port | 3 | Top-down unblock for SENTINEL |
+| 5 | Rotator #7 implementation | 1-2 | 9-key tier arch already designed |
+| 6 | Alert-module cleanup | 1 | Package today's in-session alert grid into `a2e_platform.alerts` |
+| 7 | 5267 diversification (PSLV or SCHD) | 0.5 | Single-ticker-account risk flagged today |
+
+**MICHA recommendation:** Items 2 or 3 next — both are compounding infrastructure. If you want a quick win after the SARIEL push, item 7 (5267 diversification) is 30 min of trade execution, not a build.
 
 ---
 
-## DECISIONS MADE
+## DECISIONS MADE THIS SESSION
 
-- **No Monday entries recommended unsized.** MICHA held the line on not producing dollar-sized execution without position state, despite the instinct to fill the vacuum.
-- **Silver miners identified as the cleanest HH/HL structural play,** not silver metal itself and definitively not crude.
-- **Crude reclassified** from "creeping silently" (Principal's read) to "structure broken, news speculation only" (tape's read) — Principal acknowledged and moved on.
-- **Four valid Monday options** produced: Setup A (miners), Setup B (silver direct), Setup C (UCO tactical gap-up only), Setup D (do nothing).
+### Strategic decisions
+
+- **IRONCLAD v3.0 position framework reaffirmed** — 5% hard stop, 20% max per position, $5K min ticket, 2x50% tranches, 25% trim at +5%
+- **Energy thesis decomposed** — Camp A (picks & shovels, all UPTREND) vs Camp B (power generators, most BROKEN). Camp A wins.
+- **Nuclear narrative peaked late 2025** — CEG/TLN/VST down 18-27% from highs despite AI-PPA story. Avoid or wait for V-retest.
+- **Individual-vs-ETF framework ratified** — 3 valid reasons for direct holdings: conviction overweight, trading control, name-specific thesis asymmetry. Duplicate holdings are governance debt.
+- **5267 single-ticker risk flagged** — $10,864 in QQQ alone with $3,077 cash. Add second lever (PSLV or SCHD).
+- **"Lock step the entire day" posture established** — data → decision → position → stop → next tick. No riding. No hoping.
+
+### Technical decisions
+
+- **SARIEL wiring Scope B chosen** — standalone client + HUNTER filings enrichment (vs Scope A client-only, or Scope C full CIL re-wire)
+- **SARIEL job = SEC filings summarization** (vs STOCK Act, news triage, FORGE catalog staleness)
+- **Sync (`requests`) not async (`aiohttp`)** for standalone client — most callers are single-shot, not parallel
+- **Non-destructive enrichment pattern** — SARIEL failures preserve original data, no regressions possible
+- **Skip-when-empty optimization** — don't burn API calls when there's nothing to enrich
+
+### Governance decisions
+
+- **Issue #1 (userPreferences) fully closed** — all 5 URLs use LATEST pointers
+- **6 IRONCLAD governance violations identified** (stops missing, positions below $5K min, dust-tier positions)
+- **Market-session rhythm locked**: pre-open 9:00-9:30, opening 30min 9:30-10:00, your 10am check-in, midday governance cleanup 11:30-2:00, power hour 3:00-4:00, close journaling
 
 ---
 
-## KEY LEVELS LOCKED FOR NEXT SESSION
+## UNRESOLVED ITEMS
 
-| Vehicle | Support (HL / invalidation) | Resistance (HH / breakout) | Current (session close) |
-|---|---|---|---|
-| SI=F | **$72.79** (Apr 13 HL) | $77.45 Apr 8 then $82.83 Fri high | $78.85 live Sun 23:50 |
-| SLV | $63.20 Apr 7 | $69.93 Apr 8 then Fri $75.16 high | $73.63 Fri close |
-| HL | **$16.88** (Mar 30 HL) | $21.05 Apr 8 | $19.54 Fri close |
-| PAAS | **$45.94** (Mar 19 HL) | $59.90 Apr 8 | $59.06 Fri close |
-| CL=F | **$78.97** (Fri intraday low) | $91.05 broken HL then $117.63 | $82.59 Fri close |
-| UCO | **$35.22** (Fri intraday low) | $43.48 Apr 13 HH | $37.46 Fri close |
-| GC=F | $4,704 Apr 13 HL | $4,879 Fri high | $4,767 live Sun 23:50 |
-| DXY | — | 99.00 break = metals headwind | 98.29 Fri |
-| ^TNX | — | 4.30% = metals headwind | 4.25% Fri |
-| VIX | — | >22 = regime change | 17.48 Fri |
+- **IRONCLAD governance debt:** 6 positions still out of compliance at session close (V-pattern recovery saves the P&L, rules-violation is the risk)
+- **SARIEL live integration untested** — code is ready, API call not yet made
+- **MSFT direct holding** — broken structure, DUMP criteria met, decision deferred
+- **RKLB / ITA** — grow-or-kill deferred
+- **PSLV stop at $25.75** — still aggressive relative to HL $22.51 (15% below); Monday silver action will stress-test this
+
+---
+
+## PRINCIPAL QUOTES WORTH KEEPING
+
+- "hope was actually sarcasm brother" — sarcasm confirmed, not literal
+- "data, data, data and minimize the risk based on the quality of the data" — the operating doctrine
+- "We are not riding anything out anymore" — mode lock
+- "if the data is solid and we are in lock step the entire day, there is no reason we do not hit at or above target" — the standard
+
+---
+
+## KEY NUMBERS LOCKED
+
+- **NAV at session start:** $369,819.38 (Sun Apr 19 evening consolidated)
+- **Last week P&L:** +$11,214.77 (+3.03%)
+- **Mar 30 → Apr 17 recovery:** +$31,337 (+8.47%)
+- **Cash available:** $57,342 pre-GEV/GLW deployment; ~$47,400 post-tranche-1
+- **Hot silver HL:** $72.79 (SI=F, Apr 13)
+- **Hot silver HH:** $82.83 (SI=F, Apr 17 intraday high — failed breakout)
+- **WTI broken HL:** $91.05 (Apr 8) — lost
+- **GEV stop:** $952.61 (5% tactical), structural HL $807
+- **GLW stop:** $156.16 (5% tactical), structural HL $126.68
 
 ---
 
@@ -107,38 +234,29 @@
 ```
 MICHA — PHOENIX RESUME.
 
-Baseline after 2026-04-19 MARKET WATCH session:
+Baseline after 2026-04-20 session:
+  - userPreferences Issue #1: CLOSED (all 5 LATEST pointers live)
+  - SARIEL wiring Issue #5: code complete on local branch sariel-wiring-issue-5
+    at /home/claude/build/sariel/a2e-platform/ — 46/46 unit tests passing,
+    live integration test + push PENDING
+  - GEV + GLW positions entered via IRONCLAD-compliant sizing (Mon Apr 20)
+  - Weekly P&L +$11,214 (+3.03%) — best week on record, V-pattern mechanics
+    confirmed across book
+  - 6 IRONCLAD governance violations open (naked stops, sub-min positions, dust)
+  - Energy thesis Camp A (picks & shovels) validated, Camp B (power gen) broken
+  - Operating mode: "lock step the entire day," no riding, no hoping
+  - MICHA on Opus 4.7, METATRON/IRONCLAD/PHOENIX all LATEST
 
-MARKET STATE:
-  - Silver HH/HL structure intact but fragile. HL line $72.79. Current $78.85 live.
-  - Crude structure BROKEN (HL $91.05 cracked). News-speculation only.
-  - Silver miners (HL, PAAS) = cleanest HH/HL play on the board.
-  - Gold, copper, silver all sold overnight despite Iran escalation = decoupling signal.
-  - VIX 17.48 (complacent), DXY 98.29 (soft), ^TNX 4.25% (rising).
+Pending Principal action:
+  - Confirm Mon Apr 20 GEV + GLW fills and stop placement
+  - Governance cleanup on 6 IRONCLAD violations
+  - MSFT DUMP decision
+  - RKLB / ITA grow-or-kill decisions
 
-HARD CATALYSTS:
-  - Monday Apr 20 RTH open 9:30 AM ET — crude gap tells week direction
-  - Wed Apr 22 ceasefire expiration — binary war-or-peace
-  - Strait still closed (Sat re-closed, blockade enforced)
-
-BLOCKED ON:
-  - Position state across 4898 / 5267 / 6685 (E*TRADE OAuth required)
-  - 6685 NAV refresh (72+ hrs stale at close)
-  - Shanghai silver premium feed (not wired)
-  - COT data on silver futures (not pulled)
-  - Form 4 insider feed for silver miners (SARIEL wiring pending)
-
-FIRST ACTION ON RESUME:
-  1. Pull fresh Sunday overnight tape or Monday RTH tape (whichever applies)
-  2. Confirm whether $77.45 silver / $19.00 Hecla / crude gap levels held
-  3. If still pre-open: set watchlist alerts. If post-open: read the RTH structure.
-  4. Ask Principal: positions updated yet? If yes, produce sized execution sheet.
-     If no: hold at "setup forming, not triggered" discipline.
-
-CARRY:
-  - Silver miners setup primed, waiting for trigger
-  - Do-nothing is a valid call until $82.83 clears with volume or $72.79 breaks
-  - 18-item work plan still untouched — market work took this session
+First action next session: fetch PHOENIX_CARRYFORWARD_LATEST.md, verify
+GEV/GLW position state, ask Principal whether to (a) push SARIEL wiring
+first, (b) handle Monday close governance debt, or (c) run MARKET WATCH
+on Tuesday Apr 21 tape. DO NOT execute without go-ahead.
 ```
 
 ---
