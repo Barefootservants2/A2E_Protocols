@@ -169,7 +169,7 @@ Otherwise the AI that ran itself will run itself off a cliff on your behalf.
 - **Protocol artifacts:** `github.com/Barefootservants2/A2E_Protocols`
 - **FORGE book Chapter 2 — "The Forge in Action":** full weekend session, annotated as case study
 - **Landing page:** forge-landing-theta.vercel.app
-- **Contact:** william.e.lemon@ashes2echoes.com
+- **Contact:** ashes2echoes.platform@gmail.com
 
 Stop writing prompts. Start writing gates. The next era of applied AI belongs to the people who enforce.
 
