@@ -218,6 +218,6 @@ We're looking to learn continuously, and hopefully help others learn. If somethi
 - Platform code: `github.com/Barefootservants2/a2e-platform`
 - Protocols and frameworks: `github.com/Barefootservants2/A2E_Protocols`
 - FORGE landing: `forge-landing-theta.vercel.app`
-- Contact: `william.e.lemon@ashes2echoes.com`
+- Contact: `ashes2echoes.platform@gmail.com`
 
 🔱 — *Ashes2Echoes, LLC*
