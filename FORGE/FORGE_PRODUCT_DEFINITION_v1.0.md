@@ -117,6 +117,6 @@ This is not a roadmap. This is what's running right now.
 - **Code:** `github.com/Barefootservants2/a2e-platform` (access on request)
 - **Protocols:** `github.com/Barefootservants2/A2E_Protocols`
 - **Landing:** `forge-landing-theta.vercel.app`
-- **Contact:** `william.e.lemon@ashes2echoes.com`
+- **Contact:** `ashes2echoes.platform@gmail.com`
 
 🔱 — *Ashes2Echoes, LLC*
