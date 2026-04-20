@@ -1,178 +1,104 @@
-# PHOENIX CLOSE — 2026-04-18
+# PHOENIX CLOSE — 2026-04-19
 
-**Session ID:** 2026-04-18-issues-db-genesis
+**Session ID:** 2026-04-19-market-watch-silver-crude-hhhl
 **Principal:** William Earl Lemon
-**MICHA:** Claude Opus 4.7 (platform reports v10.7 still in userPreferences — P0 #1)
+**MICHA:** Claude Opus 4.7 (LATEST)
 **METATRON:** LATEST (resolves to v10.8)
-**Context usage:** approaching ceiling, close initiated cleanly
-**Duration:** ~6 hours
+**Trigger:** MARKET WATCH (silver/crude HH/HL structure read)
+**Clock:** Sun Apr 19 18:30 ET → Mon Apr 20 00:58 ET
+**Duration:** ~6.5 hours wall-clock
 
 ---
 
 ## ACTIONS COMPLETED
 
-### Audit + strategic assessment
-- ✅ Audited userPreferences — 4 URLs verified live, 3 stale (MICHA v10.7, METATRON v10.8 pin, IRONCLAD v2.1), 1 current (PHOENIX v10.2)
-- ✅ Drafted corrected userPreferences block (LATEST pointers, PHOENIX RESUME keyword added, Rule 12 on LATEST authority added)
-- ✅ Researched Claude Opus 4.7 release (April 16 2026 — two days ago): 87.6% SWE-bench, 94.2% GPQA, 3.75MP vision, new task_budgets beta, /ultrareview command, advisor tool public beta, breaking changes on temperature/top_p/extended_thinking
-- ✅ Researched AI model landscape April 2026: GPT-5.4, Gemini 3.1 Pro, Grok 4.20 Beta 2 (four-agent architecture), DeepSeek V3.2/V4, Llama 4 Scout (10M context)
-- ✅ Delivered 90th-percentile assessment: solo-builder 97th+, small-team engineering ~75th
-- ✅ SARIEL (Perplexity) confirmed defined-but-unused across all workflows
-- ✅ Missing data sources inventory: SEC Form 4, STOCK Act, OCC, FINRA short interest, SAM.gov, CourtListener, USPTO, etc.
+### Live market tape pulled
+- ✅ Yahoo Finance API sweep: 16 tickers (silver complex, crude complex, macro frame)
+- ✅ 6-month daily OHLC persisted to local JSON for swing analysis
+- ✅ HH/HL structure analyzer built (3-bar confirmation window) and run on 8 key vehicles
+- ✅ Last-10-bar tape dump for silver/crude/miners
+- ✅ Sunday overnight live tick captured: SI=F $78.85 (-3.66%), GC=F $4,767 (-2.31%), HG=F $6.02 (-1.48%). CL=F/BZ=F feed not posting Sunday bars on Yahoo — open question.
 
-### Issues DB v1.0 build (GATHER → CREATE → TEST → DELIVER)
-- ✅ 22 labels created on A2E_Protocols (5 severity + 12 component + 5 type)
-- ✅ 3 milestones created (TST-BASELINE-2026-04-18, SP1-2026-Q2, SP2-2026-Q3); #1 description corrected post-hoc to reflect "issues that close to promote DEV → TST"
-- ✅ 15 seed issues filed (1 P0, 2 P1, 6 P2, 6 P3); #16 added later (Google consolidation)
-- ✅ Python module pushed to a2e-platform/issues/ (8 files: __init__, fetcher, exporter, reporter, cli, plus tests + data)
-- ✅ 21 tests: 19 unit (fixtures, offline) + 2 live integration (real GitHub API) — ALL GREEN
-- ✅ CSV snapshot + markdown revision log committed to issues/data/
-- ✅ Tag `issues-db-v1.0` @ `03ca8544e6` cut on a2e-platform
+### Geopolitical frame refreshed
+- ✅ Web search confirmed Strait of Hormuz closed again Sat Apr 18 (IRGC warning, Indian tankers fired on, Khamenei statement)
+- ✅ Ceasefire expires Wed Apr 22 — hard catalyst locked on watchlist
+- ✅ Trump maintaining blockade "IN FULL FORCE" per Truth Social
+- ✅ Pakistan mediating new round of proposals through weekend
 
-### Tag correction (acknowledged error)
-- ✅ Initial `TST-BASELINE-2026-04-18` tag WAS MISNAMED — we are still in DEV
-- ✅ Corrected: deleted `TST-BASELINE-2026-04-18`, created `DEV-BASELINE-2026-04-18` @ `78f2bef4d2` on A2E_Protocols
-- ✅ Milestone #1 description updated to "issues that must close to promote DEV → TST"
+### Structure read delivered (Four-Run Protocol, full 19-gate)
+- ✅ SILVER: HH→HH→HL structure intact. HL line = $72.79 (Apr 13). Current $78.85. Failed breakout retest at $82.83 confirmed in weekend trade.
+- ✅ CRUDE: HL line $91.05 (Apr 8) BROKEN on Friday close $82.59. Structure broken. Friday printed 2nd-largest single-day oil drop of the war.
+- ✅ SILVER MINERS (HL, PAAS): cleanest HH/HL uptrend structure on the board. Hecla HL $16.88 Mar 30 intact, +15.7% cushion.
+- ✅ UCO: HL $36.40 (Apr 8) tagged intraday $35.22 but closed above at $37.46. Knife's edge, not a clean long.
+- ✅ Macro frame noted: DXY 98.29 soft / ^TNX 4.25% rising / VIX 17.48 complacent = no tailwind for metals.
 
-### Issue #7 (rotator) refinements
-- ✅ Updated #7 body with three-tier architecture: AUTO (API-native) / EDGE-WINDOW (Claude in Chrome drives dashboard) / PROMPTED (Telegram deep-link bundle)
-- ✅ Patched #7 with main-Chrome-profile decision (not dedicated), Sunday 07:00 ET window, busy-tab detection (15-min defer, max 3 retries, then skip cycle)
-- ✅ 9-key inventory mapped to tiers: 3 AUTO (GitHub, Supabase, E*TRADE), 3 EDGE-WINDOW (Telegram, Perplexity, UW), 3 PROMPTED (FRED, EIA, Nasdaq)
+### RAZIEL counter-thesis scoring
+- ✅ SILVER: Thesis 60 / Counter 40. Uptrend intact but fragile. Not pound-the-table long.
+- ✅ CRUDE: Thesis 45 / Counter 55. Counter-trend news speculation, not structural long.
+- ✅ Signal called out: metals SOLD during weekend Iran escalation. If safe-haven bid doesn't fire at Hormuz closure + tanker strikes + Khamenei threats, what catalyst DOES fire it?
 
-### Strategic decisions ratified
-- ✅ Google stack consolidation approved (OneNote retained as governed exception)
-- ✅ AI model defaults unchanged (Claude primary, not switching to Gemini/etc.)
-- ✅ Operating mode locked: "pick one and finish it" — no parallel chasing
-- ✅ 18-item ranked work plan delivered (ascending by effort)
+### IRONCLAD v3.0 governance applied
+- ✅ Silver stop $78.85 → $72.79 = -7.7% EXCEEDS 5% hard stop rule. Flagged: wait for tighter re-entry near $76-77, or half-size.
+- ✅ Crude rated "do not initiate" — structure broken, news trade not technical
+- ✅ "Do nothing" validated as fourth valid Monday option (VIX 17.48 = no urgency)
+
+### Principal corrections honored
+- ✅ Stopped asking Principal to paste position state after Principal reminded MICHA has direct access to all stored context. Switched to stating limitation as fact (E*TRADE OAuth required, no position snapshot in any repo — searched MARKET_INTEL, VAULT, AIORA/trades, a2e-platform) rather than repeating the ask.
+
+### Repo state verified in-session
+- ✅ A2E_Protocols most recent commit: 2026-04-19 05:47 (FORGE Conversations with Claude v1.2)
+- ✅ a2e-platform most recent commit: 2026-04-18 19:22 (gabriel/email_archiver module)
+- ✅ A2E_Intelligence most recent commit: 2026-04-12 (ADM-3 email archive push)
+- ✅ AIORA/trades/ contains only ETRADE_RECONFIG_031226.docx — no live position log in git
 
 ---
 
-## ACTIONS PENDING
+## ACTIONS PENDING (carry into next session)
 
-- ❌ **P0 #1 — Principal pastes rewritten userPreferences into claude.ai Settings → Profile.** Only Principal can do this (lives in Anthropic user settings). Block text delivered in session.
-- ❌ **DEV → TST promotion gate decision** — Principal to confirm Strict (all 16 close) vs Tiered (6 hard gates: #1, #2, #3, #6, #7, #15 close → cut TST → rest as SP1 tickets). MICHA recommended Tiered.
-- ❌ **Next session item selection** — Principal to pick one from 18-item list.
+### Market protocol pending
+- ❌ **Monday Apr 20 RTH open read** — need 9:30 AM ET tick to confirm:
+  - Silver $77.45 hold (prior HH now support)
+  - Hecla $19.00 hold
+  - Crude gap direction (up on Iran escalation re-pricing, or down on peace-deal grind)
+- ❌ **Sized execution sheet** — blocked on position state input (E*TRADE OAuth)
+- ❌ **6685 NAV refresh** — last verified $291,840.38 on Apr 17 01:43 ET, 72+ hours stale at session close
+- ❌ **Shanghai silver premium data pull** — data fetcher does not currently have this source
+- ❌ **COT data on silver futures** — not pulled, another HUNTER gap
+- ❌ **Form 4 insider feed for silver miners (H4/H17/H22)** — mandatory per memory drift fix, still not wired (Issue #3 in DB queue: SARIEL wiring)
+
+### Hard catalyst on the clock
+- ⏰ **Wed Apr 22 ceasefire expiration** — binary event. Extension = crude retraces further. Collapse = war restarts with Strait already closed.
+
+### Carry items from prior session (still open)
+- ❌ P0 #1 — userPreferences already updated (confirmed in this session's system prompt — MICHA_INSTRUCTIONS_LATEST pointer now live). Closable retroactively.
+- ❌ DEV → TST promotion gate decision (Strict vs Tiered) — Principal deferred
+- ❌ 18-item ranked work plan — zero items executed this session (market work took priority)
 
 ---
 
 ## DECISIONS MADE
 
-- **Three-tier rotator architecture** replaces binary AUTO/MANUAL model
-- **Main Chrome profile** used for EDGE-WINDOW tier (Claude in Chrome already aligned)
-- **Sunday 07:00 ET** proposed rotation window (quiet time, low collision risk)
-- **Busy-tab detection** mandatory before every EDGE-WINDOW rotation
-- **Canary-before-revoke** invariant on every rotation path
-- **Keys never in logs** invariant (audit records `{timestamp, key_name, tier, outcome}` only)
-- **Google consolidation** approved, OneNote excepted (ADM-3 multi-account intake has no Google equivalent)
-- **GDrive backup** will be one-way, service-account auth, secrets excluded, private→private folder visibility
-- **FORGE ship/freeze decision** deferred to post-Phase 4 with artifacts in hand
-- **Advanced Protection Program** enrollment added as Google consolidation sub-task
-- **TST naming correction** — we don't name things "TST" until we've earned it. `DEV-BASELINE` is the honest label for catalogued-DEV-state.
+- **No Monday entries recommended unsized.** MICHA held the line on not producing dollar-sized execution without position state, despite the instinct to fill the vacuum.
+- **Silver miners identified as the cleanest HH/HL structural play,** not silver metal itself and definitively not crude.
+- **Crude reclassified** from "creeping silently" (Principal's read) to "structure broken, news speculation only" (tape's read) — Principal acknowledged and moved on.
+- **Four valid Monday options** produced: Setup A (miners), Setup B (silver direct), Setup C (UCO tactical gap-up only), Setup D (do nothing).
 
 ---
 
-## DOCUMENTS PRODUCED
+## KEY LEVELS LOCKED FOR NEXT SESSION
 
-- `a2e-platform/issues/__init__.py`
-- `a2e-platform/issues/fetcher.py` — GitHub Issues API client, Issue dataclass, label-taxonomy parsers, pagination
-- `a2e-platform/issues/exporter.py` — deterministic CSV exporter
-- `a2e-platform/issues/reporter.py` — markdown revision log with summary table + milestone grouping + severity ordering
-- `a2e-platform/issues/cli.py` — `snapshot` / `report` / `sync` / `stats` commands
-- `a2e-platform/issues/data/snapshot.csv` — current issue state
-- `a2e-platform/issues/data/REVISION_LOG.md` — human-readable log
-- `a2e-platform/tests/test_issues.py` — 21-test suite (19 unit + 2 live)
-- Rewritten userPreferences block (delivered in chat, not yet pasted)
-- 18-item ranked work plan (preserved below)
-
----
-
-## GITHUB STATUS
-
-### Commits pushed (a2e-platform)
-- 8 files delivered via Contents API (git clone proxy-blocked)
-- Head @ `03ca8544e6`
-
-### Tags
-- 🏷️ `issues-db-v1.0` @ `03ca8544e6` on Barefootservants2/a2e-platform
-- 🏷️ `DEV-BASELINE-2026-04-18` @ `78f2bef4d2` on Barefootservants2/A2E_Protocols
-- 🗑️ `TST-BASELINE-2026-04-18` DELETED (was misnamed, corrected)
-
-### Issues filed (16 total, all open)
-| # | Sev | Component | Milestone | Title |
-|---|---|---|---|---|
-| 1 | P0 | MICHA | TST-BASELINE | userPreferences still references MICHA v10.7 |
-| 2 | P1 | HUNTER | TST-BASELINE | data_fetcher.pct_change returns 1-year-ago close |
-| 3 | P1 | MICHA | TST-BASELINE | Instruction file lists Sonnet 4.6, actual is Opus 4.7 |
-| 4 | P2 | IRONCLAD | TST-BASELINE | No LATEST pointer |
-| 5 | P2 | SARIEL | SP1 | Not wired into any workflow |
-| 6 | P2 | infrastructure | SP1 | 300-test suite not gated on push |
-| 7 | P2 | infrastructure | SP1 | API key rotation not automated (three-tier scoped) |
-| 8 | P3 | METATRON | SP1 | v10.8 body references IRONCLAD v2.1 + PHOENIX v10.2 inline |
-| 9 | P3 | PHOENIX | SP1 | Protocol has no LATEST pointer |
-| 10 | P3 | SENTINEL | TST-BASELINE | Seven Telegram nodes returning 401 |
-| 11 | P3 | infrastructure | SP1 | Opus 4.7 migration: audit temperature/top_p usage |
-| 12 | P2 | infrastructure | SP2 | No alerting when workflows fail |
-| 13 | P3 | docs | SP2 | No single documentation index |
-| 14 | P3 | docs | SP2 | No public-facing proof |
-| 15 | P2 | infrastructure | TST-BASELINE | No DEV/TST/PRD environment separation |
-| 16 | P3 | infrastructure | TST-BASELINE | Google web-services consolidation (OneNote excepted) |
-
----
-
-## ANOMALIES ON WATCH
-
-1. **userPreferences drift** (#1, P0) — Principal-only fix, block delivered
-2. **Initial TST-BASELINE tag mislabel** — corrected same session, but flagged as a drift example for future review (industry-default bias overrode Principal's stated model)
-3. **SARIEL underutilization** (#5) — agent defined in every bootstrap, API key present, zero execution traces in any workflow
-4. **18-session scope delivered** — Principal confirmed full commitment, not trying to do multiple in one session. Cadence + sequence TBD.
-5. **Curriculum thread: Emmanuel Malyarovich / SMA 20/200** — noted but NOT filed as issue. Principal flagged this as a continuous-filter overlay on discrete HH/HL market-structure theory. Reserve for Sunday Module 2 (patterns) or Module 4 (indicators).
-6. **Memory slot usage** — no slots modified this session; all 30 existing memory edits intact.
-
----
-
-## 18-ITEM RANKED WORK PLAN (CARRY FORWARD VERBATIM)
-
-Ranked ascending by sessions-left-to-complete. "Pick one and finish it" operating mode.
-
-| # | Item | Sessions left | What's actually left |
-|---:|---|:---:|---|
-| 1 | Fast fixes sweep (issues #1, #2, #3, #4, #8, #9, #11) | **0.5–1** | userPreferences paste, 10-line pct_change fix, MICHA instruction bump to Opus 4.7, create IRONCLAD_LATEST, create PHOENIX_PROTOCOL_LATEST, strip inline version refs from METATRON v10.8, grep temperature/top_p in Claude calls |
-| 2 | Docs index (#13) | **1** | Write A2E_Protocols/INDEX.md: one-line description + link + status for every protocol, instruction, spec doc |
-| 3 | SARIEL wiring (#5) | **1** | Build ONE Perplexity-backed feed. Recommend SEC Form 4 insider transactions. Citations → HUNTER enrichment |
-| 4 | CI/CD gate (#6) | **1** | GitHub Actions workflow, branch protection, ruff/mypy baselines, Telegram failure alert, verify 300 tests pass in clean CI env |
-| 5 | Environment separation (#15) | **1** | Branch protection on main, promotion path documented, tag discipline, rollback test on canary commit |
-| 6 | Alerting (#12) | **1** | Failure detection on n8n + Python workflows, Telegram pages, dedup logic |
-| 7 | Public-facing proof (#14) | **1–2** | One write-up: architecture diagram + MARKET WATCH walkthrough. Post to Ashes2Echoes or Substack |
-| 8 | Google consolidation (#16) | **1–2** | OneDrive audit + migrate, GitHub → GDrive nightly backup, Advanced Protection, quarterly app-review via rotator |
-| 9 | FORGE landing + ship/freeze decision | **1–2** | Landing copy pass, ANVIL/ASSAY/AUTOPSY formalized, waitlist plumbing, Chapter 1 publish decision |
-| 10 | UAT scripts build | **2** | Pass/fail walkthroughs for 7 workflows: MARKET WATCH, CLOSE/RESUME, SENTINEL report, GABRIEL cycle, CIL query, E*TRADE sync, HUNTER scan |
-| 11 | API key rotator (#7) | **2** | Three-tier build: manifest, canary, audit, GitHub (AUTO), Supabase (AUTO), edge-window via Claude in Chrome (Perplexity, UW, Telegram), prompted tier, cron, tests |
-| 12 | HUNTER final polish | **2** | Enrichment hardening, H4/H17/H22 mandatory filing check wired, per-scan test coverage, decommission n8n HUNTER |
-| 13 | CIL v6.1 lockdown | **2–3** | Universal abstraction (DOMAIN ROUTER/PROMPT BUILDER/GATE CONFIG/OUTPUT TEMPLATE) integration-tested. RAZIEL post-synthesis fix (PRIME tier blocker). Cascade timing measured |
-| 14 | E*TRADE integration completion | **2–3** | Port TOKEN KEEPER + TOKEN EXCHANGE to Python, OAuth integration tests, 3-account sync validated, token-refresh runbook |
-| 15 | SENTINEL Python finalization | **3** | Remaining 36-code-node port, Compliance Engine resolution, GitHub Archive SHA 422 fix, PSLV dedup, #10 401s verified, decommission n8n |
-| 16 | GABRIEL Python port | **3** | Full source port, kill switch DX=F/ZB=F, 21-cycle baseline re-verified, decommission n8n |
-| 17 | UAT execution + TST cut | **1 (variable)** | Run every UAT script, file issues on failure, tag TST-BASELINE once all green |
-| 18 | FORGE book chapters 2–10 | **5–8** | 9 chapters, CREATE/CAKE rubric per domain with cited research, MagAI demo integration |
-
-**Dependency notes:**
-- #4 (CI/CD) + #5 (env separation) pair naturally — same session
-- #11 (rotator) cleanest after #4 ships
-- #10 (UAT scripts) must exist before #17 (TST cut)
-- Everything else parallel-safe after #4
-
-**MICHA recommendations:**
-- **Visible win in one session:** #1 (fast fixes, 7 issues closed)
-- **Highest single-session leverage:** #4 + #5 paired (every future commit gets test-gated discipline)
-- **Hardest-out-of-the-way-first:** #16 (GABRIEL port unblocks SENTINEL dependency chain)
-
----
-
-## NEXT SESSION PRIORITY
-
-1. **P0: Principal pastes userPreferences** (30 seconds, closes #1)
-2. **Pick one item** from the 18-item list. Fire `PHOENIX RESUME`, state the pick, MICHA executes that and ONLY that.
-3. **Promotion gate decision (Strict vs Tiered)** can wait until first chosen item ships — decision gets clearer with fewer open issues.
+| Vehicle | Support (HL / invalidation) | Resistance (HH / breakout) | Current (session close) |
+|---|---|---|---|
+| SI=F | **$72.79** (Apr 13 HL) | $77.45 Apr 8 then $82.83 Fri high | $78.85 live Sun 23:50 |
+| SLV | $63.20 Apr 7 | $69.93 Apr 8 then Fri $75.16 high | $73.63 Fri close |
+| HL | **$16.88** (Mar 30 HL) | $21.05 Apr 8 | $19.54 Fri close |
+| PAAS | **$45.94** (Mar 19 HL) | $59.90 Apr 8 | $59.06 Fri close |
+| CL=F | **$78.97** (Fri intraday low) | $91.05 broken HL then $117.63 | $82.59 Fri close |
+| UCO | **$35.22** (Fri intraday low) | $43.48 Apr 13 HH | $37.46 Fri close |
+| GC=F | $4,704 Apr 13 HL | $4,879 Fri high | $4,767 live Sun 23:50 |
+| DXY | — | 99.00 break = metals headwind | 98.29 Fri |
+| ^TNX | — | 4.30% = metals headwind | 4.25% Fri |
+| VIX | — | >22 = regime change | 17.48 Fri |
 
 ---
 
@@ -181,21 +107,38 @@ Ranked ascending by sessions-left-to-complete. "Pick one and finish it" operatin
 ```
 MICHA — PHOENIX RESUME.
 
-Baseline after 2026-04-18 session:
-  - Issues DB v1.0 live (16 open issues, 3 milestones, 22 labels)
-  - DEV-BASELINE-2026-04-18 tag @ 78f2bef4d2 on A2E_Protocols
-  - issues-db-v1.0 tag @ 03ca8544e6 on a2e-platform
-  - 18-item ranked work plan committed to carry-forward
-  - Operating mode: pick one and finish it
-  - MICHA is on Opus 4.7 (platform updated April 16 2026)
+Baseline after 2026-04-19 MARKET WATCH session:
 
-Pending Principal action:
-  - userPreferences paste (P0 #1)
-  - Next-item selection from 18-item list
-  - Promotion gate decision (Strict vs Tiered) — can defer
+MARKET STATE:
+  - Silver HH/HL structure intact but fragile. HL line $72.79. Current $78.85 live.
+  - Crude structure BROKEN (HL $91.05 cracked). News-speculation only.
+  - Silver miners (HL, PAAS) = cleanest HH/HL play on the board.
+  - Gold, copper, silver all sold overnight despite Iran escalation = decoupling signal.
+  - VIX 17.48 (complacent), DXY 98.29 (soft), ^TNX 4.25% (rising).
 
-First action: Fetch PHOENIX_CARRYFORWARD_LATEST.md, summarize 18-item list,
-ask Principal which item to work on this session. DO NOT execute without go-ahead.
+HARD CATALYSTS:
+  - Monday Apr 20 RTH open 9:30 AM ET — crude gap tells week direction
+  - Wed Apr 22 ceasefire expiration — binary war-or-peace
+  - Strait still closed (Sat re-closed, blockade enforced)
+
+BLOCKED ON:
+  - Position state across 4898 / 5267 / 6685 (E*TRADE OAuth required)
+  - 6685 NAV refresh (72+ hrs stale at close)
+  - Shanghai silver premium feed (not wired)
+  - COT data on silver futures (not pulled)
+  - Form 4 insider feed for silver miners (SARIEL wiring pending)
+
+FIRST ACTION ON RESUME:
+  1. Pull fresh Sunday overnight tape or Monday RTH tape (whichever applies)
+  2. Confirm whether $77.45 silver / $19.00 Hecla / crude gap levels held
+  3. If still pre-open: set watchlist alerts. If post-open: read the RTH structure.
+  4. Ask Principal: positions updated yet? If yes, produce sized execution sheet.
+     If no: hold at "setup forming, not triggered" discipline.
+
+CARRY:
+  - Silver miners setup primed, waiting for trigger
+  - Do-nothing is a valid call until $82.83 clears with volume or $72.79 breaks
+  - 18-item work plan still untouched — market work took this session
 ```
 
 ---
