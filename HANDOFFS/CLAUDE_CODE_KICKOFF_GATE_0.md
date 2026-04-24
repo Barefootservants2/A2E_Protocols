@@ -15,7 +15,7 @@ Principal is on **Windows 10/11 native** with **PowerShell** (not WSL, not bash)
 **Adapt bash-flavored specifics accordingly:**
 - Cron scheduling → use **Windows Task Scheduler** via `schtasks.exe` or `New-ScheduledTask` cmdlets
 - `install_local_cron.sh` → write `install_local_tasks.ps1` (idempotent PowerShell script that registers scheduled tasks)
-- `~/a2e-state/` → `$env:USERPROFILE\.a2e-state\` in PowerShell, or `%USERPROFILE%\.a2e-state\` in CMD
+- `~/.a2e/state/` → `$env:USERPROFILE\.a2e-state\` in PowerShell, or `%USERPROFILE%\.a2e-state\` in CMD
 - `&&` command chaining → `;` in PowerShell or separate `-Action` blocks in Task Scheduler
 - Cron verification step (`crontab -l`) → `Get-ScheduledTask -TaskPath "\A2E\*"` verification
 - File paths in Python code should use `pathlib.Path` with `Path.home() / ".a2e-state"` for cross-platform safety (not hardcoded forward-slash paths)
@@ -35,9 +35,28 @@ MICHA has been making position-aware responses by inferring from memory, console
 
 Read all three before writing any code. They are the contract.
 
+## WHERE TO RUN
+
+Claude Code must be running from the root of the `a2e-platform` repo clone. Principal's workstation layout:
+
+- **Code repo (where Claude Code runs):** `a2e-platform` — clone from `https://github.com/Barefootservants2/a2e-platform` if not already local. Likely locations to check: `~\Documents\`, `~\source\repos\`, `~\GitHub\`.
+- **Runtime state directory (where snapshotter writes + reads tokens):** `~/.a2e/` on Windows this is `C:\Users\<user>\.a2e\`. This directory already exists and contains `etrade_tokens.json`, `accounts.json`, `gmail_token*.json`. Do NOT create a new state directory — use this one.
+
+If Claude Code is currently running from `~/.a2e/` or anywhere other than `a2e-platform/`, stop, navigate out, locate or clone `a2e-platform`, then restart.
+
+```powershell
+# Find existing clone
+Get-ChildItem -Path C:\Users\$env:USERNAME -Recurse -Directory -Filter "a2e-platform" -ErrorAction SilentlyContinue -Depth 4 | Select-Object FullName
+
+# If none found, clone fresh:
+cd C:\Users\$env:USERNAME\Documents
+git clone https://github.com/Barefootservants2/a2e-platform.git
+cd a2e-platform
+```
+
 ## WHAT EXISTS ALREADY (inventory — do not rebuild)
 
-- `a2e-platform/` — main Python repo, has existing E*TRADE module stubs under `sentinel/etrade/`
+- `a2e-platform/` — main Python repo (must be cloned locally — see "WHERE TO RUN" below), has existing E*TRADE module stubs under `sentinel/etrade/`
 - Proven working pyetrade pattern from chat `fe80af27` (2026-03-24): `list_accounts()` + `get_account_portfolio()` + `get_account_balance()` all confirmed live with 26 positions pulled across 3 accounts
 - E*TRADE production consumer key: `27313e7a4f8fb97838ea53f68a7b9943` / secret: `c6e9f6eb74e57f78b3752f04e331c5c5c9f3fa57c99ae782f12b71beb1627b5f`
 - Account keys (base64 urlsafe): `4898=cEEZTEn2z_vly3-pjTT8vQ` · `5267=HeoOUUPUOB6azMHCi9-_7A` · `5536=HOlA0GAZ69Z3LsM3ph70pg` · `6685=JPsJRG-WXm497nzy3RZ-6w`
@@ -61,7 +80,7 @@ Read all three before writing any code. They are the contract.
    - Calls `etrade_fetch` for each account
    - Normalizes to `positions_v1.json` schema
    - Validates against schema (use `jsonschema` lib)
-   - Writes local: `~/a2e-state/positions_latest.json` + `~/a2e-state/history/<ISO>.json`
+   - Writes local: `~/.a2e/state/positions_latest.json` + `~/.a2e/state/history/<ISO>.json`
    - Calls `push.py` to commit to A2E_Intelligence
    - Logs structured event to Supabase `snapshots` table
    - Handles partial failures: if one account errors, write snapshot with `status=API_ERROR` for that account, proceed for others
@@ -107,7 +126,7 @@ Read all three before writing any code. They are the contract.
 ### Local infrastructure (Principal's workstation)
 
 13. **`scripts/install_local_cron.sh`** — idempotent cron installer
-    - Adds entry: `*/30 9-16 * * 1-5 cd ~/a2e-platform && python -m a2e.snapshot --push >> ~/a2e-state/logs/snapshot.log 2>&1`
+    - Adds entry: `*/30 9-16 * * 1-5 cd ~/a2e-platform && python -m a2e.snapshot --push >> ~/.a2e/state/logs/snapshot.log 2>&1`
     - Adds entry: `0 */4 * * 6,0 cd ~/a2e-platform && python -m a2e.snapshot --push`
     - Safe to re-run (checks existing crontab)
 
@@ -125,7 +144,7 @@ Your block is complete when ALL of these pass:
 - [ ] All 14 files above exist with clean code + docstrings
 - [ ] `pytest a2e-platform/tests/snapshot/` — all green
 - [ ] `pytest a2e-platform/tests/phoenix/` — all green
-- [ ] `python -m a2e.snapshot --manual` runs locally, produces a valid `~/a2e-state/positions_latest.json` that schema-validates
+- [ ] `python -m a2e.snapshot --manual` runs locally, produces a valid `~/.a2e/state/positions_latest.json` that schema-validates
 - [ ] `python -m a2e.snapshot --push` commits to `A2E_Intelligence/STATE/positions_latest.json` successfully (verify via GitHub API)
 - [ ] `python -m phoenix.session_start` prints a GREEN banner when the snapshot is fresh
 - [ ] Time-mock test: simulate a 5h-old snapshot, verify `gate_zero()` returns RED with the correct refusal message
