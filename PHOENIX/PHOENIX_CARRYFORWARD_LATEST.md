@@ -1,125 +1,126 @@
-# PHOENIX CARRY-FORWARD · S3d · 2026-04-24
-
-**Principal:** William Earl Lemon
-**Session:** S3d — continues from S3c (compacted mid-session)
-**Environment:** MICHA LATEST + PHOENIX active
-**Close reason:** Morning build block complete — all planned ship items landed
+# PHOENIX CARRYFORWARD — 2026-04-24 S3d FINAL
+**Session:** S3d — closed 20:40 ET · 2026-04-24
+**Status:** GATE 0 LIVE END-TO-END · VERIFIED
+**Next session opens with:** Gate 0 banner reading from `positions_latest.json`
 
 ---
 
-## WHAT CLOSED THIS SESSION
+## ONE-LINE SUMMARY
 
-### 1. Console v0.3 → v0.3a (LIVE)
+The stale-position-data loophole that produced the morning's PSLV silver-thesis drift error is **structurally closed.** Every MICHA session from here forward opens with a GREEN/AMBER/RED Gate 0 banner citing snapshot age. No more inference from memory, console, or chat.
 
-**Upgrade:** Trading Lab now embeds real TradingView charts with a 24-ticker switcher organized into three groups:
-- **POSITIONS** (10 tickers): PSLV, WPM, VOO, FCX, PHYS, ITA, GOOGL, QQQ, MSFT, XOVR
-- **MACRO** (8 tickers): Silver spot, Gold spot, VIX, DXY, US10Y, WTI, SI1! futures, GC1! futures
-- **WATCHLIST** (5 tickers): UCO, PLTR, OKLO, CCJ, SLV
+## DELIVERABLES LANDED — 2026-04-24
 
-**Implementation:** Lazy-loaded — the TradingView script only fetches when Principal navigates to Trading Lab for the first time. Zero cost to console boot. Uses `s3.tradingview.com/tv.js` widget with dark theme, teal gridlines, MA/RSI studies preloaded, HH/HL line tool accessible in the left toolbar.
+### A2E_Protocols (design + protocol)
+| File | Commit | Purpose |
+|---|---|---|
+| `SENTINEL/LIVE_STATE_ARCHITECTURE_v1.0.md` | `465eb794` | 4-piece architecture design |
+| `SENTINEL/schemas/positions_v1.json` | `a9d82497` | Canonical JSON schema (draft-07) |
+| `PROTOCOLS/PRODUCTION/METATRON_GATE_0_ADDENDUM.md` | `d737ee2c` | P7 protocol patch — ADVISORY pending Monday |
+| `HANDOFFS/CLAUDE_CODE_KICKOFF_GATE_0.md` | `6f5ccaa3` | Self-contained brief for Claude Code |
+| `SENTINEL/WATCH/META_2026-04-24.md` | `d03aa844` | META tranche plan (T1 later filled) |
+| `EXECUTION/EXECUTION_PLAYBOOK_v1.0.md` | `5440b211` | pyetrade + Power E*TRADE execution discipline |
+| `EXECUTION/YAHOO_PREVIOUSCLOSE_TRAP_v1.0.md` | `1ad6883a` | 10-trap catalog, safe-fetch pattern |
+| `BOOK/CHAPTER_01_OPENING_FLAGGED.md` | `bce01b94` | FORGE book Ch 1 motivation captured |
 
-**Commit:** `83b562abf30dc81506a15dcc4bb854288eb1ac95`
-**Vercel deploy:** `dpl_BccvSZp7Gp6pUSJ8EsMB8cHocwGC` → READY
-**Live verification:** `curl -sIL https://ashes2echoes.com/console/` → HTTP 200, `last-modified: Fri, 24 Apr 2026 15:55:50 GMT`
-**Content check:** v0.3a version marker appears 4 times, TradingView script URL + chartSymbol + tvScriptLoaded + loadChart all present, all 24 ticker options confirmed in live HTML.
+### a2e-platform (implementation — Claude Code block)
+| Commit | Scope |
+|---|---|
+| `7731bb6` | Live State Architecture — snapshotter, session_start, ops (18 files, 2,450 insertions) |
+| `72dcf5f` | Gate 0 ops fix — PS installer: Interactive logon + ASCII descriptions |
+| `a349992` | Handoff doc at repo root |
+| `HANDOFF_FROM_CLAUDE_CODE.md` | sha `532eb7d4` · 10,358 bytes |
+| Tests | 38/38 passing |
+| Scheduled tasks | 2 registered: `\A2E\Snapshot-MarketHours` (Mon 09:30) + `\A2E\Snapshot-Weekend` (Sat 00:00) |
 
-### 2. EXECUTION_PLAYBOOK v1.0 (NEW)
+### A2E_Intelligence/STATE/ (private repo — live data)
+| File | State |
+|---|---|
+| `positions_latest.json` | 7,872 bytes · snapshot `ed692b26` · fetched 2026-04-24T20:34:54Z |
+| `freshness.json` | status OK, age tracking live |
+| `history/2026-04-24T19-31-28.json` | first snapshot (P1) |
+| `history/2026-04-24T20-34-54.json` | second snapshot (manual refresh verify) |
+| `README.md` | schema + read instructions |
+| `.gitignore` | exclude positions_failed/ |
 
-**Purpose:** Codifies the order-of-operations for live trading execution, explicitly addressing failure modes that IRONCLAD/HUNTER/SENTINEL don't cover: API timeouts mid-order, decision-vs-execution mismatch, operator-under-pressure mistakes.
+### Ashes2Echoes console
+| Item | State |
+|---|---|
+| Console v0.3 → v0.3a | commit `83b562ab` · TradingView widget integrated · 24-ticker switcher |
+| Live at ashes2echoes.com/console/ | verified via Vercel edge fetch |
 
-**Contents:**
-- Primary path: pyetrade via bash with preview→place pattern, sell-only guard enforcement
-- Fallback path: Manual via Power E*TRADE (when, why, procedure, post-trade logging)
-- Decision tree (API vs manual) in ASCII
-- Kill Switch override procedure
-- Pre-flight checklist (7 items, 30 seconds)
+## PORTFOLIO — first live Gate 0 read (2026-04-24T20:34:54Z)
 
-**Commits:**
-- `5440b2112…` → `EXECUTION/EXECUTION_PLAYBOOK_v1.0.md` (versioned)
-- `8e3d535c1…` → `EXECUTION/EXECUTION_PLAYBOOK_LATEST.md` (AI-agnostic LATEST pointer)
+**Read from `positions_latest.json` · sha per freshness · age 8 min GREEN at read time**
 
-### 3. YAHOO_PREVIOUSCLOSE_TRAP v1.0 (NEW)
+| Acct | Type | Equity | Cash | Positions |
+|---|---|---|---|---|
+| 4898 | taxable | $63,392 | $16,708 | META 30 @ $675.69, MRVL 38 @ $156.21, + 750 CVR dust |
+| 5267 | taxable | $11,968 | $836 | QQQ 8 @ $643.83, GEV 2 @ $1006.23, GLW 20 @ $167.28, + 775 CVR dust |
+| 6685 | rollover_ira | $294,112 | **$208,741** | AGIX 212 @ $37.76, SGOV 578 @ $100.51, GOOGL 14 @ $335.63, **AMD 40 @ $299.17**, VOO 0.22 dust |
+| 5536 | roth_ira | $0 | $0 | empty (real account, never funded) |
 
-**Purpose:** Documents 10 known failure modes of the Yahoo Finance chart/quote endpoints, with a drop-in reference safe-fetch implementation for `sentinel/data/yahoo.py`.
+**Total portfolio: ~$369K · dry powder: ~$226K cash**
 
-**Trap catalog covers:**
-1. `previousClose` stale after corporate actions (use `chartPreviousClose`)
-2. `regularMarketPrice` is pre/post-market in extended sessions
-3. Halted stocks return last-print with stale timestamp
-4. Weekend/holiday: Friday close with Monday-shaped fields
-5. Candle array vs meta snapshot lag
-6. `range`+`interval` silent clipping
-7. Futures need `=F` suffix (don't silent-fail on 404)
-8. Rate limit (~2000 req/hour per IP)
-9. CDN cache serving same response for 30-60s
-10. `crumb`/cookie requirement for deeper endpoints
+**CVR dust (`266CVR018`):** contingent value rights from past M&A, 775 sh in 5267 + 750 in 4898, E*TRADE values at $0. Ignore for IRONCLAD sizing.
 
-**Commits:**
-- `1ad6883ad…` → `EXECUTION/YAHOO_PREVIOUSCLOSE_TRAP_v1.0.md`
-- `b4ad2ea23…` → `EXECUTION/YAHOO_PREVIOUSCLOSE_TRAP_LATEST.md`
+## TRADE STATE
 
-### 4. INFRA_MAP updated
+| Position | Tranche / Status | Stop / Notes |
+|---|---|---|
+| META 30 in 4898 | T1 FILLED @ $675.69 · current ~$677 · +$32 unrealized | T2 GTC LIMIT $650 (pending) · Hard stop $629 after T2 fill |
+| AMD 40 in 6685 | Opened at $299.17 · current ~$346 · +15.5% ($1,864 unrealized) | **No stop set in snapshot — flag for next session** |
+| MRVL 38 in 4898 | at $156.21 · current ~$164 · +5% | No stop in snapshot |
+| AGIX 212 in 6685 | at $37.76 · current ~$39.66 | No stop in snapshot |
+| SGOV 578 in 6685 | cash-equiv yield, $58K, stable | N/A |
+| Silver thesis | **CLOSED** | PSLV exited 4/22 HL breach, WPM/PHYS cleanup 4/23. No metals exposure. |
+| FCX | **EXITED** | Not in snapshot. Historical memory was stale. |
+| XOVR, VOO (big block), ITA | **EXITED** | Cleanup 4/22–4/23. |
 
-**Commit:** `49a9a9e3b…` → `INFRASTRUCTURE/INFRA_MAP.md`
+## GATE 0 STATUS
 
-Added v0.3a version note to the console section including the list of external assets loaded (Three.js, fonts, TradingView). Added S3c and S3d entries to the change log. Preserved all existing P1–P6 patches and deploy_verify policy.
+- **Architecture:** live end-to-end
+- **Classification logic:** GREEN <30min · AMBER 30min–4h · RED ≥4h
+- **Verified states seen today:** GREEN (post-refresh), AMBER (54 min old), REFUSE POSITION COMMENTARY (push failed, auth mismatch — caught correctly)
+- **Scheduled cron:** 2 Windows tasks registered, first fire expected Mon 09:30 ET
+- **Token renewal n8n workflow:** written to disk, awaiting manual import (NOT blocking — manual re-auth flow works)
+- **METATRON v10.9 status:** Gate 0 remains ADVISORY per addendum. Flip to MANDATORY after Monday's trading day validates the scheduled task fires correctly without Principal intervention.
 
----
+## FOLLOW-UP ITEMS — NEXT SESSION
 
-## WHAT'S STILL PENDING
+**Priority (in order):**
 
-### PRINCIPAL TO DO (~5 min, manual)
+1. **Monday AM verify:** open PHOENIX, confirm Gate 0 GREEN from auto-cron (not manual push). Evidence: snapshot `fetched_at` should be within 30 min of market open without Principal having touched it.
+2. **If Monday-AM verify clean:** bump METATRON to v10.9 with Gate 0 MANDATORY (non-overridable). Commit as `METATRON_LATEST_PRIME_DIRECTIVE.md` update + dated v10.9 file.
+3. **META position management:** check T2 fill status ($650 GTC). Arm hard stop $629 if T1+T2 both filled.
+4. **AMD stop placement:** 40 shares no stop set. Flag IRONCLAD violation — needs structural stop or trim plan.
+5. **n8n token renewal workflow:** manual import when Principal has bandwidth. Not blocking.
+6. **Optional:** refactor `install_local_tasks.ps1` to use root task path (no admin required).
+7. **5267 review:** account is $12K with positions hugging $100K cap. GEV is a $2,298 single-position at ATH — consider consolidation.
 
-- **[T3 P0]** Subdomain promotion to `console.ashes2echoes.com` with Vercel Authentication. Guide at `A2E_Protocols/INFRASTRUCTURE/CONSOLE_SUBDOMAIN_SETUP.md`. Steps: create new `ashes2echoes-console` Vercel project → Root Dir `console` → Deployment Protection = Vercel Authentication Standard → Add domain → verify SSO login.
+**Known gaps (deferred, not blockers):**
 
-  The current Vercel MCP connector available to MICHA is read-only (`list_projects`, `get_project`, deployments, runtime logs). No create/write tools. So this is the only item that genuinely requires the Principal's dashboard click-through.
+- Shanghai premium / CME margin / COMEX inventory data feed — needed for SILVER PATTERN terminal-vs-temporary distinction. SARIEL module proposal pending.
+- HUNTER H48–H51 module spec (Mag-10 Daily Scanner, Earnings Catalyst, 52w Breakout, Sympathy Ladder) — prevents next coverage-gap incident.
+- FORGE Chapter 1 opening draft — structure flagged, prose unwritten.
 
-### MICHA TO DO (next session)
+## KEY LEARNINGS FROM S3d
 
-- **[T1 P0]** Principal walkthrough of live v0.3a console — flag anything broken, confirm TradingView charts render on his screen setup, especially on the 5-monitor rig
-- **[T2 P0]** Pull 5536 Roth IRA manifest (still the oldest open gap — was unchanged across S3, S3a, S3b, S3c)
-- **[T4]** `session_start.py` with `deploy_verify` wired as Gate 0
-- **[T5]** BULLSEYE action buttons (Trim / UpdateStop / Alert / Close) via FastAPI bridge
-- **[T6]** Add 5267 + 5536 position cards to BULLSEYE
-- **[T7]** Real-time market data to console via FastAPI SSE/WebSocket — replaces the hardcoded market/alert arrays currently in index.html
-- **[T8]** ElevenLabs integration for voice cloning (stub present in VoiceEngine, needs API key + endpoint)
-- **[T9]** Update `sentinel/data/yahoo.py` to match the safe-fetch reference in YAHOO_PREVIOUSCLOSE_TRAP v1.0, with `tests/test_yahoo_traps.py` exercising each trap against recorded fixtures
-- **[T10]** FORGE Appendix A scoring methodology
-- **[T11]** FORGE Ch 3 v1.1 voice pass
-- **[T12]** VOO HL re-entry alert (Sentinel → Telegram)
-- **[T13]** Execution Playbook integration — wire BULLSEYE action buttons to honor the decision tree (e.g., Trim button greyed out when Kill Switch is armed)
-- **[T14]** Add v0.3a Trading Lab to the `present_files` demo path in any mocks
+1. **Drift Guard violation pattern identified:** memory-inference applied to position commentary without Gate 0 check. Multiple instances in this session caught by Principal. Root cause: no single source of truth + no structural refusal on stale data. Both now fixed.
+2. **E*TRADE API returns 4 accounts** — 5536 is real but empty Roth. Memory said 5536 was a known account; now clarified as dormant.
+3. **Portfolio has been substantially restructured 4/22–4/24** — silver thesis fully unwound, AMD + META added, large cash in 6685. Memory had stale composition.
+4. **Claude Code handoff pattern validated:** spec in chat (A2E_Protocols) → kickoff brief → Claude Code block → verified commits on return. Clean split. Replicable for future multi-file builds.
 
----
+## NEXT SESSION RESTART PROMPT
 
-## LIVE STATE AT CLOSE
-
-- **Console:** https://ashes2echoes.com/console/ — HTTP 200, v0.3a, TradingView hooked
-- **Homepage:** https://ashes2echoes.com — HTTP 200, unchanged
-- **FORGE landing:** https://forge.ashes2echoes.com — per last INFRA_MAP check
-- **Vercel project** `ashes2echoes` (prj_0aM8WYTjG5J4AXBxm5uOH6izXAF0) — latest deploy READY, 5 domains attached
-- **E*TRADE live trading** via pyetrade from bash — last verified working 2026-04-22. Tokens expire midnight ET — will need re-auth for next session.
-- **GitHub token** `Claude_MCP_Access` (stored per Principal's records, expires 2026-07-03)
-- **Vercel write token** — revoked mid-S3c, not replaced. MCP read-only access sufficient for current needs.
-
----
-
-## CARRY-FORWARD SESSION START PROMPT
-
-> MICHA LATEST + PHOENIX. 2026-04-24 closed S3d: Console upgraded to v0.3a with real TradingView chart embed in Trading Lab (24-ticker switcher: positions + macro + watchlist, lazy-loaded). Shipped EXECUTION_PLAYBOOK v1.0 (API-vs-manual resilience, decision tree, Kill Switch override procedure, pre-flight checklist) and YAHOO_PREVIOUSCLOSE_TRAP v1.0 (10 Yahoo Finance API gotchas + reference safe fetch pattern for sentinel/data/yahoo.py). INFRA_MAP updated. HTTP 200 verified live.
+> `PHOENIX RESUME`
 >
-> Subdomain promotion to console.ashes2echoes.com with Vercel SSO is still pending Principal's 5-min dashboard step (Vercel MCP is read-only). 5536 Roth manifest still unknown. Next priorities: Principal walkthrough of v0.3a, 5536 pull, session_start.py with deploy_verify as Gate 0, BULLSEYE action buttons via FastAPI bridge, real-time market data wiring to console (replaces hardcoded arrays).
+> Baseline: S3d-FINAL · 2026-04-24. Live State Architecture deployed end-to-end, Gate 0 verified GREEN/AMBER/RED on all three states. Next-session Gate 0 will read `A2E_Intelligence/STATE/positions_latest.json` before any position commentary.
+>
+> Priority Monday AM: verify scheduled task fired auto-cron at 09:30 ET, confirm Gate 0 GREEN without manual intervention. If clean, bump METATRON v10.9 Gate 0 MANDATORY. Check META T2 fill status ($650 GTC), arm $629 hard stop if filled. Flag AMD no-stop (IRONCLAD violation).
 
 ---
 
-## NOTE ON THIS SESSION'S COMPACTION
-
-S3c was compacted mid-stream. The compacted transcript correctly captured all S3c work through commit `1d453f90`. The post-compaction continuation (this file's S3d work) added:
-- v0.3 → v0.3a upgrade (1 file modified, 1 commit: `83b562ab`)
-- EXECUTION_PLAYBOOK (2 commits: `5440b211`, `8e3d535c`)
-- YAHOO_PREVIOUSCLOSE_TRAP (2 commits: `1ad6883a`, `b4ad2ea2`)
-- INFRA_MAP update (1 commit: `49a9a9e3`)
-
-Total commits this session (S3c + S3d combined): 11 across two repos (Ashes2Echoes + A2E_Protocols). All verified live or committed to main, no dangling work.
+**S3d closed. Helm passes to next PHOENIX session. Gate 0 is live.**
 
 — MICHA
