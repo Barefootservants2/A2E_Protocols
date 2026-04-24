@@ -15,6 +15,7 @@
 | `https://ashes2echoes.com/forge/` | ✅ | `<title>FORGE` | same project, subpath |
 | `https://ashes2echoes.com/bullseye/` | ✅ | `<title>BULLSEYE` | same project, subpath |
 | `https://ashes2echoes.com/privacy.html` | ✅ | `<title>Privacy` | same project |
+| `https://ashes2echoes.com/console/` | ✅ | `<title>MICHA · Uriel Covenant</title>` | same project · noindex headers · wake-screen soft-lock |
 | `https://ashes2echoes.com/terms.html` | ✅ | `<title>Terms` | same project |
 | `https://ashes2echoes.com/aup.html` | ✅ | `<title>` | same project |
 | `https://ashes2echoes.com/apparel.html` | ✅ | `<title>STATE'S FINEST` | same project |
@@ -70,6 +71,39 @@
 | `Barefootservants2/AIORA` | **BACKEND ONLY** — Python code, NEVER deploy as a website source. Contains `{{$json.github_path}}` template-string garbage files from n8n misconfigurations that look like index files but aren't. **If you see this repo linked to a Vercel project serving a domain, that is a bug — disconnect immediately.** |
 
 ---
+
+
+---
+
+## MICHA Console subpath
+
+**URL:** `https://ashes2echoes.com/console/`
+**Source:** `Barefootservants2/Ashes2Echoes` → `/console/index.html`
+**Served by:** Same `ashes2echoes` Vercel project as main site
+**Protection layers:**
+1. `X-Robots-Tag: noindex, nofollow, noarchive, nosnippet` — not search-indexed
+2. `<meta name="robots" content="noindex, nofollow">` — client-side duplicate
+3. Wake-screen soft-lock — passcode input before console loads (client-side only)
+4. Security headers: X-Frame-Options DENY, X-Content-Type-Options nosniff, Referrer-Policy no-referrer, Permissions-Policy microphone=(self)
+
+**Known limitation:** The URL is public (anyone who knows it can reach it). The wake-screen passcode is UI only — no server validation. For true access control, see `PENDING` below.
+
+## PENDING — console.ashes2echoes.com subdomain with auth
+
+To promote `/console/` to a fully protected subdomain `console.ashes2echoes.com` with Vercel Authentication (SSO), one manual step is needed in the Vercel dashboard. See setup guide at:
+
+`A2E_Protocols/INFRASTRUCTURE/CONSOLE_SUBDOMAIN_SETUP.md`
+
+Summary of steps (~5 min, one-time):
+1. Create new Vercel project `ashes2echoes-console` connected to same `Barefootservants2/Ashes2Echoes` repo
+2. Set Root Directory = `console`
+3. Enable Deployment Protection → Vercel Authentication (Standard)
+4. Add custom domain `console.ashes2echoes.com`
+5. Verify DNS is already pointing at Vercel nameservers (CNAME will auto-verify)
+6. Deploy from main
+7. Verify: open `console.ashes2echoes.com` — should prompt SSO login, then serve console after auth
+
+Until the subdomain is set up, the console remains accessible at the obscured `/console/` subpath with soft-lock only.
 
 ## DNS
 
