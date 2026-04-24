@@ -8,6 +8,22 @@ Paste this entire file into Claude Code when you open a fresh block. No prior co
 
 ---
 
+## RUNTIME ENVIRONMENT
+
+Principal is on **Windows 10/11 native** with **PowerShell** (not WSL, not bash). Python 3.12 is installed at `C:\Users\ashes\AppData\Local\Programs\Python\Python312\`. Git for Windows is expected to be present (Claude Code on native Windows requires it).
+
+**Adapt bash-flavored specifics accordingly:**
+- Cron scheduling → use **Windows Task Scheduler** via `schtasks.exe` or `New-ScheduledTask` cmdlets
+- `install_local_cron.sh` → write `install_local_tasks.ps1` (idempotent PowerShell script that registers scheduled tasks)
+- `~/a2e-state/` → `$env:USERPROFILE\.a2e-state\` in PowerShell, or `%USERPROFILE%\.a2e-state\` in CMD
+- `&&` command chaining → `;` in PowerShell or separate `-Action` blocks in Task Scheduler
+- Cron verification step (`crontab -l`) → `Get-ScheduledTask -TaskPath "\A2E\*"` verification
+- File paths in Python code should use `pathlib.Path` with `Path.home() / ".a2e-state"` for cross-platform safety (not hardcoded forward-slash paths)
+
+Everything else in this brief is platform-neutral (Python modules, GitHub API calls, n8n workflow JSON, the test suite). Claude Code should proceed with the Windows adaptations above without asking for clarification.
+
+---
+
 ## CONTEXT (read once)
 
 MICHA has been making position-aware responses by inferring from memory, console snapshots, and chat history rather than reading a single source of truth. This produced a serious error on 2026-04-24 (treating PSLV as a held position 48 hours after it was exited on HL breach). The fix is a 4-piece architecture, 60% of which already exists.
