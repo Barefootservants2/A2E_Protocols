@@ -1,0 +1,175 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "A2E Positions Snapshot v1.0",
+  "description": "Canonical position state for all 4 E*TRADE accounts. Consumed by MICHA Gate 0 and all downstream modules.",
+  "type": "object",
+  "required": ["snapshot_id", "fetched_at", "fetched_at_epoch", "fetched_by", "schema_version", "accounts"],
+  "properties": {
+    "snapshot_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique id for this snapshot"
+    },
+    "fetched_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp with timezone (America/New_York preferred)"
+    },
+    "fetched_at_epoch": {
+      "type": "integer",
+      "description": "Unix epoch seconds — used for age computation"
+    },
+    "fetched_by": {
+      "type": "string",
+      "enum": ["cron", "manual", "trade_hook", "test"],
+      "description": "What triggered this snapshot"
+    },
+    "source": {
+      "type": "string",
+      "description": "pyetrade version + snapshotter version (e.g. 'pyetrade-1.5.1 a2e-snapshot-1.0.0')"
+    },
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "etrade_auth_verified_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When token was last renewed or re-authed — informational"
+    },
+    "accounts": {
+      "type": "object",
+      "description": "Keyed by account number (string). Missing accounts allowed — set status=UNKNOWN.",
+      "patternProperties": {
+        "^[0-9]{4}$": {
+          "$ref": "#/definitions/account"
+        }
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "account": {"type": "string"},
+          "stage": {"type": "string"},
+          "message": {"type": "string"}
+        }
+      },
+      "description": "Non-fatal errors during the fetch — used for partial snapshots"
+    }
+  },
+  "definitions": {
+    "account": {
+      "type": "object",
+      "required": ["account_number", "account_type", "status"],
+      "properties": {
+        "account_number": {"type": "string"},
+        "account_type": {
+          "type": "string",
+          "enum": ["taxable", "roth_ira", "rollover_ira", "traditional_ira", "sep_ira", "unknown"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["OK", "AUTH_FAILED", "API_ERROR", "UNKNOWN"]
+        },
+        "cash_available": {
+          "type": "number",
+          "description": "Settled cash available for new positions"
+        },
+        "cash_buying_power": {
+          "type": "number",
+          "description": "Includes margin if applicable"
+        },
+        "total_equity": {
+          "type": "number",
+          "description": "Account total net liquidation value"
+        },
+        "margin_used": {
+          "type": "number",
+          "description": "Negative if on margin, 0 if cash account"
+        },
+        "positions": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/position"}
+        },
+        "open_orders": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/order"}
+        }
+      }
+    },
+    "position": {
+      "type": "object",
+      "required": ["symbol", "qty", "cost_basis", "current_price"],
+      "properties": {
+        "symbol": {"type": "string"},
+        "qty": {
+          "type": "number",
+          "description": "Positive for long, negative for short, can be fractional"
+        },
+        "cost_basis": {
+          "type": "number",
+          "description": "Average per-share paid price"
+        },
+        "market_value": {
+          "type": "number",
+          "description": "qty × current_price"
+        },
+        "current_price": {"type": "number"},
+        "unrealized_pnl": {"type": "number"},
+        "unrealized_pnl_pct": {"type": "number"},
+        "last_update": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When E*TRADE last marked this position"
+        },
+        "asset_type": {
+          "type": "string",
+          "enum": ["equity", "etf", "option", "mutual_fund", "bond", "cash_equiv"],
+          "description": "For routing to correct analysis module (options need different handling)"
+        },
+        "tier": {
+          "type": "string",
+          "enum": ["ANCHOR", "THESIS", "TACTICAL", "DUST", "UNTAGGED"],
+          "description": "IRONCLAD v3.0 tier — populated by separate tagging pass, not by snapshotter"
+        },
+        "ring": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "METATRON Five-Ring allocation, if assigned"
+        }
+      }
+    },
+    "order": {
+      "type": "object",
+      "required": ["order_id", "symbol", "action", "qty", "status"],
+      "properties": {
+        "order_id": {"type": "string"},
+        "symbol": {"type": "string"},
+        "action": {
+          "type": "string",
+          "enum": ["BUY", "SELL", "SELL_SHORT", "BUY_TO_COVER", "SELL_TO_OPEN", "BUY_TO_OPEN", "SELL_TO_CLOSE", "BUY_TO_CLOSE"]
+        },
+        "qty": {"type": "number"},
+        "price_type": {
+          "type": "string",
+          "enum": ["MARKET", "LIMIT", "STOP", "STOP_LIMIT", "TRAILING_STOP"]
+        },
+        "limit_price": {"type": "number"},
+        "stop_price": {"type": "number"},
+        "status": {
+          "type": "string",
+          "enum": ["OPEN", "EXECUTED", "CANCELLED", "REJECTED", "PARTIAL"]
+        },
+        "placed_at": {"type": "string", "format": "date-time"},
+        "good_until": {"type": "string", "format": "date-time"},
+        "duration": {
+          "type": "string",
+          "enum": ["DAY", "GTC", "IOC", "FOK"]
+        }
+      }
+    }
+  }
+}
