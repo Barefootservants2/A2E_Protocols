@@ -79,7 +79,12 @@
 
 **URL:** `https://ashes2echoes.com/console/`
 **Source:** `Barefootservants2/Ashes2Echoes` → `/console/index.html`
+**Version:** v0.3a (2026-04-24) — Trading Lab upgraded to TradingView embed with position/macro/watchlist ticker switcher, lazy-loaded on first view
 **Served by:** Same `ashes2echoes` Vercel project as main site
+**External assets loaded:**
+- Three.js r128 from `cdnjs.cloudflare.com` (Metatron orb)
+- Fonts from `fonts.googleapis.com` (Cinzel + Chakra Petch + JetBrains Mono)
+- TradingView widget from `s3.tradingview.com/tv.js` (loads only when Principal navigates to Trading Lab; zero cost to console boot)
 **Protection layers:**
 1. `X-Robots-Tag: noindex, nofollow, noarchive, nosnippet` — not search-indexed
 2. `<meta name="robots" content="noindex, nofollow">` — client-side duplicate
@@ -147,3 +152,5 @@ All patches are in effect as of this commit. Any session that violates one is dr
 ## Change log
 
 - **2026-04-23 22:00Z** — INFRA_MAP created. `ashes2echoes` project created, domains transferred from quarantined `aiora-legacy-donotuse`. Dormant `a2e_website_v7.4` and `a2e_website_v7.4.3` deleted. First deploy from `Ashes2Echoes` main sha `80598c27` verified READY, serving HTTP 200 on all production URLs.
+- **2026-04-24 S3c** — MICHA Console v0.3 shipped to `/console/` subpath. Wake screen + 3D Metatron orb + Web Speech voice + 5-view shell + licensing scaffold. Security headers added. Commit `8e31e832` through `1d453f90`. Verified HTTP 200.
+- **2026-04-24 S3d** — Console upgraded to v0.3a: Trading Lab gets real TradingView chart embed with position/macro/watchlist ticker switcher, lazy-loaded. Commit `83b562ab`. Verified HTTP 200 at 15:55 GMT. Also shipped `EXECUTION/EXECUTION_PLAYBOOK_v1.0.md` (+LATEST) and `EXECUTION/YAHOO_PREVIOUSCLOSE_TRAP_v1.0.md` (+LATEST) covering API-vs-manual resilience and Yahoo Finance data gotchas.
