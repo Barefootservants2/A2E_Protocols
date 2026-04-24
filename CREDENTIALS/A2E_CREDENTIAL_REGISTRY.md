@@ -35,3 +35,13 @@
 - METALS_DEV_KEY
 - CIL_WEBHOOK_URL
 - UW_API (new — added this session)
+
+## Vercel REST API
+- **Label:** VERCEL_API_TOKEN
+- **Scope:** Ashes2Echoes team only (team_nUdbxv9jUExTru4dxcA5dmad)
+- **Auth:** Authorization: Bearer {token}
+- **Used by:** phoenix/deploy_verify.py infra checks, manual API management
+- **Session policy:** Session-scoped tokens (1-day expiration) for cleanup work.
+  Long-lived tokens NOT recommended while in pre-production iteration.
+- **Rotation:** Any token pasted into chat is burned — rotate at session end.
+- **Env var name:** VERCEL_API_TOKEN (referenced by deploy_verify.py)
