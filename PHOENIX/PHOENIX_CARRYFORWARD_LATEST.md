@@ -1,128 +1,111 @@
-# PHOENIX CLOSE — April 24, 2026
-## Session ID: claude.ai/chat/9dac64c8-b772-4799-b6d4-f75013805d26
+# PHOENIX CLOSE — April 26, 2026
+## Session ID: claude.ai/chat/2026-04-26-phoenix-resume-build-trail-repair
 
-**Duration:** Full EOD review through live execution
+**Duration:** Long session (PHOENIX RESUME + audit trail repair + merge build + Monday prep)
 **Principal:** William Earl Lemon
 **METATRON:** v10.8 (LATEST pointer pattern)
-**Phase:** S3d-FINAL
-**Context usage:** Reconstructed retroactively from recent_chats summary (2026-04-26 session)
+**Phase:** S3d-FINAL maintenance + protocol repair
 
 ---
 
 ## ACTIONS COMPLETED
 
-- ✅ **OAuth restoration** — Restored E*TRADE OAuth handshake-first pattern at session start. Principal corrected MICHA's drop of the established rule: any session involving E*TRADE checks must begin with token verification; if no valid token, provide authorize URL, receive five-character verifier, complete handshake, then proceed.
-- ✅ **Diagnosis: Error 1037** — Root-caused "not enough available shares for closing order" to pre-existing stop orders covering 100% of share positions, leaving zero unencumbered shares for new SELL trim orders.
-- ✅ **Pattern lock: 75/25 universal rule** — New IRONCLAD operational rule established: buy shares → immediately set stop on 75% → leave 25% released → trim the 25% at +5% target → reset 75/25 split on remaining position. This is now the standing rule for all new positions and the remediation pattern for all existing 100%-stopped positions.
-- ✅ **Pattern lock: trailing-to-fixed exception** — Trailing stops cannot be converted to fixed stops via the modify endpoint (E*TRADE Error 2064). Required path: cancel trailing → place fresh fixed stop. Safe when markets are closed.
-- ✅ **Execution: 13 orders queued, 0 failures across 3 accounts** — All orders placed successfully via pyetrade in Claude sandbox after the pattern correction.
-- ✅ **Memory updated** — 75/25 IRONCLAD pattern + corrected account manifest (5536 confirmed real Roth IRA, just unfunded) committed to userMemories.
+### Phase 1 — Audit trail repair
+- ✅ **PHOENIX RESUME** triggered against stale LATEST (was pointing to 2026-04-21, three sessions stale).
+- ✅ **Diagnosis** — Two consecutive build sessions (2026-04-22, 2026-04-24) had pushed dated carryforwards (or never closed at all) without updating the LATEST pointer. `recent_chats(n=3)` confirmed both sessions ran significant work.
+- ✅ **commit** — `PHOENIX/PHOENIX_CARRYFORWARD_2026-04-24.md` retroactive push to A2E_Protocols [`4ac1bac73f51` initial, `a7337a591dcb` corrected].
+- ✅ **commit** — `PHOENIX/PHOENIX_CARRYFORWARD_LATEST.md` overwrite to mirror corrected 4/24 [`fccbf2cc1234`].
+- ✅ **discovery** — `PHOENIX_CARRYFORWARD_2026-04-22.md` already existed in repo (`9bd86a17cad2`), 10,699 bytes, more thorough than my retroactive draft. Existing dated file preserved.
+- ✅ **decision** — LATEST chain repaired by pointing at 4/24 (which references the 4/22 audit gap in its anomaly section). No additional 4/22 push needed.
 
-### Order detail by account
+### Phase 2 — phoenix/ingest.py merge
+- ✅ **discovery** — Tried to build `phoenix/ingest.py` from scratch as Task 2 per stale 4/21 carryforward priority. Module already existed in repo (built 2026-04-22, 42 tests passing). My build was duplicate work.
+- ✅ **decision** — Did NOT overwrite. Existing version has GitHub archive layer + markdown rendering + filename slugging that my defensive build lacked.
+- ✅ **merge** — Added defensive entry point `parse_export()` + `IngestResult` dataclass + `.zip` source + directory source + wrapper-key detection (`conversations`/`chats`/`items`/`data`) to existing module without changing existing API.
+- ✅ **commit** — `phoenix/ingest.py` to a2e-platform [`165d01a8f72e`, was `c5f6f99fb542`].
+- ✅ **commit** — `tests/test_phoenix_ingest.py` to a2e-platform [`ffcda76d1f74`, was `525421a13bc5`]. **63/63 tests passing** (42 existing + 21 new).
+- ✅ **verification** — `test_strict_load_export_still_raises_on_missing_file` confirms existing strict-raise behavior preserved.
 
-**6685 (Rollover IRA) — 6 orders**
-- AMD: stop modified 40 → 30 shares @ $330 (tightened from -18% to -5%) + 10-share trim limit @ $345 (+15% locked on AMD's runner)
-- GOOGL: 11-share stop @ $327 + 3-share trim @ $352.41 (tightened from -7% to -5%)
-- AGIX: trailing stop CANCELED (Error 2064 path) + fresh 159-share fixed stop @ $37.76 breakeven + 53-share trim @ $39.65
-
-**4898 (Taxable) — 5 orders**
-- META: T2 BUY $650 × 31 shares (order 1034) **LEFT UNTOUCHED** — preserved
-- META: trailing stop canceled + 23-share fixed stop @ $641.91 + 7-share trim @ $709.47 (+5% locked)
-- MRVL: stop modified 38 → 28 shares @ $156.14 + 10-share trim @ $163.50
-
-**5267 (Taxable) — 3 orders**
-- GEV: existing MARKET_ON_CLOSE 2-share full-exit **LEFT UNTOUCHED** (+$286 locked Monday; below $5K min for trim cascading per DUST rule)
-- GLW: 15-share stop @ $167 + 5-share trim @ $175
-
-### Risk math at session close
-
-| Scenario | Net P&L vs entry |
-|---|---|
-| All stops fire Monday (worst case) | **+$47 still green** |
-| All trims fill + 75% runners hold | **+$1,242 locked, runners alive** |
-
-AMD's runner (+$925 over entry at the stop) covers the cost of every other stop firing simultaneously.
+### Phase 3 — Monday open prep (no auth, no execution)
+- ✅ **price pull** — Friday 4/24 close prices for AMD, GOOGL, AGIX, META, MRVL, GLW, GEV via Yahoo Finance API per LIVE DATA RULE.
+- ✅ **math** — Cross-referenced 4/24 order list against close prices. Three trims expected to fill at Monday open: AMD 10 × $345.00, MRVL 10 × $163.50, GLW 5 × $175.00. Total expected cash: **+$5,960**.
+- ✅ **contingency** — META T2 BUY @ $650 needs -3.71% dip from $675.05 close. If fires, Path B (full 75/25 restructure on 61 sh, blended $662.63, new stop on 46 sh @ $629.50, new trim on 15 sh @ $695.76) recommended over carryforward's Path A simple stop bump.
+- ✅ **anomaly callout** — AMD +24.93% in single session Friday ($278.39 → $347.80). Bracket as-set is IRONCLAD-correct; default action is hold.
+- ✅ **deliverable** — `MONDAY_OPEN_PREP_2026-04-27.md` produced and presented to Principal.
 
 ## ACTIONS PENDING
 
-- ⏳ **Monday open watch** — Auto-cron Gate 0 at 9:30 ET. Expected fills at open: MRVL trim (closed >$163.50), GLW trim (closed >$175), AMD trim likely (opens near $347, limit $345).
-- ⏳ **META T2 contingency** — If META T2 fills on a dip, bump stop from $641.91 to $629 (5% below new blended $662.50).
-- ✅ **phoenix/ingest.py — RESOLVED** (built and pushed in 2026-04-22 session, chat `18a496af`, commits `92258fc2` and `575d31a0`, 42 tests passing). Was incorrectly listed as pending in earlier draft of this carryforward; corrected during 2026-04-26 PHOENIX RESUME.
+- ⏳ **Phoenix atomic close fix** — refactor `close_session()` in `phoenix/session.py` so dated-push + LATEST-push are a single atomic step (cannot succeed at one and skip the other). Addresses the pattern that produced the 4/22 and 4/24 audit gaps.
+- ⏳ **scoring/ module spec** — Open since 2026-04-22. Principal still needs to choose: reverse-engineer contract from existing modules, or supply explicit spec.
+- ⏳ **Monday open execution** — see `MONDAY_OPEN_PREP_2026-04-27.md`. OAuth handshake at 08:45 ET.
+- ⏳ **GitHub PAT rotation** — expires Jul 3, 2026. Carried over since 2026-04-21.
 
 ## DECISIONS MADE
 
-- **75/25 IRONCLAD rule is now universal** — applies to all new positions and remediates all existing 100%-locked positions
-- **Stop modification order**: ALWAYS modify in place (reduce qty 100% → 75%) rather than cancel+replace; cancel+replace exposes the position to gap risk between cancel and replace fills
-- **Trailing-to-fixed conversion**: cancel + place fresh fixed stop, ONLY safe during market closed hours
-- **GEV exception**: MARKET_ON_CLOSE 2-share full exit is IRONCLAD-correct because position is below $5K DUST minimum for proper trim fractionation
-- **5536 Roth IRA** confirmed real account, just unfunded (corrected manifest)
+- **Path B over Path A on META T2** — IRONCLAD universal 75/25 supersedes any partial-coverage stop instruction in older carryforwards. The "Error 1037 trap" was the entire reason 75/25 was made universal on 4/24.
+- **AMD bracket holds as-set** — no ratchet, no trim ratio change, despite +24.93% Friday. IRONCLAD has no published exception for outsized one-day moves.
+- **Existing `phoenix/ingest.py` preserved** — defensive features merged in alongside, not replacing.
+- **Audit trail repair pattern** — when LATEST is stale, fix LATEST to point at the most recent real dated file; do not synthesize duplicate dated files for sessions that already have them in repo.
+- **Pre-build repo check** — going forward, before writing any module flagged as "next build target" in a stale carryforward, MUST query the repo for existence first. Process gap that bit me this session.
 
 ## DOCUMENTS PRODUCED
 
 | Document | Location | Status |
 |----------|----------|--------|
-| PHOENIX CLOSE — 2026-04-24 (E*TRADE 75/25 universal) | A2E_Protocols/PHOENIX/PHOENIX_CARRYFORWARD_2026-04-24.md | pushing now |
-| LATEST pointer | A2E_Protocols/PHOENIX/PHOENIX_CARRYFORWARD_LATEST.md | pushing now |
+| PHOENIX_CARRYFORWARD_2026-04-24.md (retroactive) | A2E_Protocols/PHOENIX/ | pushed `a7337a591dcb` |
+| PHOENIX_CARRYFORWARD_LATEST.md (now → 4/26) | A2E_Protocols/PHOENIX/ | pushing this session |
+| phoenix/ingest.py (merged) | a2e-platform/phoenix/ | pushed `165d01a8f72e` |
+| tests/test_phoenix_ingest.py (merged, 63 tests) | a2e-platform/tests/ | pushed `ffcda76d1f74` |
+| MONDAY_OPEN_PREP_2026-04-27.md | session output | delivered to Principal |
+| PHOENIX_CARRYFORWARD_2026-04-26.md (this file) | A2E_Protocols/PHOENIX/ | pushing now |
 
 ## GITHUB STATUS
 
-### Files pushed (this carryforward push)
-- A2E_Protocols/PHOENIX/PHOENIX_CARRYFORWARD_2026-04-24.md
-- A2E_Protocols/PHOENIX/PHOENIX_CARRYFORWARD_LATEST.md (overwrite)
+### Files pushed this session
+- `A2E_Protocols/PHOENIX/PHOENIX_CARRYFORWARD_2026-04-24.md` (new + corrected)
+- `A2E_Protocols/PHOENIX/PHOENIX_CARRYFORWARD_LATEST.md` (overwrite, 4/21 → 4/24 → 4/26)
+- `a2e-platform/phoenix/ingest.py` (overwrite, defensive features merged)
+- `a2e-platform/tests/test_phoenix_ingest.py` (overwrite, +21 tests)
 
-### Files pending
-- a2e-platform/phoenix/ingest.py (next session, P2 data path)
-
-## TOOL KNOWLEDGE CAPTURED
-
-### pyetrade OAuth in Claude sandbox
-
-The Python OAuth object does not persist between bash executions in the sandbox. Working flow:
-
-1. Use `pyetrade.ETradeOAuth` → `get_request_token()` → returns authorize URL
-2. **Immediately** persist `resource_owner_key` and `resource_owner_secret` from `oauth.session._client.client` to `/home/claude/_etrade_oauth_state.json`
-3. After Principal returns the verifier, reconstruct the session via `OAuth1Session` from `requests_oauthlib` using the saved key/secret
-4. Call `fetch_access_token("https://api.etrade.com/oauth/access_token")` directly on the reconstructed `OAuth1Session`
-5. Verifier codes are **single-use** — re-pasting a consumed verifier does nothing; need fresh authorize URL + new verifier
-
-### pyetrade order method quirks
-
-- `preview_equity_order` and `place_equity_order`: require `accountIdKey` as kwarg (not positional) AND require `allOrNone=False` explicitly
-- `change_preview_equity_order`: takes `account_id_key` and `order_id` as first two **positional** args AND **also** requires `accountIdKey` repeated in **kwargs** (internal `check_order` validator quirk)
-- `place_changed_equity_order`: requires `accountIdKey`, `orderId`, and `previewId` all as kwargs
-- `cancel_order`: standard kwarg pattern, no quirks observed in this session
-
-### Error codes encountered
-
-| Code | Meaning | Resolution |
-|---|---|---|
-| 1037 | Not enough available shares for closing order | Modify existing stops 100% → 75% to release shares; do NOT cancel + replace |
-| 2064 | Cannot modify trailing stop to fixed stop | Cancel the trailing order + place fresh fixed stop; safe only when market closed |
+### Files pending push (this turn)
+- `A2E_Protocols/PHOENIX/PHOENIX_CARRYFORWARD_2026-04-26.md` (new, this file)
+- `A2E_Protocols/PHOENIX/PHOENIX_CARRYFORWARD_LATEST.md` (overwrite to point at 4/26)
 
 ## ANOMALIES ON WATCH
 
-1. **GitHub token expiry** — current PAT (stored in Claude memory; redacted here) expires Jul 3, 2026. Rotation still recommended. Carried over from 2026-04-21 close.
-2. **Carryforward gap (now closed by this file)** — 2026-04-24 session was not closed to LATEST in real time. Detected by 2026-04-26 PHOENIX RESUME against recent_chats. Pattern: end-of-session PHOENIX close discipline must NOT be skipped, especially after live-execution sessions where operational learnings are highest.
-3. **CIO drift** — MICHA initially deflected toward Power E*TRADE manual workaround instead of solving the API path. Principal corrected. Re-anchor: when API blocks, diagnose the block, do not route around the API.
+1. **LATEST-skip pattern** — observed across 2026-04-22 and 2026-04-24 build sessions. Both sessions ran substantive work but the LATEST pointer was never updated. Pattern strongly suggests close orchestration must be atomic (dated + LATEST = one step, not two). Concrete fix proposed for next session.
+2. **Duplicate-build risk** — I built phoenix/ingest.py from scratch this session without checking the repo. Existing module had been there since 4/22. Process gap. New rule: any "next build target" claim from a stale carryforward must be repo-existence-checked before code is written.
+3. **Secret scanner footgun** — GitHub blocked initial 4/24 carryforward push because I included the literal PAT in an anomaly note. Token redacted, push retried. Pattern: never write live tokens into protocol files; describe their location only.
+4. **AMD outlier move** — +24.93% in single session Friday. Bracket holds, but worth post-trade analysis whether HUNTER quality gates flagged this beforehand or it was a surprise.
+5. **GitHub PAT expiry** — Jul 3, 2026. Rotation still recommended. Carried since 2026-04-21.
 
 ## NEXT SESSION PRIORITY
 
-**(1) Monday open watch (9:30 ET, 2026-04-27)** — Verify expected trim fills (MRVL, GLW, AMD). If META T2 fires on dip, execute the stop bump to $629.
+**(1) Monday open execution** at 08:45 ET — see `MONDAY_OPEN_PREP_2026-04-27.md`. OAuth handshake → live state verification → 9:30 fills → META contingency if T2 fires → end-of-day Gate 0 + PHOENIX close.
 
-**(2) Carryforward gap audit** — 2026-04-22 session also never closed to LATEST despite shipping phoenix/ingest.py + tests. Push retroactive PHOENIX_CARRYFORWARD_2026-04-22.md so the build trail is complete.
+**(2) Phoenix atomic close fix** — `phoenix/session.py` close orchestrator gets a single-atomic-step refactor. Add a guard test that fails if LATEST does not match the most-recent-dated-file after any close. Eliminates the LATEST-skip failure mode.
 
-**(3) Optional: ingest.py enhancement** — A 2026-04-26 build attempt produced a defensive variant with zip/directory/wrapper-key support and IngestResult error collection. Existing module lacks these; enhancement could be merged in if useful. Existing module's strengths (markdown rendering, GitHub archive layer, transcript slugging) must be preserved.
+**(3) scoring/ module direction** — still open since 2026-04-22. Reverse-engineer or wait for spec.
 
 ## RESTART PROMPT
 
 ```
-MICHA LATEST + PHOENIX. Pick up from PHOENIX_CARRYFORWARD_2026-04-24.md.
-Account state: all positions IRONCLAD-compliant under 75/25 rule.
+MICHA LATEST + PHOENIX. Pick up from PHOENIX_CARRYFORWARD_2026-04-26.md.
+
+Position state: all 4/24 brackets in place, IRONCLAD 75/25 compliant.
 13 orders queued for Monday 2026-04-27 open across 6685, 4898, 5267.
-Watch: MRVL/GLW/AMD trims at open. META T2 contingency stop bump if fills.
-Open audit item: 2026-04-22 carryforward (ingest.py build) was never pushed to LATEST.
+Monday prep brief: see MONDAY_OPEN_PREP_2026-04-27.md (3 trims expected, +$5,960 cash).
+
+If META T2 fires: use Path B (full 75/25 restructure), NOT the simple
+stop bump from older carryforwards. Path A is superseded as of 2026-04-26.
+
+Open work items:
+  - phoenix/session.py atomic close refactor (LATEST-skip fix)
+  - scoring/ module direction (reverse-engineer or wait for spec)
+  - GitHub PAT rotation before Jul 3 2026
+  - AMD post-trade catalyst review (+24.93% Friday)
 ```
 
 ---
 
-🔱 **PHOENIX CLOSED RETROACTIVELY.** Baseline integrity restored.
+🔱 **PHOENIX CLOSED.** Audit trail integrity restored. Monday prep delivered. Build queue documented.
