@@ -47,7 +47,7 @@ AMD's runner (+$925 over entry at the stop) covers the cost of every other stop 
 
 - ⏳ **Monday open watch** — Auto-cron Gate 0 at 9:30 ET. Expected fills at open: MRVL trim (closed >$163.50), GLW trim (closed >$175), AMD trim likely (opens near $347, limit $345).
 - ⏳ **META T2 contingency** — If META T2 fills on a dip, bump stop from $641.91 to $629 (5% below new blended $662.50).
-- ⏳ **phoenix/ingest.py** — P2 data path build target carried forward from 2026-04-21 close. Still pending.
+- ✅ **phoenix/ingest.py — RESOLVED** (built and pushed in 2026-04-22 session, chat `18a496af`, commits `92258fc2` and `575d31a0`, 42 tests passing). Was incorrectly listed as pending in earlier draft of this carryforward; corrected during 2026-04-26 PHOENIX RESUME.
 
 ## DECISIONS MADE
 
@@ -109,7 +109,9 @@ The Python OAuth object does not persist between bash executions in the sandbox.
 
 **(1) Monday open watch (9:30 ET, 2026-04-27)** — Verify expected trim fills (MRVL, GLW, AMD). If META T2 fires on dip, execute the stop bump to $629.
 
-**(2) phoenix/ingest.py build** — P2 data path. Parser for Anthropic conversation-export JSON → SessionState. CLI: `python -m phoenix.ingest <path>`. Tests for JSON schema variants. AVOID the word "extractor" in module naming.
+**(2) Carryforward gap audit** — 2026-04-22 session also never closed to LATEST despite shipping phoenix/ingest.py + tests. Push retroactive PHOENIX_CARRYFORWARD_2026-04-22.md so the build trail is complete.
+
+**(3) Optional: ingest.py enhancement** — A 2026-04-26 build attempt produced a defensive variant with zip/directory/wrapper-key support and IngestResult error collection. Existing module lacks these; enhancement could be merged in if useful. Existing module's strengths (markdown rendering, GitHub archive layer, transcript slugging) must be preserved.
 
 ## RESTART PROMPT
 
@@ -118,7 +120,7 @@ MICHA LATEST + PHOENIX. Pick up from PHOENIX_CARRYFORWARD_2026-04-24.md.
 Account state: all positions IRONCLAD-compliant under 75/25 rule.
 13 orders queued for Monday 2026-04-27 open across 6685, 4898, 5267.
 Watch: MRVL/GLW/AMD trims at open. META T2 contingency stop bump if fills.
-Build queue: phoenix/ingest.py (P2 data path) — do NOT use the word "extractor".
+Open audit item: 2026-04-22 carryforward (ingest.py build) was never pushed to LATEST.
 ```
 
 ---
